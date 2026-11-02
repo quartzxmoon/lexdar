@@ -1,0 +1,474 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		B18EDFF579BE44798F0E2231 /* LexdarApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E61B65D6D937410F9E39FD9D /* LexdarApp.swift */; };
+		01D1329BD5E147B384F4E164 /* ScanProject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4609B237D67E4CBCAAAAD111 /* ScanProject.swift */; };
+		CA59165FD4E243B1A9BED5B6 /* CatalogItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA1179C921024C0194555C8D /* CatalogItem.swift */; };
+		3E311DFCF8094ED7BA894DF3 /* Catalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 532023A2DC4B4D14A735082E /* Catalog.swift */; };
+		897E7F137B5A4A73A8FD24D8 /* RenovationPlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E912FF10DE4AF08EC8FC08 /* RenovationPlan.swift */; };
+		E5E27726698D4C4CB16BBE84 /* ScanStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D123E9071C944D80AAC7763D /* ScanStore.swift */; };
+		25162CBF1032439493AF9C71 /* RoomCaptureCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF040EF6DFC044608E1FE8BC /* RoomCaptureCoordinator.swift */; };
+		EBC2612E10BE4D67A193B6A9 /* RoomCaptureRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 068712DAFC5D4E8B93A124CD /* RoomCaptureRepresentable.swift */; };
+		805CF08FDC54404482E3BF59 /* ScanCaptureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA53F8B4B9CC4262A48235F1 /* ScanCaptureView.swift */; };
+		AA4B134864804864A4F16802 /* RoomSceneBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9724957F991F4538BB89CFAB /* RoomSceneBuilder.swift */; };
+		DCC7FDB813B34479953BED4B /* RenovationSceneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD5D271A0A2042A4AD99C5F3 /* RenovationSceneView.swift */; };
+		0412608624BA4BE5BCCF1037 /* FloorPlanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8914C50F00CF4E7E84EF5C17 /* FloorPlanView.swift */; };
+		52F89B4E41204F4E9CB2E56A /* CatalogBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86CF3CD96C0249EE8CADC5FE /* CatalogBrowserView.swift */; };
+		63516A539FA04DF0B929EB30 /* RenovationEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7C323600364453BD0574F9 /* RenovationEditorView.swift */; };
+		F23FC70DA60743DCA02C67DA /* RenovationSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E0E1D35A8724ACC9EAD7092 /* RenovationSummaryView.swift */; };
+		FED0FCEF46074C279DBCD9EB /* ScanListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D69FC75CED39493292D1F8C8 /* ScanListView.swift */; };
+		42AC9B2B901B49C9A8EBD253 /* ScanDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DEE63D8C8284441958E7FC3 /* ScanDetailView.swift */; };
+		44596ADE61B941DAA168A127 /* USDZPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20CC90D5587C4D68935C7FB2 /* USDZPreviewView.swift */; };
+		46EBB42C6F0E4EFDAAAA1AD5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CBD2947564F340EDA893E0D5 /* Assets.xcassets */; };
+		C2E275A2DA244C51AF906DA8 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 75AC7C18EAE847D08BC8FAD2 /* Preview Assets.xcassets */; };
+		F0594526A74D4FF4B5062821 /* RoomPlan.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 874A61A01DDC4516867CB630 /* RoomPlan.framework */; };
+		2DA248874CF8447594EAF358 /* ARKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7F62A2FDB6B42AC9AEDEC36 /* ARKit.framework */; };
+		52FACFA0084341DDAB72C5B1 /* SceneKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 732EEB107E4E49B883307DA1 /* SceneKit.framework */; };
+		D3927CF6BD8844B6ABB87C43 /* QuickLook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C575A428E73476A8F1D42E4 /* QuickLook.framework */; };
+		E406EF751DF64A0ABA94D927 /* PDFKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 05F86A55E0534A308C542958 /* PDFKit.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		DBE47437EABB4FAA85B8AEEB /* Lexdar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Lexdar.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E61B65D6D937410F9E39FD9D /* LexdarApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LexdarApp.swift"; sourceTree = "<group>"; };
+		4609B237D67E4CBCAAAAD111 /* ScanProject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Models/ScanProject.swift"; sourceTree = "<group>"; };
+		DA1179C921024C0194555C8D /* CatalogItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Models/CatalogItem.swift"; sourceTree = "<group>"; };
+		532023A2DC4B4D14A735082E /* Catalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Models/Catalog.swift"; sourceTree = "<group>"; };
+		53E912FF10DE4AF08EC8FC08 /* RenovationPlan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Models/RenovationPlan.swift"; sourceTree = "<group>"; };
+		D123E9071C944D80AAC7763D /* ScanStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Models/ScanStore.swift"; sourceTree = "<group>"; };
+		AF040EF6DFC044608E1FE8BC /* RoomCaptureCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Scanning/RoomCaptureCoordinator.swift"; sourceTree = "<group>"; };
+		068712DAFC5D4E8B93A124CD /* RoomCaptureRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Scanning/RoomCaptureRepresentable.swift"; sourceTree = "<group>"; };
+		DA53F8B4B9CC4262A48235F1 /* ScanCaptureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Scanning/ScanCaptureView.swift"; sourceTree = "<group>"; };
+		9724957F991F4538BB89CFAB /* RoomSceneBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Scanning/RoomSceneBuilder.swift"; sourceTree = "<group>"; };
+		DD5D271A0A2042A4AD99C5F3 /* RenovationSceneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Scanning/RenovationSceneView.swift"; sourceTree = "<group>"; };
+		8914C50F00CF4E7E84EF5C17 /* FloorPlanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/FloorPlanView.swift"; sourceTree = "<group>"; };
+		86CF3CD96C0249EE8CADC5FE /* CatalogBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/CatalogBrowserView.swift"; sourceTree = "<group>"; };
+		9F7C323600364453BD0574F9 /* RenovationEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/RenovationEditorView.swift"; sourceTree = "<group>"; };
+		3E0E1D35A8724ACC9EAD7092 /* RenovationSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/RenovationSummaryView.swift"; sourceTree = "<group>"; };
+		D69FC75CED39493292D1F8C8 /* ScanListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/ScanListView.swift"; sourceTree = "<group>"; };
+		7DEE63D8C8284441958E7FC3 /* ScanDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/ScanDetailView.swift"; sourceTree = "<group>"; };
+		20CC90D5587C4D68935C7FB2 /* USDZPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/USDZPreviewView.swift"; sourceTree = "<group>"; };
+		CBD2947564F340EDA893E0D5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Assets.xcassets"; sourceTree = "<group>"; };
+		75AC7C18EAE847D08BC8FAD2 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Content/Preview Assets.xcassets"; sourceTree = "<group>"; };
+		F1A9AD35B46C48E0A1B649AB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info.plist"; sourceTree = "<group>"; };
+		874A61A01DDC4516867CB630 /* RoomPlan.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RoomPlan.framework; path = System/Library/Frameworks/RoomPlan.framework; sourceTree = SDKROOT; };
+		F7F62A2FDB6B42AC9AEDEC36 /* ARKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ARKit.framework; path = System/Library/Frameworks/ARKit.framework; sourceTree = SDKROOT; };
+		732EEB107E4E49B883307DA1 /* SceneKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SceneKit.framework; path = System/Library/Frameworks/SceneKit.framework; sourceTree = SDKROOT; };
+		5C575A428E73476A8F1D42E4 /* QuickLook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLook.framework; path = System/Library/Frameworks/QuickLook.framework; sourceTree = SDKROOT; };
+		05F86A55E0534A308C542958 /* PDFKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PDFKit.framework; path = System/Library/Frameworks/PDFKit.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		4543BB6A047B4DBD9DE66DAA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F0594526A74D4FF4B5062821 /* RoomPlan.framework in Frameworks */,
+				2DA248874CF8447594EAF358 /* ARKit.framework in Frameworks */,
+				52FACFA0084341DDAB72C5B1 /* SceneKit.framework in Frameworks */,
+				D3927CF6BD8844B6ABB87C43 /* QuickLook.framework in Frameworks */,
+				E406EF751DF64A0ABA94D927 /* PDFKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		3336C20375DF47C895391D7D = {
+			isa = PBXGroup;
+			children = (
+				5F402564EA074F12BEEB4AFD /* Lexdar */,
+				864AEA0612CF461199F1DA22 /* Frameworks */,
+				7BCD2F4811A3418B983E41A6 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		7BCD2F4811A3418B983E41A6 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				DBE47437EABB4FAA85B8AEEB /* Lexdar.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		864AEA0612CF461199F1DA22 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				874A61A01DDC4516867CB630 /* RoomPlan.framework */,
+				F7F62A2FDB6B42AC9AEDEC36 /* ARKit.framework */,
+				732EEB107E4E49B883307DA1 /* SceneKit.framework */,
+				5C575A428E73476A8F1D42E4 /* QuickLook.framework */,
+				05F86A55E0534A308C542958 /* PDFKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		5F402564EA074F12BEEB4AFD /* Lexdar */ = {
+			isa = PBXGroup;
+			children = (
+				E61B65D6D937410F9E39FD9D /* LexdarApp.swift */,
+				016FD6EB345E4E3EBAD4E601 /* Models */,
+				AD47FDFFBF714FDCB6688989 /* Scanning */,
+				0CAF63F0592543E8A4F48F19 /* Views */,
+				F60606B23223410D995D77F8 /* Preview Content */,
+				F1A9AD35B46C48E0A1B649AB /* Info.plist */,
+				CBD2947564F340EDA893E0D5 /* Assets.xcassets */,
+			);
+			path = Lexdar;
+			sourceTree = "<group>";
+		};
+		016FD6EB345E4E3EBAD4E601 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				4609B237D67E4CBCAAAAD111 /* ScanProject.swift */,
+				DA1179C921024C0194555C8D /* CatalogItem.swift */,
+				532023A2DC4B4D14A735082E /* Catalog.swift */,
+				53E912FF10DE4AF08EC8FC08 /* RenovationPlan.swift */,
+				D123E9071C944D80AAC7763D /* ScanStore.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		AD47FDFFBF714FDCB6688989 /* Scanning */ = {
+			isa = PBXGroup;
+			children = (
+				AF040EF6DFC044608E1FE8BC /* RoomCaptureCoordinator.swift */,
+				068712DAFC5D4E8B93A124CD /* RoomCaptureRepresentable.swift */,
+				DA53F8B4B9CC4262A48235F1 /* ScanCaptureView.swift */,
+				9724957F991F4538BB89CFAB /* RoomSceneBuilder.swift */,
+				DD5D271A0A2042A4AD99C5F3 /* RenovationSceneView.swift */,
+			);
+			path = Scanning;
+			sourceTree = "<group>";
+		};
+		0CAF63F0592543E8A4F48F19 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				8914C50F00CF4E7E84EF5C17 /* FloorPlanView.swift */,
+				86CF3CD96C0249EE8CADC5FE /* CatalogBrowserView.swift */,
+				9F7C323600364453BD0574F9 /* RenovationEditorView.swift */,
+				3E0E1D35A8724ACC9EAD7092 /* RenovationSummaryView.swift */,
+				D69FC75CED39493292D1F8C8 /* ScanListView.swift */,
+				7DEE63D8C8284441958E7FC3 /* ScanDetailView.swift */,
+				20CC90D5587C4D68935C7FB2 /* USDZPreviewView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		F60606B23223410D995D77F8 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				75AC7C18EAE847D08BC8FAD2 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F76895DE4BB04870A703EEF2 /* Lexdar */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F17ECDA126D44DA996818D93 /* Build configuration list for PBXNativeTarget "Lexdar" */;
+			buildPhases = (
+				8D9CA928938F41FDACE3A379 /* Sources */,
+				4543BB6A047B4DBD9DE66DAA /* Frameworks */,
+				936E8CFF48EB45718CC6F985 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Lexdar;
+			productName = Lexdar;
+			productReference = DBE47437EABB4FAA85B8AEEB /* Lexdar.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		69FF1B30C76F40A48E6095A4 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1540;
+				LastUpgradeCheck = 1540;
+				TargetAttributes = {
+					F76895DE4BB04870A703EEF2 = {
+						CreatedOnToolsVersion = 15.4;
+					};
+				};
+			};
+			buildConfigurationList = 45E88B4B806048C49B8EB20E /* Build configuration list for PBXProject "Lexdar" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 3336C20375DF47C895391D7D;
+			productRefGroup = 7BCD2F4811A3418B983E41A6 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F76895DE4BB04870A703EEF2 /* Lexdar */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		936E8CFF48EB45718CC6F985 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				46EBB42C6F0E4EFDAAAA1AD5 /* Assets.xcassets in Resources */,
+				C2E275A2DA244C51AF906DA8 /* Preview Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8D9CA928938F41FDACE3A379 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B18EDFF579BE44798F0E2231 /* LexdarApp.swift in Sources */,
+				01D1329BD5E147B384F4E164 /* ScanProject.swift in Sources */,
+				CA59165FD4E243B1A9BED5B6 /* CatalogItem.swift in Sources */,
+				3E311DFCF8094ED7BA894DF3 /* Catalog.swift in Sources */,
+				897E7F137B5A4A73A8FD24D8 /* RenovationPlan.swift in Sources */,
+				E5E27726698D4C4CB16BBE84 /* ScanStore.swift in Sources */,
+				25162CBF1032439493AF9C71 /* RoomCaptureCoordinator.swift in Sources */,
+				EBC2612E10BE4D67A193B6A9 /* RoomCaptureRepresentable.swift in Sources */,
+				805CF08FDC54404482E3BF59 /* ScanCaptureView.swift in Sources */,
+				AA4B134864804864A4F16802 /* RoomSceneBuilder.swift in Sources */,
+				DCC7FDB813B34479953BED4B /* RenovationSceneView.swift in Sources */,
+				0412608624BA4BE5BCCF1037 /* FloorPlanView.swift in Sources */,
+				52F89B4E41204F4E9CB2E56A /* CatalogBrowserView.swift in Sources */,
+				63516A539FA04DF0B929EB30 /* RenovationEditorView.swift in Sources */,
+				F23FC70DA60743DCA02C67DA /* RenovationSummaryView.swift in Sources */,
+				FED0FCEF46074C279DBCD9EB /* ScanListView.swift in Sources */,
+				42AC9B2B901B49C9A8EBD253 /* ScanDetailView.swift in Sources */,
+				44596ADE61B941DAA168A127 /* USDZPreviewView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		0BF0254B9F1A48E686828065 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		871207A9FEDD4115B23DC9FD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		9AF2C6B1E879459CB1276FD6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Lexdar/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Lexdar/Info.plist;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lexdar.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+
+			};
+			name = Debug;
+		};
+		E3F4B6777E5545BC82D800D7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Lexdar/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Lexdar/Info.plist;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lexdar.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		45E88B4B806048C49B8EB20E /* Build configuration list for PBXProject "Lexdar" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0BF0254B9F1A48E686828065 /* Debug */,
+				871207A9FEDD4115B23DC9FD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F17ECDA126D44DA996818D93 /* Build configuration list for PBXNativeTarget "Lexdar" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9AF2C6B1E879459CB1276FD6 /* Debug */,
+				E3F4B6777E5545BC82D800D7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+	};
+	rootObject = 69FF1B30C76F40A48E6095A4 /* Project object */;
+}
