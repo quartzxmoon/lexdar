@@ -1,0 +1,82 @@
+---
+title: Scan-to-renovation data flow
+type: architecture
+created: 2026-11-02
+updated: 2026-11-02
+sources:
+  - code: Lexdar/Scanning/RoomCaptureCoordinator.swift
+  - code: Lexdar/Scanning/ScanCaptureView.swift
+  - code: Lexdar/Models/ScanStore.swift
+  - code: Lexdar/Models/ScanProject.swift
+  - code: Lexdar/Models/RenovationPlan.swift
+  - code: Lexdar/Models/CatalogItem.swift
+  - code: Lexdar/Models/Catalog.swift
+  - code: Lexdar/Scanning/RoomSceneBuilder.swift
+  - code: Lexdar/Scanning/RenovationSceneView.swift
+  - code: Lexdar/Views/RenovationEditorView.swift
+  - code: Lexdar/Views/FloorPlanView.swift
+  - code: Lexdar/Views/RenovationSummaryView.swift
+verified_at: fa5001d
+---
+
+One LiDAR scan (`ScanProject`) can carry many independent renovation ideas
+(`RenovationPlan`) — "Open concept kitchen", "Guest bath — option A" — each
+tracking its own wall removals, material swaps, and placed furniture/fixture
+items without touching the original scan data.
+
+## Flow
+
+1. **Capture** — `RoomCaptureCoordinator` wraps Apple's `RoomCaptureSession`
+   / `RoomCaptureView` (RoomPlan). `ScanCaptureView` drives
+   start → scan → finish → name → save.
+2. **Persist** — `ScanStore.saveNewScan` exports the processed `CapturedRoom`
+   two ways into `Documents/Scans/<scanID>/`: a `.usdz` (via
+   `CapturedRoom.export(to:exportOptions: .parametric)`) for AR Quick Look,
+   and the raw `CapturedRoom` as a JSON file named room.json (it's natively
+   `Codable`) so it can be reloaded without re-scanning.
+3. **Plan** — `ScanDetailView` creates a `RenovationPlan` per idea. A plan
+   is just: `removedWallIDs: Set<UUID>`, `surfaceMaterials:
+   [SurfaceMaterialOverride]`, `placedItems: [PlacedItem]`, keyed by
+   RoomPlan's own `CapturedRoom.Surface.identifier` — **not** by array
+   index, because array order is not guaranteed stable across re-processing.
+4. **Edit** — `RenovationEditorView` + `RenovationSceneView` render the
+   scan + plan together via `RoomSceneBuilder.build(room:plan:)`, which
+   rebuilds the whole `SCNScene` from scratch on every plan mutation
+   (walls flagged removed are simply skipped when building the scene, not
+   hidden after the fact).
+5. **Export** — `RenovationSummaryView` renders a PDF directly with
+   `UIGraphicsPDFRenderer` (no layout engine) summarizing wall removals,
+   material changes, and the itemized furnish/fixture list.
+
+## Catalog
+
+`Catalog.swift` is static Swift data, not a database — `CatalogItem.id` is
+a stable string (e.g. `"kitchen.sink.farmhouse"`) stored on `PlacedItem` and
+`SurfaceMaterialOverride`, resolved back to a `CatalogItem` via
+`Catalog.item(id:)` at render/export time. Items render as dimensioned
+primitive shapes (box/cylinder/plane) by default; `CatalogItem.assetName`
+is reserved for swapping in real `.usdz` models later (see README).
+
+> ⚠️ `RenovationPlan.removedWallIDs` / `surfaceMaterials` are keyed by
+> `CapturedRoom.Surface.identifier`, which Apple's docs describe as stable
+> for the life of one `CapturedRoom` — re-running RoomPlan capture on the
+> same physical room produces a **new** `CapturedRoom` with new
+> identifiers. A `RenovationPlan` is therefore only valid against the exact
+> `CapturedRoom` (the exact `scanID`) it was created for; it cannot be
+> replayed onto a re-scan of the same space.
+
+> ⚠️ `RoomSceneBuilder.placedItemNode` composes two rotations for `.plane`
+> primitives (a -90° tip to lie flat, then the item's `rotationY`) using
+> `simd_quatf` multiplication in a specific order (`yaw * layFlat`).
+> Reordering that product changes which axis the yaw rotates around after
+> the tip and silently breaks rug/outdoor-footprint placement.
+
+## Not yet built
+
+- No native `.usdz`/Reality asset loading path for catalog items — see
+  `CatalogItem.assetName` and the README section "Swapping in real 3D
+  assets".
+- No multi-room stitching beyond what RoomPlan's own continuous-session
+  capture provides.
+- Wall removal / material swap is a **visual planning aid only** — nothing
+  in this codebase checks structural/load-bearing concerns.
