@@ -94,3 +94,16 @@ Append-only. Newest entries at the bottom.
   that do have `Text`-returning overrides (`.font`, `.foregroundStyle`) before
   ruling them safe. Documented as a trap on [[blueprint-production]];
   `verified_at: 767a4af`.
+
+## [2026-11-03] fix | CI simulator runtime mismatch (ENABLE_PREVIEWS)
+
+- The Swift compile itself succeeded this time -- all SwiftCompile/linking
+  steps passed. The build then failed at CompileAssetCatalog: "No simulator
+  runtime version ... available to use with iphonesimulator SDK version
+  ...", a known GitHub Actions macOS runner-image issue
+  (actions/runner-images#13317). `ENABLE_PREVIEWS=YES` makes Xcode compile a
+  Simulator-targeted preview dylib even for a device-only build, pulling in
+  the mismatched SDK. Added `ENABLE_PREVIEWS=NO` as a command-line override
+  on both xcodebuild invocations (project setting itself untouched, so local
+  Xcode Previews still work). Documented as a trap on
+  [[ios-signing-and-sideloading]]; `verified_at: f643814`.
