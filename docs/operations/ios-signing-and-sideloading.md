@@ -7,7 +7,7 @@ sources:
   - code: .github/workflows/build-ios.yml
   - code: README.md
   - ext: https://developer.apple.com/account
-verified_at: 731690c
+verified_at: 99e9763
 ---
 
 No Mac is required to get `Lexdar` onto an iPad: Xcode itself only runs on
@@ -97,33 +97,28 @@ In the GitHub repo: **Settings → Secrets and variables → Actions**.
 > step is ever rewritten, keep `set -o pipefail` or drop the `xcpretty`
 > pipe entirely.
 
-> ⚠️ Both `xcodebuild` invocations pass `SUPPORTED_PLATFORMS=iphoneos` as a
-> command-line override — the project itself keeps
-> `"iphoneos iphonesimulator"` (kept there so Simulator builds still work
-> in Xcode locally, for UI-only screens that don't need RoomPlan).
-> `CompileAssetCatalog`/`actool` validates the asset catalog against
-> **every platform named in `SUPPORTED_PLATFORMS`**, regardless of what
-> `-destination` actually targets — so with `iphonesimulator` still listed,
-> it tries to resolve a matching simulator runtime even for a device-only
-> `generic/platform=iOS` build. GitHub's macOS runner images periodically
-> ship a simulator runtime that doesn't match what the resident Xcode's SDK
-> expects
-> ([actions/runner-images#13317](https://github.com/actions/runner-images/issues/13317)),
-> failing with "No simulator runtime version ... available to use with
-> iphonesimulator SDK version ..." — unrelated to anything in this app's
-> own code.
->
-> Two earlier fix attempts did **not** work, in case this resurfaces and
-> they look tempting again: `ENABLE_PREVIEWS=NO` (Xcode 16 stopped
-> honoring that flag for previews at all) and building `-configuration
-> Release` instead of Debug (the failure is configuration-independent —
-> it's about `SUPPORTED_PLATFORMS`, not Debug-only preview-dylib
-> generation, which was a plausible-looking but wrong theory along the
-> way). `SUPPORTED_PLATFORMS=iphoneos` is what actually removes the
-> simulator check. If this recurs even with it in place, it's the runner
-> image itself drifting further out of sync with the pinned Xcode version;
-> check that issue (or its successors) before assuming it's a regression
-> here.
+> ⚠️ Neither job pins a specific Xcode version with `xcode-select` anymore
+> — a prior version of this workflow did (`sudo xcode-select -s
+> /Applications/Xcode_16.app/Contents/Developer`), which turned out to be
+> the actual root cause of a long chain of CI failures. This runner image
+> carries several Xcode installs side by side (16.0 through 16.4, plus
+> 26.x); the specific one pinned here had an iOS SDK that matched **no**
+> installed simulator runtime (failing `CompileAssetCatalog` with "No
+> simulator runtime version ... available to use with iphonesimulator SDK
+> version ...", [actions/runner-images#13317](https://github.com/actions/runner-images/issues/13317)),
+> and on a later run its device-platform support wasn't even registered as
+> installed ("iOS 18.0 is not installed") — i.e. **not every Xcode copy on
+> the image is fully provisioned**, only whichever one `xcode-select`
+> already defaults to. Just using that default (by not overriding it)
+> fixed it. `SUPPORTED_PLATFORMS=iphoneos` (an earlier, narrower attempt at
+> the same symptom) stays in place too — harmless, and still correct in
+> principle (it keeps `actool` from validating against a platform the CI
+> build doesn't target), but it was not sufficient on its own; the Xcode
+> pin was the real culprit. If a future CI run needs a *specific* Xcode
+> version again (e.g. to pin a known-good toolchain), add a diagnostic
+> step first (`ls /Applications | grep -i xcode`,
+> `xcrun simctl list runtimes`) rather than guessing a path — this took
+> three wrong guesses before that diagnostic step actually settled it.
 
 ## 5. Run it
 

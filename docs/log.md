@@ -133,3 +133,20 @@ Append-only. Newest entries at the bottom.
   `SUPPORTED_PLATFORMS=iphoneos` for CI only. Rewrote the trap on
   [[ios-signing-and-sideloading]] to record this and the two dead ends
   tried first; `verified_at: 731690c`.
+
+## [2026-11-03] fix | the real cause: a pinned Xcode copy wasn't fully provisioned
+
+- Three earlier fix attempts (ENABLE_PREVIEWS=NO, -configuration Release,
+  SUPPORTED_PLATFORMS=iphoneos alone) all treated symptoms of the same CI
+  failure without touching the actual cause. Added a diagnostic step
+  instead of guessing a fourth time: it showed this runner image carries
+  several Xcode installs side by side, and the one pinned via `xcode-select
+  -s .../Xcode_16.app/...` had an SDK matching no installed simulator
+  runtime, and on another run its device platform wasn't registered as
+  installed at all ("iOS 18.0 is not installed") -- not every Xcode copy on
+  the image is fully provisioned, only whichever one `xcode-select` already
+  defaults to. Removed the explicit Xcode pin from both jobs.
+  `SUPPORTED_PLATFORMS=iphoneos` stays (still correct in principle, just
+  wasn't sufficient alone). Rewrote the trap on
+  [[ios-signing-and-sideloading]] with the real cause and a note to add a
+  diagnostic step before guessing next time; `verified_at: 99e9763`.
