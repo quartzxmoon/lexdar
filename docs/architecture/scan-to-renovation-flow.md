@@ -17,7 +17,8 @@ sources:
   - code: Lexdar/Views/FloorPlanView.swift
   - code: Lexdar/Views/RenovationSummaryView.swift
   - code: Lexdar.xcodeproj/project.pbxproj
-verified_at: acf5af3
+  - code: Lexdar/Views/ScanListView.swift
+verified_at: aa79d02
 ---
 
 One LiDAR scan (`ScanProject`) can carry many independent renovation ideas
@@ -99,6 +100,13 @@ is reserved for swapping in real `.usdz` models later (see README).
 > never actually archived/unarchived. This was the real compile failure
 > behind the first *honestly-reported* CI failure (after the pipefail fix
 > below stopped masking it).
+>
+> Mark both `init?(coder:)` and `encode(with:)` **`nonisolated`**: the
+> class is `@MainActor`, so without it both methods are implicitly
+> MainActor-isolated, but `NSCoding`'s requirements are nonisolated —
+> Swift 6 language mode treats the mismatch as an error (a warning under
+> this project's current settings, caught in CI anyway). Neither method
+> touches actor-isolated state, so `nonisolated` is free here.
 
 ## Not yet built
 

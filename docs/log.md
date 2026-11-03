@@ -58,3 +58,13 @@ Append-only. Newest entries at the bottom.
   `ScanStore.swift`'s new floor-plan persistence) and
   [[ios-signing-and-sideloading]] (README additions). All three pages'
   `verified_at` moved to `acf5af3`.
+
+## [2026-11-03] fix | actor isolation + ShapeStyle typo
+
+- The commit right after the blueprint-production push still failed CI:
+  `RoomCaptureCoordinator`'s NSCoding methods needed `nonisolated` (Swift 6
+  language mode error, `@MainActor` class vs. nonisolated protocol
+  requirement), and `ScanListView.swift` used a nonexistent `.accent`
+  ShapeStyle member (real build failure, not a warning) -- fixed to
+  `Color.accentColor`. Documented the nonisolated requirement as a trap on
+  [[scan-to-renovation-flow]]; `verified_at: aa79d02`.
