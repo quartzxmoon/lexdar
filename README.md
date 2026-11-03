@@ -21,6 +21,17 @@ Every feature below is unlocked by default because you own the app.
   first-party Apple frameworks (RoomPlan, ARKit, SceneKit, QuickLook,
   PDFKit).
 
+## Building and installing without a Mac
+
+Xcode only runs on macOS, but you don't need to own a Mac to build or
+install this app — `.github/workflows/build-ios.yml` builds it on a
+GitHub Actions macOS runner, and once signing secrets are configured it
+produces a signed `.ipa` you can sideload from Windows with
+[Sideloadly](https://sideloadly.io/). Full step-by-step setup (certificate,
+provisioning profile, GitHub secrets — all done via OpenSSL and the Apple
+Developer web portal, no Xcode/Keychain Access needed) is in
+[`docs/operations/ios-signing-and-sideloading.md`](docs/operations/ios-signing-and-sideloading.md).
+
 ## Opening and running
 
 ```bash

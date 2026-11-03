@@ -8,6 +8,7 @@ repository. The rules are in [`CLAUDE.md`](CLAUDE.md).
 ## Start here
 
 1. [[scan-to-renovation-flow]] -- the whole scan -> plan -> edit -> export pipeline
+2. [[ios-signing-and-sideloading]] -- building and installing the app with no Mac
 
 ---
 
@@ -35,7 +36,8 @@ repository. The rules are in [`CLAUDE.md`](CLAUDE.md).
 
 ## operations
 
-<!-- TODO: pages under Install, deploy, checks, incident response. `- [[page-name]] -- one line` -->
+- [[ios-signing-and-sideloading]] -- CI build/sign pipeline + Windows-based sideloading
+  (no Mac needed to build or install)
 
 ## history
 

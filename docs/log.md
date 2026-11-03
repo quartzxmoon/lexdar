@@ -17,3 +17,11 @@ Append-only. Newest entries at the bottom.
   export, plus the two traps hit while writing `RoomSceneBuilder`/
   `RenovationPlan` (surface-identifier scoping, plane-rotation composition
   order). `verified_at: fa5001d`.
+
+## [2026-11-03] grow | CI build/sign pipeline
+
+- Added `.github/workflows/build-ios.yml` (unsigned validate job always runs;
+  signed archive+export job gated on the `SIGNING_CONFIGURED` repo variable) and
+  [[ios-signing-and-sideloading]] -- the whole cert/profile/secrets setup done via
+  OpenSSL + the Apple Developer web portal + Sideloadly, with no Mac involved at any
+  step. `verified_at: c31135c`.
