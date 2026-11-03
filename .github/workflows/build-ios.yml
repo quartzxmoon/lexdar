@@ -34,25 +34,27 @@ jobs:
         # status is xcpretty's (which exits 0 as long as it could parse the
         # output), so a real BUILD FAILED silently reports as a green check.
         #
-        # ENABLE_PREVIEWS=NO overrides the project's own setting (left YES
-        # there so Xcode Previews still work locally) for this CI build
-        # only: with it YES, Xcode also compiles a Simulator-targeted
-        # preview dylib even for a device-only `generic/platform=iOS`
-        # build, which pulls in the iphonesimulator SDK -- and GitHub's
-        # macOS runner images periodically ship a simulator runtime that
-        # doesn't match what that SDK expects (actions/runner-images#13317),
+        # Builds Release, not Debug, specifically to dodge Xcode 16's
+        # "XOJIT previews": even for a device-only `generic/platform=iOS`
+        # build, a Debug build also compiles a Simulator-targeted preview
+        # dylib, pulling in the iphonesimulator SDK -- and GitHub's macOS
+        # runner images periodically ship a simulator runtime that doesn't
+        # match what that SDK expects (actions/runner-images#13317),
         # failing CompileAssetCatalog with "No simulator runtime version
-        # ... available to use with iphonesimulator SDK version ...". CI
-        # never needs live canvas previews, so skip that whole code path.
+        # ... available to use with iphonesimulator SDK version ...".
+        # ENABLE_PREVIEWS=NO does NOT suppress this under Xcode 16 (that
+        # flag stopped controlling previews there) -- Release configuration
+        # does, since preview-dylib generation is Debug-only. CI just needs
+        # to know the code compiles, so Release works as well as Debug for
+        # that and sidesteps the whole code path.
         run: |
           set -o pipefail
           xcodebuild build \
             -project Lexdar.xcodeproj \
             -scheme Lexdar \
             -destination "generic/platform=iOS" \
-            -configuration Debug \
+            -configuration Release \
             CODE_SIGNING_ALLOWED=NO \
-            ENABLE_PREVIEWS=NO \
             | xcpretty
 
   archive:
@@ -107,8 +109,10 @@ jobs:
             DEVELOPMENT_TEAM="${{ vars.APPLE_TEAM_ID }}" \
             PRODUCT_BUNDLE_IDENTIFIER="$BUNDLE_ID" \
             CODE_SIGN_STYLE=Manual \
-            PROVISIONING_PROFILE_SPECIFIER="${{ vars.PROVISIONING_PROFILE_NAME }}" \
-            ENABLE_PREVIEWS=NO
+            PROVISIONING_PROFILE_SPECIFIER="${{ vars.PROVISIONING_PROFILE_NAME }}"
+          # Already -configuration Release, so this never hits the Debug-only
+          # preview-dylib code path discussed above -- no ENABLE_PREVIEWS
+          # override needed (that flag wouldn't help under Xcode 16 anyway).
 
       - name: Write exportOptions.plist
         run: |
