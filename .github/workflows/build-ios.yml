@@ -33,6 +33,17 @@ jobs:
         # set -o pipefail matters: without it, `xcodebuild | xcpretty`'s exit
         # status is xcpretty's (which exits 0 as long as it could parse the
         # output), so a real BUILD FAILED silently reports as a green check.
+        #
+        # ENABLE_PREVIEWS=NO overrides the project's own setting (left YES
+        # there so Xcode Previews still work locally) for this CI build
+        # only: with it YES, Xcode also compiles a Simulator-targeted
+        # preview dylib even for a device-only `generic/platform=iOS`
+        # build, which pulls in the iphonesimulator SDK -- and GitHub's
+        # macOS runner images periodically ship a simulator runtime that
+        # doesn't match what that SDK expects (actions/runner-images#13317),
+        # failing CompileAssetCatalog with "No simulator runtime version
+        # ... available to use with iphonesimulator SDK version ...". CI
+        # never needs live canvas previews, so skip that whole code path.
         run: |
           set -o pipefail
           xcodebuild build \
@@ -41,6 +52,7 @@ jobs:
             -destination "generic/platform=iOS" \
             -configuration Debug \
             CODE_SIGNING_ALLOWED=NO \
+            ENABLE_PREVIEWS=NO \
             | xcpretty
 
   archive:
@@ -95,7 +107,8 @@ jobs:
             DEVELOPMENT_TEAM="${{ vars.APPLE_TEAM_ID }}" \
             PRODUCT_BUNDLE_IDENTIFIER="$BUNDLE_ID" \
             CODE_SIGN_STYLE=Manual \
-            PROVISIONING_PROFILE_SPECIFIER="${{ vars.PROVISIONING_PROFILE_NAME }}"
+            PROVISIONING_PROFILE_SPECIFIER="${{ vars.PROVISIONING_PROFILE_NAME }}" \
+            ENABLE_PREVIEWS=NO
 
       - name: Write exportOptions.plist
         run: |
