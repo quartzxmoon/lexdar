@@ -35,3 +35,11 @@ Append-only. Newest entries at the bottom.
   bug #1's real `BUILD FAILED` was reported as a green check -- fixed and
   documented as a trap on [[ios-signing-and-sideloading]].
 - Both pages' `verified_at` moved to `4701aea`.
+
+## [2026-11-03] fix | NSCoding conformance
+
+- `RoomCaptureViewDelegate` inherits `NSCoding` (Apple's own doc page confirms
+  it) -- missed when the delegate was first written and verified. CI's
+  now-honest failure (post-pipefail-fix) caught it. Added a minimal
+  `init?(coder:)`/`encode(with:)` pair to `RoomCaptureCoordinator`. Documented
+  as a trap on [[scan-to-renovation-flow]]; `verified_at: b99e638`.

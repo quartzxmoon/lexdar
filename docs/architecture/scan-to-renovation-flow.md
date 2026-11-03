@@ -17,7 +17,7 @@ sources:
   - code: Lexdar/Views/FloorPlanView.swift
   - code: Lexdar/Views/RenovationSummaryView.swift
   - code: Lexdar.xcodeproj/project.pbxproj
-verified_at: 4701aea
+verified_at: b99e638
 ---
 
 One LiDAR scan (`ScanProject`) can carry many independent renovation ideas
