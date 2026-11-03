@@ -34,19 +34,23 @@ jobs:
         # status is xcpretty's (which exits 0 as long as it could parse the
         # output), so a real BUILD FAILED silently reports as a green check.
         #
-        # Builds Release, not Debug, specifically to dodge Xcode 16's
-        # "XOJIT previews": even for a device-only `generic/platform=iOS`
-        # build, a Debug build also compiles a Simulator-targeted preview
-        # dylib, pulling in the iphonesimulator SDK -- and GitHub's macOS
-        # runner images periodically ship a simulator runtime that doesn't
-        # match what that SDK expects (actions/runner-images#13317),
-        # failing CompileAssetCatalog with "No simulator runtime version
-        # ... available to use with iphonesimulator SDK version ...".
-        # ENABLE_PREVIEWS=NO does NOT suppress this under Xcode 16 (that
-        # flag stopped controlling previews there) -- Release configuration
-        # does, since preview-dylib generation is Debug-only. CI just needs
-        # to know the code compiles, so Release works as well as Debug for
-        # that and sidesteps the whole code path.
+        # SUPPORTED_PLATFORMS=iphoneos overrides the project's own
+        # "iphoneos iphonesimulator" (kept there so Simulator builds still
+        # work in Xcode locally, for UI-only screens that don't need
+        # RoomPlan). CompileAssetCatalog/actool validates the asset catalog
+        # against every platform in SUPPORTED_PLATFORMS regardless of what
+        # -destination actually targets, so with iphonesimulator still
+        # listed it tries to resolve a matching simulator runtime even for
+        # this device-only build -- and GitHub's macOS runner images
+        # periodically ship a simulator runtime that doesn't match what the
+        # resident Xcode's SDK expects (actions/runner-images#13317),
+        # failing with "No simulator runtime version ... available to use
+        # with iphonesimulator SDK version ...". Neither ENABLE_PREVIEWS=NO
+        # (that flag stopped controlling anything relevant under Xcode 16)
+        # nor switching to a Release build (tried first; same failure,
+        # config-independent) fixed this -- restricting SUPPORTED_PLATFORMS
+        # for this CI invocation is what actually removes the simulator
+        # check.
         run: |
           set -o pipefail
           xcodebuild build \
@@ -55,6 +59,7 @@ jobs:
             -destination "generic/platform=iOS" \
             -configuration Release \
             CODE_SIGNING_ALLOWED=NO \
+            SUPPORTED_PLATFORMS=iphoneos \
             | xcpretty
 
   archive:
@@ -109,10 +114,13 @@ jobs:
             DEVELOPMENT_TEAM="${{ vars.APPLE_TEAM_ID }}" \
             PRODUCT_BUNDLE_IDENTIFIER="$BUNDLE_ID" \
             CODE_SIGN_STYLE=Manual \
-            PROVISIONING_PROFILE_SPECIFIER="${{ vars.PROVISIONING_PROFILE_NAME }}"
-          # Already -configuration Release, so this never hits the Debug-only
-          # preview-dylib code path discussed above -- no ENABLE_PREVIEWS
-          # override needed (that flag wouldn't help under Xcode 16 anyway).
+            PROVISIONING_PROFILE_SPECIFIER="${{ vars.PROVISIONING_PROFILE_NAME }}" \
+            SUPPORTED_PLATFORMS=iphoneos
+          # SUPPORTED_PLATFORMS=iphoneos for the same reason as the validate
+          # job above: without it, CompileAssetCatalog/actool tries to
+          # validate against iphonesimulator too and can hit a runner-image
+          # simulator-runtime mismatch (actions/runner-images#13317),
+          # regardless of build configuration.
 
       - name: Write exportOptions.plist
         run: |
