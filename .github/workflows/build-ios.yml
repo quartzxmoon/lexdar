@@ -30,19 +30,18 @@ jobs:
           swift --version
 
       - name: Build (no code signing)
+        # set -o pipefail matters: without it, `xcodebuild | xcpretty`'s exit
+        # status is xcpretty's (which exits 0 as long as it could parse the
+        # output), so a real BUILD FAILED silently reports as a green check.
         run: |
+          set -o pipefail
           xcodebuild build \
             -project Lexdar.xcodeproj \
             -scheme Lexdar \
             -destination "generic/platform=iOS" \
             -configuration Debug \
             CODE_SIGNING_ALLOWED=NO \
-            | xcpretty || xcodebuild build \
-            -project Lexdar.xcodeproj \
-            -scheme Lexdar \
-            -destination "generic/platform=iOS" \
-            -configuration Debug \
-            CODE_SIGNING_ALLOWED=NO
+            | xcpretty
 
   archive:
     name: Archive + export signed .ipa
