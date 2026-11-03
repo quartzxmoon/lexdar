@@ -10,6 +10,7 @@ struct FloorPlanListView: View {
     @State private var showNewPlanPrompt = false
     @State private var newPlanName = "New Floor Plan"
     @State private var openPlan: FloorPlan?
+    @State private var showMeasure = false
 
     var body: some View {
         NavigationStack {
@@ -44,6 +45,9 @@ struct FloorPlanListView: View {
                         } label: {
                             Label("Property Summary", systemImage: "list.bullet.rectangle")
                         }
+                        Button { showMeasure = true } label: {
+                            Label("Measure (AR tape)", systemImage: "ruler")
+                        }
                         NavigationLink {
                             LANSyncView()
                         } label: {
@@ -71,6 +75,9 @@ struct FloorPlanListView: View {
             }
             .navigationDestination(item: $openPlan) { plan in
                 FloorPlanDetailView(floorPlan: plan)
+            }
+            .fullScreenCover(isPresented: $showMeasure) {
+                MeasureView()
             }
         }
     }

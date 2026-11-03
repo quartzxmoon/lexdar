@@ -27,6 +27,7 @@ repository. The rules are in [`CLAUDE.md`](CLAUDE.md).
 
 - [[blueprint-production]] -- hand-drawn + LiDAR-generated contractor-grade
   blueprints, built on an app-owned `FloorPlan` model independent of `CapturedRoom`
+- [[ar-measure]] -- on-device AR tape measure (camera + LiDAR), no accessory needed
 
 ## decisions
 

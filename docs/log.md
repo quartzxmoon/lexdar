@@ -213,3 +213,9 @@ Append-only. Newest entries at the bottom.
 
 - Added `PlanScheduleExport`, `LANSyncView`, `tools/lexdar_receiver.py`, and
   the local-network keys in Info.plist. Traps on [[blueprint-production]].
+
+## [2026-11-03] feature | On-device AR tape measure
+
+- Added `MeasureView` (ARKit raycast point-to-point measuring with running
+  total) so no external laser meter is needed; Bluetooth meter support is
+  dropped from the plan. New page [[ar-measure]].

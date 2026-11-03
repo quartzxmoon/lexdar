@@ -24,7 +24,7 @@ sources:
   - code: Lexdar/Views/FloorPlanIFCExport.swift
   - code: Lexdar/Views/ModelExportView.swift
   - code: Lexdar/Views/BlueprintPDFExportView.swift
-verified_at: 432a557
+verified_at: a76ce08
 ---
 
 A second, parallel subsystem to [[scan-to-renovation-flow]]'s
@@ -322,7 +322,7 @@ box treads for the 3D and AR views.
 
 ## Explicitly not built (checked against RoomScan Pro LiDAR, scope cut on purpose)
 
-- **Bluetooth laser measure pairing** (Bosch/Leica, which RoomScan Pro
+- **Bluetooth laser measure pairing** (dropped on purpose: the app measures by itself, see [[ar-measure]]) (Bosch/Leica, which RoomScan Pro
   supports) — would need real hardware to test a hand-rolled BLE GATT
   protocol implementation against; claiming working hardware support
   without that verification would be dishonest. Not started.
