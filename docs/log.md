@@ -120,3 +120,16 @@ Append-only. Newest entries at the bottom.
   Corrected the trap on [[ios-signing-and-sideloading]] to say what
   actually works instead of what seemed plausible but wasn't; `verified_at:
   fb2d412`.
+
+## [2026-11-03] fix | SUPPORTED_PLATFORMS=iphoneos is the real fix
+
+- Release config (previous commit) dropped the preview-dylib link step but
+  the exact same simulator-runtime-mismatch failure recurred unchanged at
+  CompileAssetCatalog, disproving the "Debug-only preview dylib" theory.
+  Actual cause: actool validates the asset catalog against every platform
+  in `SUPPORTED_PLATFORMS` regardless of `-destination`, and this project
+  lists `iphonesimulator` there (so local Xcode Simulator builds still
+  work). Both xcodebuild invocations now override
+  `SUPPORTED_PLATFORMS=iphoneos` for CI only. Rewrote the trap on
+  [[ios-signing-and-sideloading]] to record this and the two dead ends
+  tried first; `verified_at: 731690c`.

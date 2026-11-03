@@ -7,7 +7,7 @@ sources:
   - code: .github/workflows/build-ios.yml
   - code: README.md
   - ext: https://developer.apple.com/account
-verified_at: fb2d412
+verified_at: 731690c
 ---
 
 No Mac is required to get `Lexdar` onto an iPad: Xcode itself only runs on
@@ -97,22 +97,33 @@ In the GitHub repo: **Settings → Secrets and variables → Actions**.
 > step is ever rewritten, keep `set -o pipefail` or drop the `xcpretty`
 > pipe entirely.
 
-> ⚠️ The `validate` job builds **Release**, not Debug, specifically to
-> avoid Xcode 16's "XOJIT previews": a Debug build also compiles a
-> Simulator-targeted preview dylib even for a device-only
-> `generic/platform=iOS` build, pulling in the iphonesimulator SDK. GitHub's
-> macOS runner images periodically ship a simulator runtime that doesn't
-> match what that SDK expects
+> ⚠️ Both `xcodebuild` invocations pass `SUPPORTED_PLATFORMS=iphoneos` as a
+> command-line override — the project itself keeps
+> `"iphoneos iphonesimulator"` (kept there so Simulator builds still work
+> in Xcode locally, for UI-only screens that don't need RoomPlan).
+> `CompileAssetCatalog`/`actool` validates the asset catalog against
+> **every platform named in `SUPPORTED_PLATFORMS`**, regardless of what
+> `-destination` actually targets — so with `iphonesimulator` still listed,
+> it tries to resolve a matching simulator runtime even for a device-only
+> `generic/platform=iOS` build. GitHub's macOS runner images periodically
+> ship a simulator runtime that doesn't match what the resident Xcode's SDK
+> expects
 > ([actions/runner-images#13317](https://github.com/actions/runner-images/issues/13317)),
-> which fails `CompileAssetCatalog` with "No simulator runtime version ...
-> available to use with iphonesimulator SDK version ..." — unrelated to
-> anything in this app's own code. **`ENABLE_PREVIEWS=NO` does not fix
-> this** — Xcode 16 stopped honoring that flag for previews, so it was
-> tried first and had zero effect; Release configuration is the thing that
-> actually sidesteps the whole preview-dylib code path, since that's
-> Debug-only. If this recurs even on a Release build, it's the runner
-> image itself drifting out of sync with the pinned Xcode version; check
-> that issue (or its successors) before assuming it's a regression here.
+> failing with "No simulator runtime version ... available to use with
+> iphonesimulator SDK version ..." — unrelated to anything in this app's
+> own code.
+>
+> Two earlier fix attempts did **not** work, in case this resurfaces and
+> they look tempting again: `ENABLE_PREVIEWS=NO` (Xcode 16 stopped
+> honoring that flag for previews at all) and building `-configuration
+> Release` instead of Debug (the failure is configuration-independent —
+> it's about `SUPPORTED_PLATFORMS`, not Debug-only preview-dylib
+> generation, which was a plausible-looking but wrong theory along the
+> way). `SUPPORTED_PLATFORMS=iphoneos` is what actually removes the
+> simulator check. If this recurs even with it in place, it's the runner
+> image itself drifting further out of sync with the pinned Xcode version;
+> check that issue (or its successors) before assuming it's a regression
+> here.
 
 ## 5. Run it
 
