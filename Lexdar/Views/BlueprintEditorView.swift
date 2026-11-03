@@ -53,6 +53,8 @@ struct BlueprintEditorView: View {
     @Environment(\.dismiss) private var dismiss
 
     @State private var tool: BlueprintTool = .wall
+    @State private var is3D = false
+    @State private var isDaytime = true
     @State private var baseScale: CGFloat = 40 // points per meter at zoom 1
     @State private var zoom: CGFloat = 1
     @State private var lastZoom: CGFloat = 1
@@ -86,18 +88,36 @@ struct BlueprintEditorView: View {
     var body: some View {
         NavigationStack {
             GeometryReader { geo in
-                Canvas { context, size in
-                    draw(in: &context, size: size)
+                ZStack(alignment: .topTrailing) {
+                    if is3D {
+                        FloorPlan3DPreviewView(floorPlan: floorPlan, isDaytime: $isDaytime)
+                            .ignoresSafeArea(edges: .bottom)
+                        Button {
+                            isDaytime.toggle()
+                        } label: {
+                            Image(systemName: isDaytime ? "sun.max.fill" : "moon.stars.fill")
+                                .padding(10)
+                                .background(.ultraThinMaterial)
+                                .clipShape(Circle())
+                        }
+                        .padding()
+                    } else {
+                        Canvas { context, size in
+                            draw(in: &context, size: size)
+                        }
+                        .background(Color(uiColor: .systemBackground))
+                        .contentShape(Rectangle())
+                        .gesture(panAndWallGesture(canvasSize: geo.size))
+                        .simultaneousGesture(tapGesture(canvasSize: geo.size))
+                        .simultaneousGesture(magnificationGesture())
+                    }
                 }
-                .background(Color(uiColor: .systemBackground))
-                .contentShape(Rectangle())
-                .gesture(panAndWallGesture(canvasSize: geo.size))
-                .simultaneousGesture(tapGesture(canvasSize: geo.size))
-                .simultaneousGesture(magnificationGesture())
             }
             .navigationTitle(floorPlan.name)
             .navigationBarTitleDisplayMode(.inline)
-            .safeAreaInset(edge: .bottom) { toolBar }
+            .safeAreaInset(edge: .bottom) {
+                if !is3D { toolBar }
+            }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Done") {
@@ -106,10 +126,18 @@ struct BlueprintEditorView: View {
                     }
                 }
                 ToolbarItemGroup(placement: .primaryAction) {
-                    Button { undo() } label: { Image(systemName: "arrow.uturn.backward") }
-                        .disabled(undoStack.isEmpty)
-                    Button { redo() } label: { Image(systemName: "arrow.uturn.forward") }
-                        .disabled(redoStack.isEmpty)
+                    Button {
+                        persist()
+                        is3D.toggle()
+                    } label: {
+                        Label(is3D ? "2D" : "3D", systemImage: is3D ? "square.grid.3x3" : "view.3d")
+                    }
+                    if !is3D {
+                        Button { undo() } label: { Image(systemName: "arrow.uturn.backward") }
+                            .disabled(undoStack.isEmpty)
+                        Button { redo() } label: { Image(systemName: "arrow.uturn.forward") }
+                            .disabled(redoStack.isEmpty)
+                    }
                 }
             }
             .alert("Wall length", isPresented: $showWallLengthConfirm) {
