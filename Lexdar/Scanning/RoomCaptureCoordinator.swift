@@ -42,6 +42,16 @@ final class RoomCaptureCoordinator: NSObject, ObservableObject {
         captureView.captureSession.stop()
         isScanning = false
     }
+
+    // `RoomCaptureViewDelegate` inherits from `NSCoding` (see Apple's
+    // documentation — unusual for a delegate protocol, but required).
+    // This coordinator is never actually archived/unarchived; these exist
+    // purely to satisfy that conformance.
+    init?(coder: NSCoder) {
+        nil
+    }
+
+    func encode(with coder: NSCoder) {}
 }
 
 extension RoomCaptureCoordinator: RoomCaptureViewDelegate {

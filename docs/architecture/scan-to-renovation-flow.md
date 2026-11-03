@@ -84,6 +84,15 @@ is reserved for swapping in real `.usdz` models later (see README).
 > needs more files added by hand-editing the `.pbxproj` rather than through
 > Xcode, check this rule again.
 
+> ⚠️ `RoomCaptureViewDelegate` inherits from `NSCoding` (confirmed on
+> Apple's own doc page for the protocol — easy to miss since it's an
+> unusual thing for a delegate protocol to require). Any type conforming
+> to it, including `RoomCaptureCoordinator`, must also implement
+> `init?(coder:)` and `encode(with:)`, even though the coordinator is
+> never actually archived/unarchived. This was the real compile failure
+> behind the first *honestly-reported* CI failure (after the pipefail fix
+> below stopped masking it).
+
 ## Not yet built
 
 - No native `.usdz`/Reality asset loading path for catalog items — see
