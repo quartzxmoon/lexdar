@@ -116,6 +116,7 @@ struct FloorPlanDetailView: View {
     @State private var showDXFExport = false
     @State private var showAnnotate = false
     @State private var showPNGExport = false
+    @State private var showModelExport = false
     @State private var showAR = false
     @State private var showPlacement = false
     @State private var liveFloorPlan: FloorPlan
@@ -140,6 +141,9 @@ struct FloorPlanDetailView: View {
                         }
                         Button { showDXFExport = true } label: {
                             Label("Export DXF (CAD)", systemImage: "square.and.arrow.up.on.square")
+                        }
+                        Button { showModelExport = true } label: {
+                            Label("Export IFC / OBJ / PLY / XYZ", systemImage: "cube")
                         }
                         Button { showPNGExport = true } label: {
                             Label("Export PNG Image", systemImage: "photo")
@@ -171,6 +175,9 @@ struct FloorPlanDetailView: View {
             }
             .sheet(isPresented: $showDXFExport) {
                 BlueprintDXFExportView(floorPlan: liveFloorPlan)
+            }
+            .sheet(isPresented: $showModelExport) {
+                ModelExportView(floorPlan: liveFloorPlan)
             }
             .sheet(isPresented: $showPNGExport) {
                 BlueprintPNGExportView(floorPlan: liveFloorPlan)

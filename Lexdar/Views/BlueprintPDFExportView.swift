@@ -36,10 +36,29 @@ struct BlueprintPDFExportView: View {
                     ToolbarItem(placement: .primaryAction) {
                         ShareLink(item: pdfURL) { Image(systemName: "square.and.arrow.up") }
                     }
+                    ToolbarItem(placement: .primaryAction) {
+                        Button {
+                            Self.airPrint(pdfURL)
+                        } label: {
+                            Image(systemName: "printer")
+                        }
+                    }
                 }
             }
             .task { generate() }
         }
+    }
+
+    private static func airPrint(_ url: URL) {
+        guard UIPrintInteractionController.isPrintingAvailable else { return }
+        let info = UIPrintInfo(dictionary: nil)
+        info.outputType = .general
+        info.jobName = url.deletingPathExtension().lastPathComponent
+        info.orientation = .landscape
+        let controller = UIPrintInteractionController.shared
+        controller.printInfo = info
+        controller.printingItem = url
+        controller.present(animated: true)
     }
 
     private func generate() {

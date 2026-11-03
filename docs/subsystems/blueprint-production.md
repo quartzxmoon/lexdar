@@ -9,7 +9,6 @@ sources:
   - code: Lexdar/Views/BlueprintLayout.swift
   - code: Lexdar/Views/BlueprintView.swift
   - code: Lexdar/Views/BlueprintEditorView.swift
-  - code: Lexdar/Views/BlueprintPDFExportView.swift
   - code: Lexdar/Views/FloorPlanListView.swift
   - code: Lexdar/LexdarApp.swift
   - code: Lexdar/Views/ScanDetailView.swift
@@ -21,7 +20,11 @@ sources:
   - code: Lexdar/Views/BlueprintPNGExportView.swift
   - code: Lexdar/Views/FloorPlanARView.swift
   - code: Lexdar/Views/PropertySummaryView.swift
-verified_at: fd4a5fd
+  - code: Lexdar/Views/FloorPlanMeshExport.swift
+  - code: Lexdar/Views/FloorPlanIFCExport.swift
+  - code: Lexdar/Views/ModelExportView.swift
+  - code: Lexdar/Views/BlueprintPDFExportView.swift
+verified_at: 4dd2154
 ---
 
 A second, parallel subsystem to [[scan-to-renovation-flow]]'s
@@ -243,6 +246,33 @@ gaps, closed with original code:
 > `BlueprintView`'s Canvas is rendered via `ImageRenderer`. Both compile in
 > CI but need a hands-on check on the iPad.
 
+## 3D / BIM exports, AirPrint, ceiling height
+
+- `FloorPlanMesh` (`FloorPlanMeshExport.swift`) builds a triangle mesh straight
+  from the plan (walls split around door/window cut-outs with lintel and
+  sill pieces, ear-clipped room floors) and writes OBJ, PLY, and XYZ text.
+  `OpeningProfile.vertical` is the single source of door/window heights for
+  both the mesh and IFC writers.
+- `FloorPlanIFCExport` writes IFC4 STEP text by hand: project, site, building,
+  storey, `IfcWall` extruded profiles, `IfcOpeningElement` voids filled by
+  `IfcDoor` / `IfcWindow`, and an `IfcSpace` per room. `ModelExportView`
+  offers all four formats. AirPrint is a printer button on the PDF export
+  screen (`UIPrintInteractionController` on the same PDF).
+- Ceiling height is set from the "Property & Floor" sheet and written to
+  every wall's `height`.
+
+> ⚠️ Plan y points down the screen but IFC Y points north, so the IFC writer
+> maps plan `(x, y)` to IFC `(X, -Y)` and a wall's direction to `(dx, -dy)`.
+> Dropping the sign flip silently mirrors the whole building. The format was
+> checked by prototyping the same output in Python and opening it with
+> IfcOpenShell (walls at the right world coordinates, voids cut, GUIDs
+> identical to `ifcopenshell.guid.compress`); the Swift port itself has only
+> been compile-checked in CI, not opened in a BIM viewer.
+
+> ⚠️ XYZ is the corner points of the modeled walls and floors. RoomPlan
+> returns parametric surfaces, not a sampled point cloud, so this is not
+> comparable to a real scanner's point cloud.
+
 ## Explicitly not built (checked against RoomScan Pro LiDAR, scope cut on purpose)
 
 - **Bluetooth laser measure pairing** (Bosch/Leica, which RoomScan Pro
@@ -253,10 +283,15 @@ gaps, closed with original code:
   RoomScan Pro supports curved walls via its own capture/editing model.
   Would need a real model change (an arc/spline wall type), not a quick
   addition.
-- **Point cloud export** (PLY/OBJ/XYZ) — RoomPlan's `CapturedRoom` is
+- **True point cloud export** (a sampled scan; mesh/vertex OBJ/PLY/XYZ now exist, see above) — RoomPlan's `CapturedRoom` is
   parametric surfaces, not a raw point cloud; a real point cloud would
   need capturing `ARMeshAnchor` geometry during the scan session
   separately, which `RoomCaptureCoordinator` doesn't currently do.
+- **SketchUp (.skp) and Xactimate ESX** (checked online): SketchUp's C SDK
+  reads/writes .skp but has no public iOS build (SketchUp forum), so the
+  app emits OBJ, which SketchUp imports. ESX is Verisk's proprietary format
+  with no public spec; it is produced by partner integrations. Neither
+  can be written honestly from this app.
 - **Bluetooth/ML-assisted curved or non-vertical wall scanning**, exterior/
   plot-specific capture UI, and CAD-system-specific exports (Xactimate
   ESX, Symbility FML, IFC/BIM) — all real RoomScan Pro features, all

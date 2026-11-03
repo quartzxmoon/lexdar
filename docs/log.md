@@ -189,3 +189,11 @@ Append-only. Newest entries at the bottom.
   `BlueprintPNGExportView`, and `FloorPlanARView`; `FloorPlan` gained optional
   `propertyName`/`floorLevel`. Regenerated project.pbxproj for 3 new files.
   Documented on [[blueprint-production]]; `verified_at: fd4a5fd`.
+
+## [2026-11-03] feature | IFC / OBJ / PLY / XYZ export, AirPrint, ceiling height
+
+- Added `FloorPlanMesh`, `FloorPlanIFCExport`, `ModelExportView`; printer
+  button on the PDF screen; ceiling height field on the placement sheet.
+  IFC output prototyped in Python and validated with IfcOpenShell before the
+  Swift port. Recorded SDK findings for SketchUp / Xactimate on
+  [[blueprint-production]]. `verified_at: 4dd2154`.

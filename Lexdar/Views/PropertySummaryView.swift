@@ -82,12 +82,14 @@ struct PlanPlacementSheet: View {
     @Environment(\.dismiss) private var dismiss
     @State private var propertyName: String
     @State private var floorLevel: Int
+    @State private var ceilingHeight: Float
 
     init(floorPlan: FloorPlan, onSave: @escaping (FloorPlan) -> Void) {
         self.floorPlan = floorPlan
         self.onSave = onSave
         _propertyName = State(initialValue: floorPlan.propertyName ?? "")
         _floorLevel = State(initialValue: floorPlan.floorLevel ?? 0)
+        _ceilingHeight = State(initialValue: floorPlan.walls.first?.height ?? 2.4384)
     }
 
     var body: some View {
@@ -100,6 +102,15 @@ struct PlanPlacementSheet: View {
                     Stepper(value: $floorLevel, in: -3...20) {
                         Text(FloorLevelName.label(floorLevel))
                     }
+                }
+                Section("Ceiling height") {
+                    Stepper(value: $ceilingHeight, in: 2.0...6.0, step: 0.05) {
+                        let totalInches = ceilingHeight * 39.3701
+                        Text(String(format: "%.2f m (%ld ft %.0f in)", ceilingHeight, Int(totalInches / 12), totalInches.truncatingRemainder(dividingBy: 12)))
+                    }
+                    Text("Applies to every wall in this plan. Used by the 3D view, AR, IFC, and mesh exports.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                 }
             }
             .navigationTitle("Property & Floor")
@@ -114,6 +125,7 @@ struct PlanPlacementSheet: View {
                         let trimmed = propertyName.trimmingCharacters(in: .whitespacesAndNewlines)
                         updated.propertyName = trimmed.isEmpty ? nil : trimmed
                         updated.floorLevel = floorLevel
+                        for i in updated.walls.indices { updated.walls[i].height = ceilingHeight }
                         updated.touch()
                         onSave(updated)
                         dismiss()
