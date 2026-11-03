@@ -171,3 +171,13 @@ Append-only. Newest entries at the bottom.
   [[ios-signing-and-sideloading]] ("added no new frameworks") that this
   same change made incorrect. All three affected pages' `verified_at`
   moved to `d77a5d0`.
+
+## [2026-11-03] fix | Swift 6 actor isolation in PhotosPicker label closure
+
+- CI build succeeded but surfaced a real warning: `store.photoURL(...)`
+  (ScanStore is `@MainActor`) called from inside `PhotosPicker`'s `label:`
+  trailing closure in the annotation sheet, which isn't guaranteed
+  MainActor-isolated under Swift 6 strict concurrency even though it's
+  written inline inside a View's body. Resolved the URL as a plain `let`
+  in the enclosing (MainActor-isolated) scope instead. Documented as a
+  trap on [[blueprint-production]]; `verified_at: 416fb26`.

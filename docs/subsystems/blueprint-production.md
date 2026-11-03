@@ -18,7 +18,7 @@ sources:
   - code: Lexdar/Views/BlueprintDXFExportView.swift
   - code: Lexdar/Views/BlueprintAnnotationView.swift
   - code: Lexdar/Models/ScanStore.swift
-verified_at: d77a5d0
+verified_at: 416fb26
 ---
 
 A second, parallel subsystem to [[scan-to-renovation-flow]]'s
@@ -202,6 +202,17 @@ copied from that app:
 > formal exports is a reasonable next step, not an oversight to "fix"
 > without reading this: it was deliberately scoped out to keep this pass
 > bounded.
+
+> ⚠️ Resolve any `ScanStore` call (it's `@MainActor`) in the view body
+> itself, never inside a trailing closure passed to a SwiftUI API like
+> `PhotosPicker`'s `label:` — those closures aren't guaranteed
+> MainActor-isolated under Swift 6 strict concurrency, even though they're
+> written inline inside a View's `body`. CI caught exactly this
+> (`store.photoURL(...)` called from inside `PhotosPicker`'s label
+> closure in the annotation sheet) as a warning, not yet an error under
+> this project's settings — fix is to capture the resolved value as a
+> plain `let` in the enclosing scope and reference that inside the
+> closure instead of calling the actor-isolated method from within it.
 
 ## Explicitly not built (checked against RoomScan Pro LiDAR, scope cut on purpose)
 
