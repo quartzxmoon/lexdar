@@ -29,6 +29,19 @@ jobs:
           xcodebuild -version
           swift --version
 
+      - name: Diagnose available Xcode versions and simulator runtimes
+        run: |
+          ls /Applications | grep -i xcode || true
+          echo "---"
+          xcrun simctl list runtimes || true
+          echo "---"
+          /usr/libexec/PlistBuddy -c "Print :MinimumSDKVersion" /Applications/Xcode_16.app/Contents/version.plist 2>/dev/null || true
+          for app in /Applications/Xcode*.app; do
+            echo "== $app =="
+            /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$app/Contents/version.plist" 2>/dev/null || true
+            /usr/libexec/PlistBuddy -c "Print :ProductBuildVersion" "$app/Contents/version.plist" 2>/dev/null || true
+          done
+
       - name: Build (no code signing)
         # set -o pipefail matters: without it, `xcodebuild | xcpretty`'s exit
         # status is xcpretty's (which exits 0 as long as it could parse the
