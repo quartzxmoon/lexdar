@@ -7,17 +7,19 @@ sources:
   - code: .github/workflows/build-ios.yml
   - code: README.md
   - ext: https://developer.apple.com/account
-verified_at: 99e9763
+verified_at: d77a5d0
 ---
 
 No Mac is required to get `Lexdar` onto an iPad: Xcode itself only runs on
 macOS, but a GitHub Actions **macOS runner** can build and sign the app for
 you, and a Windows tool can install the resulting `.ipa` over USB. This
-covers the whole app as it grows — the blueprint production subsystem
-(see [[blueprint-production]]) added no new frameworks or build steps, so
-nothing here changes when that code changes. Every
-step below runs from the Apple Developer *website* and OpenSSL — neither
-needs Xcode or Keychain Access.
+covers the whole app as it grows — [[blueprint-production]]'s DXF export
+and annotation features added two more system frameworks (PencilKit,
+PhotosUI), but those need no new CI steps, secrets, or build settings:
+the project-generator script's `frameworks` list links them the same way as
+RoomPlan/ARKit/SceneKit/QuickLook/PDFKit, so nothing here changes when
+new frameworks are added that way. Every step below runs from the Apple
+Developer *website* and OpenSSL — neither needs Xcode or Keychain Access.
 
 Requires an **Apple Developer Program** membership ($99/yr). The free
 tier's web portal does not expose certificate/profile creation — that's an

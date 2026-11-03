@@ -150,3 +150,24 @@ Append-only. Newest entries at the bottom.
   wasn't sufficient alone). Rewrote the trap on
   [[ios-signing-and-sideloading]] with the real cause and a note to add a
   diagnostic step before guessing next time; `verified_at: 99e9763`.
+
+## [2026-11-03] grow | RoomScan Pro feature-parity audit
+
+- Audited against RoomScan Pro LiDAR's actual feature set (capture modes,
+  export formats, annotation tools) and closed the real gaps with original
+  code/UI: DXF export (hand-written AutoCAD R12 generator reusing
+  BlueprintLayout), detected-fixture labels (surfacing RoomPlan's own ML
+  object recognition that was already captured but not shown anywhere),
+  a wall-area/ceiling-height summary, photo+note pins placed via a new
+  BlueprintEditorView tool, and a separate PencilKit freehand markup layer
+  over the finished blueprint.
+- Explicitly documented what was *not* built and why (Bluetooth laser
+  measure pairing -- no hardware to verify against; curved walls -- not in
+  the model; point-cloud export -- RoomPlan data is parametric, not a
+  point cloud; specialist CAD/estimating exports -- DXF covers the general
+  need) on [[blueprint-production]], rather than leaving gaps undisclosed.
+- Added PencilKit.framework and PhotosUI.framework; regenerated
+  project.pbxproj for the 2 new files. Fixed a now-false claim on
+  [[ios-signing-and-sideloading]] ("added no new frameworks") that this
+  same change made incorrect. All three affected pages' `verified_at`
+  moved to `d77a5d0`.

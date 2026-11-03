@@ -15,7 +15,10 @@ sources:
   - code: Lexdar/Views/ScanDetailView.swift
   - code: Lexdar/Scanning/FloorPlanSceneBuilder.swift
   - code: Lexdar/Views/FloorPlan3DPreviewView.swift
-verified_at: 767a4af
+  - code: Lexdar/Views/BlueprintDXFExportView.swift
+  - code: Lexdar/Views/BlueprintAnnotationView.swift
+  - code: Lexdar/Models/ScanStore.swift
+verified_at: d77a5d0
 ---
 
 A second, parallel subsystem to [[scan-to-renovation-flow]]'s
@@ -141,6 +144,84 @@ for a hand-drawn plan or an imported LiDAR one.
 > first build after the 2D/3D toggle landed. Before chaining any further
 > `Text` modifier here, check it has a `Text`-returning overload — not
 > just a `View` one — the same way `.font`/`.foregroundStyle` do.
+
+## Feature-parity additions (DXF, detected objects, notes, markup)
+
+Added after an explicit audit against RoomScan Pro LiDAR's feature set
+(capture modes, exports, annotation tools) — own code/UI throughout, not
+copied from that app:
+
+- **`BlueprintDXFExportView.swift`** (`BlueprintDXFExporter`) — hand-written
+  AutoCAD R12 ASCII DXF generator, reusing `BlueprintLayout` (the same
+  geometry the PDF/on-screen views draw). Walls are double lines + end
+  caps (not a single centerline), doors get a real `ARC` entity for the
+  swing, dimensions are plain `LINE`+`TEXT` (not associative AutoCAD
+  `DIMENSION` objects — see trap below), everything is on separate layers
+  (WALLS/DOORS/WINDOWS/OPENINGS/ROOMS/DIMENSIONS/TEXT).
+- **Detected-object labels** (`CapturedRoom.Object.Category` extension in
+  `RoomPlanImporter.swift`, surfaced in `ScanDetailView`) — RoomPlan's own
+  ML object classification (toilet, bathtub, sink, appliances, furniture)
+  was already being captured and rendered as translucent ghosts by
+  `RoomSceneBuilder`; this just lists it by name/count, matching the kind
+  of "recognizes toilets & baths" feature other LiDAR floor-plan apps
+  market, without needing any new recognition logic of our own.
+- **Wall area / ceiling height summary** (`ScanDetailView.scanSummaryRows`)
+  — contractor-oriented stats (total wall area, ceiling height or range,
+  door/window/room counts) computed from the same `CapturedRoom` data
+  already loaded.
+- **Photo + note annotations** (`PlanAnnotation` in `FloorPlan.swift`,
+  placed via the `.note` tool in `BlueprintEditorView`, rendered as
+  numbered pins in both the editor and `BlueprintView`) — the "take
+  photos and type notes, see them positioned on the plan" survey/inventory
+  workflow. Photos are stored as separate JPEG files
+  (`ScanStore.savePhoto`/`photoURL`), referenced by filename only, so the
+  `FloorPlan` JSON stays small.
+- **`BlueprintAnnotationView.swift`** — a separate, PencilKit-based
+  freehand markup layer over the *finished* blueprint (circle a problem,
+  write a note directly on the drawing), distinct from
+  `BlueprintEditorView`'s precision wall-drafting. Saved as a `PKDrawing`
+  (`ScanStore.markupURL`), independent of the wall/door/room geometry.
+
+> ⚠️ The DXF exporter's dimension lines are **not** true AutoCAD
+> `DIMENSION` entities — they're plain `LINE` + `TEXT`, positioned
+> correctly but not "live" (won't recompute if a wall is dragged inside
+> the CAD tool). Said explicitly in the export screen's description text;
+> don't let that wording drift toward implying associative dimensions.
+
+> ⚠️ DXF R12 (`$ACADVER` = `AC1009`) was chosen specifically for broad
+> import compatibility and predates the `$INSUNITS` header variable, so
+> there's no reliable way to declare "these coordinates are meters" in the
+> header — a `TEXT` entity in the drawing says so instead. If a reader
+> doesn't check that note and assumes a different unit, the drawing will
+> import at the wrong scale; this is a real, disclosed limitation of
+> picking R12 over a newer DXF version, not a bug.
+
+> ⚠️ Photo/note annotations and the Pencil markup layer are **not**
+> included in the PDF or DXF exports yet — they're visible in-app
+> (`BlueprintEditorView`, `BlueprintView`) only. Adding them to the
+> formal exports is a reasonable next step, not an oversight to "fix"
+> without reading this: it was deliberately scoped out to keep this pass
+> bounded.
+
+## Explicitly not built (checked against RoomScan Pro LiDAR, scope cut on purpose)
+
+- **Bluetooth laser measure pairing** (Bosch/Leica, which RoomScan Pro
+  supports) — would need real hardware to test a hand-rolled BLE GATT
+  protocol implementation against; claiming working hardware support
+  without that verification would be dishonest. Not started.
+- **Curved wall support** — `FloorPlanWall` is a straight segment only;
+  RoomScan Pro supports curved walls via its own capture/editing model.
+  Would need a real model change (an arc/spline wall type), not a quick
+  addition.
+- **Point cloud export** (PLY/OBJ/XYZ) — RoomPlan's `CapturedRoom` is
+  parametric surfaces, not a raw point cloud; a real point cloud would
+  need capturing `ARMeshAnchor` geometry during the scan session
+  separately, which `RoomCaptureCoordinator` doesn't currently do.
+- **Bluetooth/ML-assisted curved or non-vertical wall scanning**, exterior/
+  plot-specific capture UI, and CAD-system-specific exports (Xactimate
+  ESX, Symbility FML, IFC/BIM) — all real RoomScan Pro features, all
+  skipped for now; DXF covers the general CAD-interchange need those
+  specialist formats exist to serve.
 
 ## Not yet built
 

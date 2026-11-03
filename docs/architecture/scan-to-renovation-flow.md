@@ -18,7 +18,7 @@ sources:
   - code: Lexdar/Views/RenovationSummaryView.swift
   - code: Lexdar.xcodeproj/project.pbxproj
   - code: Lexdar/Views/ScanListView.swift
-verified_at: edf889d
+verified_at: d77a5d0
 ---
 
 One LiDAR scan (`ScanProject`) can carry many independent renovation ideas
@@ -92,7 +92,11 @@ is reserved for swapping in real `.usdz` models later (see README).
 > already, caught before commit both times since the scheme simply
 > wouldn't resolve. Do this every time the generator is re-run — including
 > for [[blueprint-production]]'s files, which live in this same project
-> and go through the same generator script.
+> and go through the same generator script. The `frameworks` list in the
+> generator (RoomPlan/ARKit/SceneKit/QuickLook/PDFKit, now also
+> PencilKit/PhotosUI for [[blueprint-production]]'s markup/photo features)
+> needs a new entry whenever a new system framework is imported, same as
+> a new source file needs an entry in `swift_files`.
 
 > ⚠️ `RoomCaptureViewDelegate` inherits from `NSCoding` (confirmed on
 > Apple's own doc page for the protocol — easy to miss since it's an
