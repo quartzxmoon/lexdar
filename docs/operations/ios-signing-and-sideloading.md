@@ -7,7 +7,7 @@ sources:
   - code: .github/workflows/build-ios.yml
   - code: README.md
   - ext: https://developer.apple.com/account
-verified_at: f643814
+verified_at: fb2d412
 ---
 
 No Mac is required to get `Lexdar` onto an iPad: Xcode itself only runs on
@@ -97,9 +97,8 @@ In the GitHub repo: **Settings → Secrets and variables → Actions**.
 > step is ever rewritten, keep `set -o pipefail` or drop the `xcpretty`
 > pipe entirely.
 
-> ⚠️ Both `xcodebuild` invocations pass `ENABLE_PREVIEWS=NO` as a
-> command-line override — the project itself keeps `ENABLE_PREVIEWS=YES`
-> so Xcode Previews work locally, but with it on, Xcode also compiles a
+> ⚠️ The `validate` job builds **Release**, not Debug, specifically to
+> avoid Xcode 16's "XOJIT previews": a Debug build also compiles a
 > Simulator-targeted preview dylib even for a device-only
 > `generic/platform=iOS` build, pulling in the iphonesimulator SDK. GitHub's
 > macOS runner images periodically ship a simulator runtime that doesn't
@@ -107,10 +106,13 @@ In the GitHub repo: **Settings → Secrets and variables → Actions**.
 > ([actions/runner-images#13317](https://github.com/actions/runner-images/issues/13317)),
 > which fails `CompileAssetCatalog` with "No simulator runtime version ...
 > available to use with iphonesimulator SDK version ..." — unrelated to
-> anything in this app's own code. If this recurs with the override already
-> in place, it's the runner image itself drifting out of sync with the
-> pinned Xcode version; check that issue (or its successors) before
-> assuming it's a regression here.
+> anything in this app's own code. **`ENABLE_PREVIEWS=NO` does not fix
+> this** — Xcode 16 stopped honoring that flag for previews, so it was
+> tried first and had zero effect; Release configuration is the thing that
+> actually sidesteps the whole preview-dylib code path, since that's
+> Debug-only. If this recurs even on a Release build, it's the runner
+> image itself drifting out of sync with the pinned Xcode version; check
+> that issue (or its successors) before assuming it's a regression here.
 
 ## 5. Run it
 

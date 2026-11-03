@@ -107,3 +107,16 @@ Append-only. Newest entries at the bottom.
   on both xcodebuild invocations (project setting itself untouched, so local
   Xcode Previews still work). Documented as a trap on
   [[ios-signing-and-sideloading]]; `verified_at: f643814`.
+
+## [2026-11-03] fix | ENABLE_PREVIEWS=NO was a dead end -- Release config is the real fix
+
+- The previous fix (`ENABLE_PREVIEWS=NO`) had zero effect: same "Linking
+  __preview.dylib" + simulator-runtime-mismatch failure recurred unchanged.
+  Root cause: Xcode 16 stopped honoring `ENABLE_PREVIEWS` for its new "XOJIT
+  previews" system. Preview-dylib generation is still Debug-only though, so
+  switching the `validate` job to `-configuration Release` (previously
+  Debug) actually sidesteps it. `archive` was already Release and
+  unaffected; removed its now-confirmed-useless `ENABLE_PREVIEWS=NO`.
+  Corrected the trap on [[ios-signing-and-sideloading]] to say what
+  actually works instead of what seemed plausible but wasn't; `verified_at:
+  fb2d412`.
