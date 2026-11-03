@@ -7,7 +7,7 @@ sources:
   - code: .github/workflows/build-ios.yml
   - code: README.md
   - ext: https://developer.apple.com/account
-verified_at: 8a76d91
+verified_at: 4701aea
 ---
 
 No Mac is required to get `Lexdar` onto an iPad: Xcode itself only runs on
@@ -84,6 +84,15 @@ In the GitHub repo: **Settings → Secrets and variables → Actions**.
 > ⚠️ `SIGNING_CONFIGURED` is a repository **variable**, not a secret, and
 > the archive job's `if:` reads it as the literal string `'true'` — setting
 > it to `True`/`1`/anything else leaves the job silently skipped.
+
+> ⚠️ The `validate` job's build step runs `set -o pipefail` before piping
+> `xcodebuild` into `xcpretty`. Without it, the step's exit status is
+> `xcpretty`'s (which exits 0 as long as it could parse the input), so a
+> real `BUILD FAILED` from `xcodebuild` reports as a green check — this is
+> exactly what happened on the first CI run (the project.pbxproj bug noted
+> in [[scan-to-renovation-flow]] built silently "successfully"). If this
+> step is ever rewritten, keep `set -o pipefail` or drop the `xcpretty`
+> pipe entirely.
 
 ## 5. Run it
 

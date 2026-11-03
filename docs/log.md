@@ -25,3 +25,13 @@ Append-only. Newest entries at the bottom.
   [[ios-signing-and-sideloading]] -- the whole cert/profile/secrets setup done via
   OpenSSL + the Apple Developer web portal + Sideloadly, with no Mac involved at any
   step. `verified_at: c31135c`.
+
+## [2026-11-03] fix | first real CI run caught two bugs
+
+- `project.pbxproj` had doubled file paths (groups already contribute their own
+  subdirectory; file refs must be basenames) -- regenerated it and documented the
+  rule as a trap on [[scan-to-renovation-flow]].
+- The CI build step piped `xcodebuild | xcpretty` without `set -o pipefail`, so
+  bug #1's real `BUILD FAILED` was reported as a green check -- fixed and
+  documented as a trap on [[ios-signing-and-sideloading]].
+- Both pages' `verified_at` moved to `4701aea`.
