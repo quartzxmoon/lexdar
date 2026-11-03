@@ -150,6 +150,29 @@ enum FloorPlanSource: Codable, Hashable {
     case handDrawn
 }
 
+/// A photo and/or note pinned to a specific point on the plan — the
+/// "take photos and type or dictate notes onto them, and see them
+/// automatically positioned on the plan" survey/inventory workflow.
+/// `photoFilename`, when present, names a JPEG stored alongside this
+/// floor plan's own files (see `ScanStore.photoURL(for:in:)`); the
+/// annotation itself stores only the filename, never the image data, so
+/// the `FloorPlan` JSON stays small.
+struct PlanAnnotation: Identifiable, Codable, Hashable {
+    let id: UUID
+    var position: SIMD2<Float>
+    var note: String
+    var photoFilename: String?
+    let createdAt: Date
+
+    init(id: UUID = UUID(), position: SIMD2<Float>, note: String = "", photoFilename: String? = nil) {
+        self.id = id
+        self.position = position
+        self.note = note
+        self.photoFilename = photoFilename
+        self.createdAt = Date()
+    }
+}
+
 /// A complete floor plan: one level's worth of walls, openings, and room
 /// boundaries, at a known real-world scale. This is the thing contractor-
 /// grade blueprints are rendered from (see `BlueprintView` /
@@ -164,12 +187,13 @@ struct FloorPlan: Identifiable, Codable, Hashable {
     var walls: [FloorPlanWall]
     var openings: [FloorPlanOpening]
     var rooms: [FloorPlanRoom]
+    var annotations: [PlanAnnotation]
     /// Free-form notes shown on the blueprint's title block / cover sheet.
     var notes: String
 
     init(id: UUID = UUID(), name: String, source: FloorPlanSource,
          walls: [FloorPlanWall] = [], openings: [FloorPlanOpening] = [],
-         rooms: [FloorPlanRoom] = [], notes: String = "") {
+         rooms: [FloorPlanRoom] = [], annotations: [PlanAnnotation] = [], notes: String = "") {
         self.id = id
         self.name = name
         self.createdAt = Date()
@@ -178,6 +202,7 @@ struct FloorPlan: Identifiable, Codable, Hashable {
         self.walls = walls
         self.openings = openings
         self.rooms = rooms
+        self.annotations = annotations
         self.notes = notes
     }
 

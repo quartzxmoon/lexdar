@@ -76,4 +76,54 @@ enum RoomPlanImporter {
         return simd_length(ac - bc)
     }
 }
+
+/// Human-readable labels for RoomPlan's own ML-based object recognition
+/// (`CapturedRoom.objects`) — surfaced in `ScanDetailView` as a "Detected
+/// Fixtures & Furniture" list. RoomPlan already does the classification
+/// (toilets, bathtubs, sinks, appliances, furniture); this just presents it.
+extension CapturedRoom.Object.Category {
+    var displayName: String {
+        switch self {
+        case .bathtub: return "Bathtub"
+        case .bed: return "Bed"
+        case .chair: return "Chair"
+        case .dishwasher: return "Dishwasher"
+        case .fireplace: return "Fireplace"
+        case .oven: return "Oven"
+        case .refrigerator: return "Refrigerator"
+        case .sink: return "Sink"
+        case .sofa: return "Sofa"
+        case .stairs: return "Stairs"
+        case .storage: return "Storage"
+        case .stove: return "Stove"
+        case .table: return "Table"
+        case .television: return "Television"
+        case .toilet: return "Toilet"
+        case .washerDryer: return "Washer/Dryer"
+        @unknown default: return "Object"
+        }
+    }
+
+    var symbolName: String {
+        switch self {
+        case .bathtub: return "bathtub.fill"
+        case .bed: return "bed.double.fill"
+        case .chair: return "chair.fill"
+        case .dishwasher: return "dishwasher.fill"
+        case .fireplace: return "fireplace.fill"
+        case .oven: return "oven.fill"
+        case .refrigerator: return "refrigerator.fill"
+        case .sink: return "sink.fill"
+        case .sofa: return "sofa.fill"
+        case .stairs: return "figure.stairs"
+        case .storage: return "cabinet.fill"
+        case .stove: return "stove.fill"
+        case .table: return "table.furniture.fill"
+        case .television: return "tv.fill"
+        case .toilet: return "toilet.fill"
+        case .washerDryer: return "washer.fill"
+        @unknown default: return "cube.fill"
+        }
+    }
+}
 #endif

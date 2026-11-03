@@ -106,6 +106,8 @@ struct FloorPlanDetailView: View {
     @EnvironmentObject private var store: ScanStore
     @State private var showEditor = false
     @State private var showExport = false
+    @State private var showDXFExport = false
+    @State private var showAnnotate = false
     @State private var liveFloorPlan: FloorPlan
 
     init(floorPlan: FloorPlan) {
@@ -126,6 +128,12 @@ struct FloorPlanDetailView: View {
                         Button { showExport = true } label: {
                             Label("Export Blueprint PDF", systemImage: "square.and.arrow.up")
                         }
+                        Button { showDXFExport = true } label: {
+                            Label("Export DXF (CAD)", systemImage: "square.and.arrow.up.on.square")
+                        }
+                        Button { showAnnotate = true } label: {
+                            Label("Annotate with Pencil", systemImage: "pencil.tip.crop.circle")
+                        }
                         Button(role: .destructive) {
                             store.deleteFloorPlan(liveFloorPlan)
                         } label: {
@@ -141,6 +149,12 @@ struct FloorPlanDetailView: View {
             }
             .sheet(isPresented: $showExport) {
                 BlueprintPDFExportView(floorPlan: liveFloorPlan)
+            }
+            .sheet(isPresented: $showDXFExport) {
+                BlueprintDXFExportView(floorPlan: liveFloorPlan)
+            }
+            .fullScreenCover(isPresented: $showAnnotate, onDismiss: refresh) {
+                BlueprintAnnotationView(floorPlan: liveFloorPlan)
             }
     }
 

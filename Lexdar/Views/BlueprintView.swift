@@ -65,8 +65,18 @@ struct BlueprintView: View {
         drawOpenings(layout, project: project, context: &context)
         drawRooms(layout, project: project, context: &context)
         drawDimensions(layout, project: project, context: &context)
+        drawAnnotationPins(project: project, context: &context)
         drawScaleBarAndNorth(scale: scale, size: size, context: &context)
         drawTitleBlock(size: size, context: &context)
+    }
+
+    private func drawAnnotationPins(project: (SIMD2<Float>) -> CGPoint, context: inout GraphicsContext) {
+        for (index, annotation) in floorPlan.annotations.enumerated() {
+            let point = project(annotation.position)
+            context.fill(Path(ellipseIn: CGRect(x: point.x - 9, y: point.y - 9, width: 18, height: 18)),
+                          with: .color(.orange))
+            context.draw(Text("\(index + 1)").font(.system(size: 9, weight: .bold)).foregroundStyle(.white), at: point)
+        }
     }
 
     private func drawWalls(_ layout: BlueprintLayout, project: (SIMD2<Float>) -> CGPoint,

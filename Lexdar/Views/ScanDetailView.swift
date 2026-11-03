@@ -74,6 +74,29 @@ struct ScanDetailView: View {
                 }
             }
 
+            Section("Scan Summary") {
+                scanSummaryRows(room: room)
+            }
+
+            if !room.objects.isEmpty {
+                Section("Detected Fixtures & Furniture") {
+                    ForEach(detectedObjectCounts(room: room), id: \.category) { entry in
+                        HStack {
+                            Image(systemName: entry.symbolName)
+                                .foregroundStyle(.secondary)
+                                .frame(width: 24)
+                            Text(entry.displayName)
+                            Spacer()
+                            Text("\(entry.count)")
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    Text("Automatically recognized during the scan by RoomPlan — review before relying on it; low-confidence items may be mislabeled or missed.")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
             Section("Renovation Plans") {
                 let plans = store.plans(for: project.id)
                 if plans.isEmpty {
@@ -105,6 +128,59 @@ struct ScanDetailView: View {
                 }
             }
         }
+    }
+
+    // MARK: - Scan summary (contractor-oriented stats, matching what
+    // LiDAR floor-plan apps typically surface: wall area, ceiling
+    // height, per-room breakdown)
+
+    @ViewBuilder
+    private func scanSummaryRows(room: CapturedRoom) -> some View {
+        let totalWallAreaSqFt = room.walls.reduce(0.0) { partial, wall in
+            partial + Double(wall.dimensions.x * wall.dimensions.y) * 10.7639
+        }
+        let ceilingHeights = room.walls.map { Double($0.dimensions.y) * 3.28084 }
+        let minHeight = ceilingHeights.min() ?? 0
+        let maxHeight = ceilingHeights.max() ?? 0
+
+        LabeledContent("Walls") { Text("\(room.walls.count)") }
+        LabeledContent("Total wall area") { Text("\(Int(totalWallAreaSqFt.rounded())) sq ft") }
+        if !ceilingHeights.isEmpty {
+            if abs(maxHeight - minHeight) < 0.3 {
+                LabeledContent("Ceiling height") { Text(Self.feetInches(maxHeight)) }
+            } else {
+                LabeledContent("Ceiling height range") {
+                    Text("\(Self.feetInches(minHeight)) – \(Self.feetInches(maxHeight))")
+                }
+            }
+        }
+        LabeledContent("Doors") { Text("\(room.doors.count)") }
+        LabeledContent("Windows") { Text("\(room.windows.count)") }
+        LabeledContent("Rooms") { Text("\(room.floors.count)") }
+    }
+
+    private struct DetectedObjectEntry {
+        let category: String
+        let displayName: String
+        let symbolName: String
+        let count: Int
+    }
+
+    private func detectedObjectCounts(room: CapturedRoom) -> [DetectedObjectEntry] {
+        var counts: [CapturedRoom.Object.Category: Int] = [:]
+        for object in room.objects {
+            counts[object.category, default: 0] += 1
+        }
+        return counts.sorted { $0.key.displayName < $1.key.displayName }.map { category, count in
+            DetectedObjectEntry(category: category.displayName, displayName: category.displayName,
+                                 symbolName: category.symbolName, count: count)
+        }
+    }
+
+    private static func feetInches(_ totalFeet: Double) -> String {
+        let feet = Int(totalFeet)
+        let inches = Int((totalFeet - Double(feet)) * 12)
+        return "\(feet)'\(inches)\""
     }
 
     private func planSummary(_ plan: RenovationPlan) -> String {

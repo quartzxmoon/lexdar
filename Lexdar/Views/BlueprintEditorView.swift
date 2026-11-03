@@ -1,11 +1,12 @@
 import SwiftUI
+import PhotosUI
 import simd
 
 /// Tools available in the hand-drawn blueprint editor. Works identically
 /// with a finger or Apple Pencil — SwiftUI's gestures don't distinguish
 /// the two, so no Pencil-specific code is needed for precise placement.
 enum BlueprintTool: String, CaseIterable, Identifiable {
-    case wall, door, window, opening, room, select
+    case wall, door, window, opening, room, note, select
 
     var id: String { rawValue }
 
@@ -16,6 +17,7 @@ enum BlueprintTool: String, CaseIterable, Identifiable {
         case .window: return "Window"
         case .opening: return "Opening"
         case .room: return "Room"
+        case .note: return "Note"
         case .select: return "Select"
         }
     }
@@ -27,6 +29,7 @@ enum BlueprintTool: String, CaseIterable, Identifiable {
         case .window: return "windshield.front.and.wiper.intermittent"
         case .opening: return "rectangle.portrait.and.arrow.right"
         case .room: return "square.dashed"
+        case .note: return "camera.badge.ellipsis"
         case .select: return "hand.point.up.left.fill"
         }
     }
@@ -78,6 +81,13 @@ struct BlueprintEditorView: View {
 
     @State private var selectedWallID: UUID?
     @State private var draggingEndpoint: (wallID: UUID, isStart: Bool)?
+
+    @State private var showAnnotationSheet = false
+    @State private var pendingAnnotationPosition: SIMD2<Float>?
+    @State private var editingAnnotationID: UUID?
+    @State private var annotationNoteText = ""
+    @State private var annotationPhotoItem: PhotosPickerItem?
+    @State private var annotationPhotoData: Data?
 
     @State private var undoStack: [FloorPlan] = []
     @State private var redoStack: [FloorPlan] = []
@@ -154,6 +164,7 @@ struct BlueprintEditorView: View {
                 Button("Cancel", role: .cancel) { roomPoints = [] }
             }
             .sheet(isPresented: $showOpeningSheet) { openingSheet }
+            .sheet(isPresented: $showAnnotationSheet) { annotationSheet }
         }
     }
 
@@ -286,6 +297,8 @@ struct BlueprintEditorView: View {
                     placeOpening(at: point)
                 case .room:
                     addRoomPoint(point)
+                case .note:
+                    placeOrEditAnnotation(at: point)
                 case .select:
                     selectNearestWall(at: point)
                 case .wall:
@@ -385,12 +398,134 @@ struct BlueprintEditorView: View {
         }
     }
 
+    @ViewBuilder
+    private var annotationSheet: some View {
+        NavigationStack {
+            Form {
+                Section("Photo") {
+                    PhotosPicker(selection: $annotationPhotoItem, matching: .images) {
+                        if let annotationPhotoData, let uiImage = UIImage(data: annotationPhotoData) {
+                            Image(uiImage: uiImage)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(maxHeight: 180)
+                        } else if let editingID = editingAnnotationID,
+                                  let existing = floorPlan.annotations.first(where: { $0.id == editingID }),
+                                  let filename = existing.photoFilename {
+                            AsyncImage(url: store.photoURL(filename: filename, for: floorPlan)) { image in
+                                image.resizable().scaledToFit()
+                            } placeholder: {
+                                ProgressView()
+                            }
+                            .frame(maxHeight: 180)
+                        } else {
+                            Label("Add Photo", systemImage: "camera.fill")
+                        }
+                    }
+                    .onChange(of: annotationPhotoItem) { _, newItem in
+                        Task {
+                            if let data = try? await newItem?.loadTransferable(type: Data.self) {
+                                annotationPhotoData = data
+                            }
+                        }
+                    }
+                }
+                Section("Note") {
+                    TextField("What needs attention here?", text: $annotationNoteText, axis: .vertical)
+                        .lineLimit(3...8)
+                }
+                if editingAnnotationID != nil {
+                    Section {
+                        Button("Delete Note", role: .destructive) { deleteAnnotation() }
+                    }
+                }
+            }
+            .navigationTitle(editingAnnotationID == nil ? "New Note" : "Edit Note")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { showAnnotationSheet = false }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") { confirmAnnotation() }
+                }
+            }
+        }
+    }
+
     private func confirmOpening(width: Float) {
         defer { showOpeningSheet = false }
         guard let wallID = pendingOpeningWallID else { return }
         pushUndo()
         floorPlan.openings.append(FloorPlanOpening(wallID: wallID, kind: tool.openingKind ?? .opening,
                                                      distanceFromWallStart: pendingOpeningDistance, width: width))
+        persist()
+    }
+
+    // MARK: - Photo + note annotations
+
+    /// Tapping near an existing pin reopens it for editing; tapping empty
+    /// space starts a new one at that point -- matches the familiar
+    /// "tap a pin to edit, tap elsewhere to add" convention.
+    private func placeOrEditAnnotation(at point: SIMD2<Float>) {
+        let tolerance: Float = 20 / Float(effectiveScale)
+        if let existing = floorPlan.annotations.min(by: { simd_length($0.position - point) < simd_length($1.position - point) }),
+           simd_length(existing.position - point) < tolerance {
+            editingAnnotationID = existing.id
+            annotationNoteText = existing.note
+            pendingAnnotationPosition = existing.position
+            annotationPhotoData = nil
+            annotationPhotoItem = nil
+        } else {
+            editingAnnotationID = nil
+            annotationNoteText = ""
+            pendingAnnotationPosition = snappedToGrid(point)
+            annotationPhotoData = nil
+            annotationPhotoItem = nil
+        }
+        showAnnotationSheet = true
+    }
+
+    private func confirmAnnotation() {
+        defer {
+            showAnnotationSheet = false
+            pendingAnnotationPosition = nil
+            editingAnnotationID = nil
+            annotationNoteText = ""
+            annotationPhotoData = nil
+            annotationPhotoItem = nil
+        }
+        guard let position = pendingAnnotationPosition else { return }
+        pushUndo()
+
+        var photoFilename: String?
+        if let data = annotationPhotoData {
+            photoFilename = store.savePhoto(data, for: floorPlan)
+        }
+
+        if let editingID = editingAnnotationID,
+           let idx = floorPlan.annotations.firstIndex(where: { $0.id == editingID }) {
+            floorPlan.annotations[idx].note = annotationNoteText
+            if let photoFilename {
+                floorPlan.annotations[idx].photoFilename = photoFilename
+            }
+        } else {
+            let annotation = PlanAnnotation(position: position, note: annotationNoteText, photoFilename: photoFilename)
+            floorPlan.annotations.append(annotation)
+        }
+        persist()
+    }
+
+    private func deleteAnnotation() {
+        defer {
+            showAnnotationSheet = false
+            pendingAnnotationPosition = nil
+            editingAnnotationID = nil
+            annotationNoteText = ""
+        }
+        guard let editingID = editingAnnotationID else { return }
+        pushUndo()
+        floorPlan.annotations.removeAll { $0.id == editingID }
         persist()
     }
 
@@ -481,6 +616,16 @@ struct BlueprintEditorView: View {
         if !roomPoints.isEmpty {
             drawPendingRoom(in: &context, size: size)
         }
+        for (index, annotation) in floorPlan.annotations.enumerated() {
+            drawAnnotationPin(annotation, number: index + 1, in: &context, size: size)
+        }
+    }
+
+    private func drawAnnotationPin(_ annotation: PlanAnnotation, number: Int, in context: inout GraphicsContext, size: CGSize) {
+        let screen = planToScreen(annotation.position, canvasSize: size)
+        context.fill(Path(ellipseIn: CGRect(x: screen.x - 11, y: screen.y - 11, width: 22, height: 22)),
+                      with: .color(.orange))
+        context.draw(Text("\(number)").font(.caption2.bold()).foregroundStyle(.white), at: screen)
     }
 
     private func drawGrid(in context: inout GraphicsContext, size: CGSize) {

@@ -192,6 +192,43 @@ final class ScanStore: ObservableObject {
         floorPlansDirectory.appendingPathComponent("\(floorPlan.id.uuidString).json")
     }
 
+    /// Folder holding this floor plan's annotation photos and Pencil
+    /// markup layer -- everything except the `FloorPlan` JSON itself.
+    func floorPlanAssetsDirectory(for floorPlan: FloorPlan) -> URL {
+        let dir = floorPlansDirectory.appendingPathComponent(floorPlan.id.uuidString, isDirectory: true)
+        if !fileManager.fileExists(atPath: dir.path) {
+            try? fileManager.createDirectory(at: dir, withIntermediateDirectories: true)
+        }
+        return dir
+    }
+
+    /// Saves JPEG data for a new annotation photo and returns the filename
+    /// to store on `PlanAnnotation.photoFilename` (not the full path --
+    /// the folder is derived from the floor plan's own id, so storage can
+    /// move without invalidating every annotation).
+    @discardableResult
+    func savePhoto(_ data: Data, for floorPlan: FloorPlan) -> String? {
+        let filename = "\(UUID().uuidString).jpg"
+        let url = floorPlanAssetsDirectory(for: floorPlan).appendingPathComponent(filename)
+        do {
+            try data.write(to: url)
+            return filename
+        } catch {
+            return nil
+        }
+    }
+
+    func photoURL(filename: String, for floorPlan: FloorPlan) -> URL {
+        floorPlanAssetsDirectory(for: floorPlan).appendingPathComponent(filename)
+    }
+
+    /// Where `BlueprintAnnotationView`'s PencilKit freehand markup layer is
+    /// saved (`PKDrawing.dataRepresentation()`), separate from the
+    /// `FloorPlan` JSON and from the photo/note annotation pins.
+    func markupURL(for floorPlan: FloorPlan) -> URL {
+        floorPlanAssetsDirectory(for: floorPlan).appendingPathComponent("markup.drawing")
+    }
+
     func floorPlans(for scanID: UUID) -> [FloorPlan] {
         floorPlans.filter { $0.scanID == scanID }
     }
@@ -233,6 +270,7 @@ final class ScanStore: ObservableObject {
 
     func deleteFloorPlan(_ floorPlan: FloorPlan) {
         try? fileManager.removeItem(at: floorPlanURL(floorPlan))
+        try? fileManager.removeItem(at: floorPlanAssetsDirectory(for: floorPlan))
         reload()
     }
 }

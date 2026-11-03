@@ -116,6 +116,31 @@ open Lexdar.xcodeproj
     back through smaller standard scales, or an explicitly-labeled "NOT TO
     SCALE" fit) with a title block and a plain-language disclaimer that
     it's a planning drawing, not a stamped/permit-ready document.
+  - `Views/BlueprintDXFExportView.swift` — exports the blueprint as a DXF
+    (AutoCAD R12) file, the CAD-interchange format most professional
+    floor-plan workflows actually need, with walls/doors/windows/rooms/
+    dimensions on separate layers.
+  - Detected-fixture list, wall-area/ceiling-height summary
+    (`Views/ScanDetailView.swift`) — surfaces RoomPlan's own ML object
+    recognition (toilets, bathtubs, sinks, appliances, etc.) and
+    contractor-oriented stats computed from the scan.
+  - Photo + note annotations and a separate Apple-Pencil freehand markup
+    layer (`PlanAnnotation` in `Models/FloorPlan.swift`,
+    `Views/BlueprintAnnotationView.swift`) — pin a photo/note to a spot on
+    the plan, or draw/write directly over the finished blueprint.
+
+This feature set was built after an explicit audit against RoomScan Pro
+LiDAR's own capability list (capture modes, exports, annotation tools) —
+own code and UI throughout, nothing copied from that app. Deliberately
+**not** built, and why: Bluetooth laser-measure pairing (Bosch/Leica —
+would need real hardware to verify a hand-rolled BLE protocol against, and
+claiming it works without that would be dishonest), curved walls (the
+model is straight-segment-only), raw point-cloud export (RoomPlan's data
+is parametric surfaces, not a point cloud), and format-specific exports
+like Xactimate ESX/Symbility FML/IFC (DXF covers the general CAD-
+interchange need those exist to serve). See
+[`docs/subsystems/blueprint-production.md`](docs/subsystems/blueprint-production.md)
+for the full list and reasoning.
 
 ## Project layout
 
