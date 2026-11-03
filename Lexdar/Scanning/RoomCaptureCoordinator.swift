@@ -47,11 +47,11 @@ final class RoomCaptureCoordinator: NSObject, ObservableObject {
     // documentation — unusual for a delegate protocol, but required).
     // This coordinator is never actually archived/unarchived; these exist
     // purely to satisfy that conformance.
-    init?(coder: NSCoder) {
+    nonisolated init?(coder: NSCoder) {
         nil
     }
 
-    func encode(with coder: NSCoder) {}
+    nonisolated func encode(with coder: NSCoder) {}
 }
 
 extension RoomCaptureCoordinator: RoomCaptureViewDelegate {

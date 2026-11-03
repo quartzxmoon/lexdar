@@ -92,7 +92,7 @@ private struct ScanRow: View {
         HStack {
             Image(systemName: "house.fill")
                 .font(.title2)
-                .foregroundStyle(.accent)
+                .foregroundStyle(Color.accentColor)
                 .frame(width: 36)
             VStack(alignment: .leading, spacing: 2) {
                 Text(project.name).font(.headline)
