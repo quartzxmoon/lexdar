@@ -82,3 +82,15 @@ Append-only. Newest entries at the bottom.
   rotation conventions as traps on [[blueprint-production]].
 - Regenerated `project.pbxproj` for the 2 new files; both affected pages'
   `verified_at` moved to `edf889d`.
+
+## [2026-11-03] fix | GraphicsContext.draw overload break
+
+- `.multilineTextAlignment(.center)` chained onto a `Text` passed to
+  `context.draw` has no `Text`-returning overload (only `View`'s), breaking
+  overload resolution with a confusing "no exact matches" error -- caught
+  by CI on the commit right after the 2D/3D toggle. Replaced the two-line
+  label with two separate single-line draws. Verified every other
+  `context.draw(Text(...)...)` call site in the app only chains methods
+  that do have `Text`-returning overrides (`.font`, `.foregroundStyle`) before
+  ruling them safe. Documented as a trap on [[blueprint-production]];
+  `verified_at: 767a4af`.

@@ -15,7 +15,7 @@ sources:
   - code: Lexdar/Views/ScanDetailView.swift
   - code: Lexdar/Scanning/FloorPlanSceneBuilder.swift
   - code: Lexdar/Views/FloorPlan3DPreviewView.swift
-verified_at: edf889d
+verified_at: 767a4af
 ---
 
 A second, parallel subsystem to [[scan-to-renovation-flow]]'s
@@ -130,6 +130,17 @@ for a hand-drawn plan or an imported LiDAR one.
 > instead of deriving rotations from a 2D direction vector). If either
 > renderer's coordinate convention changes, re-derive this one
 > independently rather than assuming they still match.
+
+> ⚠️ `GraphicsContext.draw(_:at:anchor:)` requires an actual `Text` value,
+> not `some View`. `Text` has its own `Text`-returning overrides for
+> `.font(_:)` and `.foregroundStyle(_:)` (confirmed against Apple's docs),
+> so those chain safely — but `.multilineTextAlignment(_:)` has **no**
+> `Text`-returning override, only the `View` one, so chaining it onto a
+> `Text` passed to `context.draw` silently produces `some View` and breaks
+> the call with a confusing "no exact matches" error. This broke the
+> first build after the 2D/3D toggle landed. Before chaining any further
+> `Text` modifier here, check it has a `Text`-returning overload — not
+> just a `View` one — the same way `.font`/`.foregroundStyle` do.
 
 ## Not yet built
 
