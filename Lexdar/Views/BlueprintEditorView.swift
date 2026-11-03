@@ -553,8 +553,13 @@ struct BlueprintEditorView: View {
 
         let centroid = planToScreen(room.centroid, canvasSize: size)
         let sqft = room.areaSquareMeters * 10.7639
-        context.draw(Text("\(room.name)\n\(String(format: "%.0f", sqft)) sq ft")
-            .font(.caption2).multilineTextAlignment(.center), at: centroid)
+        // GraphicsContext.draw(_:at:) only accepts a Text, not `some View`,
+        // so `.multilineTextAlignment` (a View modifier, not a Text one)
+        // can't be chained here -- draw the two lines separately instead,
+        // which also centers each one independently.
+        context.draw(Text(room.name).font(.caption2), at: CGPoint(x: centroid.x, y: centroid.y - 6))
+        context.draw(Text("\(String(format: "%.0f", sqft)) sq ft").font(.caption2),
+                     at: CGPoint(x: centroid.x, y: centroid.y + 6))
     }
 
     private func drawPendingWall(start: SIMD2<Float>, end: SIMD2<Float>, in context: inout GraphicsContext, size: CGSize) {
