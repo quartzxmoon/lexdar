@@ -172,13 +172,18 @@ struct BlueprintPDFRenderer {
             ctx.setLineWidth(1)
             ctx.move(to: project(door.panelLine.a)); ctx.addLine(to: project(door.panelLine.b)); ctx.strokePath()
 
-            let center = project(door.arcCenter)
-            let radius = project(door.arcCenter + SIMD2<Float>(door.arcRadius, 0)).x - center.x
-            ctx.setLineDash(phase: 0, lengths: [2, 2])
-            ctx.addArc(center: center, radius: abs(radius),
-                       startAngle: CGFloat(door.arcStartAngle), endAngle: CGFloat(door.arcEndAngle), clockwise: false)
-            ctx.strokePath()
-            ctx.setLineDash(phase: 0, lengths: [])
+            if door.drawsArc {
+                let center = project(door.arcCenter)
+                let radius = project(door.arcCenter + SIMD2<Float>(door.arcRadius, 0)).x - center.x
+                ctx.setLineDash(phase: 0, lengths: [2, 2])
+                ctx.addArc(center: center, radius: abs(radius),
+                           startAngle: CGFloat(door.arcStartAngle), endAngle: CGFloat(door.arcEndAngle), clockwise: false)
+                ctx.strokePath()
+                ctx.setLineDash(phase: 0, lengths: [])
+            }
+            for extra in door.extraLines {
+                ctx.move(to: project(extra.a)); ctx.addLine(to: project(extra.b)); ctx.strokePath()
+            }
         }
 
         for window in layout.windows {

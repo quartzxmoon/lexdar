@@ -107,13 +107,21 @@ struct BlueprintView: View {
             panel.addLine(to: project(door.panelLine.b))
             context.stroke(panel, with: .color(.black), lineWidth: 1.2)
 
-            let center = project(door.arcCenter)
-            let radius = project(door.arcCenter + SIMD2<Float>(door.arcRadius, 0)).x - center.x
-            var arc = Path()
-            arc.addArc(center: center, radius: abs(radius),
-                       startAngle: .radians(Double(door.arcStartAngle)),
-                       endAngle: .radians(Double(door.arcEndAngle)), clockwise: false)
-            context.stroke(arc, with: .color(.black.opacity(0.6)), style: StrokeStyle(lineWidth: 0.8, dash: [3, 3]))
+            if door.drawsArc {
+                let center = project(door.arcCenter)
+                let radius = project(door.arcCenter + SIMD2<Float>(door.arcRadius, 0)).x - center.x
+                var arc = Path()
+                arc.addArc(center: center, radius: abs(radius),
+                           startAngle: .radians(Double(door.arcStartAngle)),
+                           endAngle: .radians(Double(door.arcEndAngle)), clockwise: false)
+                context.stroke(arc, with: .color(.black.opacity(0.6)), style: StrokeStyle(lineWidth: 0.8, dash: [3, 3]))
+            }
+            for extra in door.extraLines {
+                var path = Path()
+                path.move(to: project(extra.a))
+                path.addLine(to: project(extra.b))
+                context.stroke(path, with: .color(.black.opacity(0.8)), lineWidth: 1)
+            }
         }
 
         for window in layout.windows {

@@ -78,6 +78,7 @@ struct BlueprintEditorView: View {
     @State private var showOpeningSheet = false
     @State private var pendingOpeningWallID: UUID?
     @State private var pendingOpeningDistance: Float = 0
+    @State private var pendingOpeningStyle: OpeningStyle?
 
     @State private var selectedWallID: UUID?
     @State private var draggingEndpoint: (wallID: UUID, isStart: Bool)?
@@ -375,17 +376,35 @@ struct BlueprintEditorView: View {
         let proj = simd_dot(toPoint, nearest.direction)
         pendingOpeningWallID = nearest.id
         pendingOpeningDistance = max(0, min(nearest.lengthMeters, proj))
+        pendingOpeningStyle = OpeningStyle.options(for: tool.openingKind ?? .opening).first
         showOpeningSheet = true
     }
 
     @ViewBuilder
     private var openingSheet: some View {
         NavigationStack {
-            List(FloorPlanOpening.standardWidths(for: tool.openingKind ?? .opening), id: \.self) { width in
-                Button {
-                    confirmOpening(width: width)
-                } label: {
-                    Text(Self.feetInchesLabel(meters: width))
+            List {
+                let kind = tool.openingKind ?? .opening
+                let styles = OpeningStyle.options(for: kind)
+                if !styles.isEmpty {
+                    Section("Style") {
+                        Picker("Style", selection: $pendingOpeningStyle) {
+                            ForEach(styles) { style in
+                                Text(style.displayName).tag(Optional(style))
+                            }
+                        }
+                        .pickerStyle(.inline)
+                        .labelsHidden()
+                    }
+                }
+                Section("Width") {
+                    ForEach(FloorPlanOpening.standardWidths(for: kind), id: \.self) { width in
+                        Button {
+                            confirmOpening(width: width)
+                        } label: {
+                            Text(Self.feetInchesLabel(meters: width))
+                        }
+                    }
                 }
             }
             .navigationTitle("\((tool.openingKind ?? .opening).displayName) Width")
@@ -469,7 +488,8 @@ struct BlueprintEditorView: View {
         guard let wallID = pendingOpeningWallID else { return }
         pushUndo()
         floorPlan.openings.append(FloorPlanOpening(wallID: wallID, kind: tool.openingKind ?? .opening,
-                                                     distanceFromWallStart: pendingOpeningDistance, width: width))
+                                                     distanceFromWallStart: pendingOpeningDistance, width: width,
+                                                     style: pendingOpeningStyle))
         persist()
     }
 

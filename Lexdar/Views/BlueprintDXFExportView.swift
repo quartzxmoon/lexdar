@@ -94,15 +94,20 @@ enum BlueprintDXFExporter {
 
         for door in layout.doors {
             line(door.panelLine.a, door.panelLine.b, layer: "DOORS")
-            emit(0, "ARC")
-            emit(8, "DOORS")
-            emitPoint(door.arcCenter, codeX: 10, codeY: 20)
-            emit(30, "0.0")
-            emit(40, String(format: "%.4f", door.arcRadius))
-            let startDeg = door.arcStartAngle * 180 / .pi
-            let endDeg = door.arcEndAngle * 180 / .pi
-            emit(50, String(format: "%.2f", min(startDeg, endDeg)))
-            emit(51, String(format: "%.2f", max(startDeg, endDeg)))
+            for extra in door.extraLines {
+                line(extra.a, extra.b, layer: "DOORS")
+            }
+            if door.drawsArc {
+                emit(0, "ARC")
+                emit(8, "DOORS")
+                emitPoint(door.arcCenter, codeX: 10, codeY: 20)
+                emit(30, "0.0")
+                emit(40, String(format: "%.4f", door.arcRadius))
+                let startDeg = door.arcStartAngle * 180 / .pi
+                let endDeg = door.arcEndAngle * 180 / .pi
+                emit(50, String(format: "%.2f", min(startDeg, endDeg)))
+                emit(51, String(format: "%.2f", max(startDeg, endDeg)))
+            }
         }
 
         for window in layout.windows {

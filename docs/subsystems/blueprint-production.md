@@ -24,7 +24,7 @@ sources:
   - code: Lexdar/Views/FloorPlanIFCExport.swift
   - code: Lexdar/Views/ModelExportView.swift
   - code: Lexdar/Views/BlueprintPDFExportView.swift
-verified_at: 4dd2154
+verified_at: d070fbe
 ---
 
 A second, parallel subsystem to [[scan-to-renovation-flow]]'s
@@ -272,6 +272,20 @@ gaps, closed with original code:
 > ⚠️ XYZ is the corner points of the modeled walls and floors. RoomPlan
 > returns parametric surfaces, not a sampled point cloud, so this is not
 > comparable to a real scanner's point cloud.
+
+## Door and window styles
+
+`FloorPlanOpening.style` (`OpeningStyle`) selects single / double / sliding /
+pocket doors and casement / double-hung / fixed windows. The editor's width
+sheet has a style picker. `BlueprintLayout` turns each style into the same
+`DoorSymbol` / `WindowSymbol` shapes (extra leaves and arc polylines in
+`extraLines`, `drawsArc` off for sliding and pocket), so the on-screen view,
+PDF, and DXF stay in step without per-style code in each renderer.
+
+> ⚠️ `style` is optional on purpose: plans saved before styles existed lack
+> the key and must keep decoding, and `nil` draws the original single-swing
+> door / plain two-line window. Styles are drawn symbols only; the 3D view,
+> IFC, and mesh exports still model every door and window as the same cut-out.
 
 ## Explicitly not built (checked against RoomScan Pro LiDAR, scope cut on purpose)
 

@@ -29,6 +29,10 @@ struct BlueprintLayout {
         var arcStartAngle: Float
         var arcEndAngle: Float
         var gapInWall: Segment
+        /// False for sliding / pocket doors, which have no swing arc.
+        var drawsArc: Bool = true
+        /// Extra leaves, retracted panels, and polyline arcs.
+        var extraLines: [Segment] = []
     }
 
     struct WindowSymbol {
@@ -52,6 +56,80 @@ struct BlueprintLayout {
     /// Plan-space bounding box in meters, padded for dimension lines and
     /// labels drawn outside the building outline.
     var bounds: CGRect = .zero
+
+    private static func arcPolyline(center: SIMD2<Float>, radius: Float, from a0: Float, to a1: Float) -> [Segment] {
+        var delta = a1 - a0
+        while delta > .pi { delta -= 2 * .pi }
+        while delta < -.pi { delta += 2 * .pi }
+        let steps = 8
+        var pts: [SIMD2<Float>] = []
+        for i in 0...steps {
+            let a = a0 + delta * Float(i) / Float(steps)
+            pts.append(center + SIMD2<Float>(cos(a), sin(a)) * radius)
+        }
+        return (0..<steps).map { Segment(a: pts[$0], b: pts[$0 + 1]) }
+    }
+
+    private static func doorSymbol(wall: FloorPlanWall, opening: FloorPlanOpening,
+                                    p1: SIMD2<Float>, p2: SIMD2<Float>, gap: Segment) -> DoorSymbol {
+        let openDirection = opening.swingsTowardNormal ? wall.normal : -wall.normal
+        let wallAngle = atan2(wall.direction.y, wall.direction.x)
+        let openAngle = atan2(openDirection.y, openDirection.x)
+        switch opening.style ?? .single {
+        case .double:
+            let leaf = opening.width / 2
+            var symbol = DoorSymbol(
+                panelLine: Segment(a: p1, b: p1 + openDirection * leaf),
+                arcCenter: p1, arcRadius: leaf,
+                arcStartAngle: wallAngle, arcEndAngle: openAngle, gapInWall: gap)
+            symbol.extraLines = [Segment(a: p2, b: p2 + openDirection * leaf)]
+                + arcPolyline(center: p2, radius: leaf, from: atan2(-wall.direction.y, -wall.direction.x), to: openAngle)
+            return symbol
+        case .sliding:
+            let n = wall.normal * (wall.thickness / 4)
+            let mid = (p1 + p2) / 2
+            let overlap = wall.direction * 0.05
+            var symbol = DoorSymbol(
+                panelLine: Segment(a: p1 + n, b: mid + overlap + n),
+                arcCenter: p1, arcRadius: 0, arcStartAngle: 0, arcEndAngle: 0, gapInWall: gap)
+            symbol.drawsArc = false
+            symbol.extraLines = [Segment(a: mid - overlap - n, b: p2 - n)]
+            return symbol
+        case .pocket:
+            var symbol = DoorSymbol(
+                panelLine: Segment(a: p1, b: p2),
+                arcCenter: p1, arcRadius: 0, arcStartAngle: 0, arcEndAngle: 0, gapInWall: gap)
+            symbol.drawsArc = false
+            symbol.extraLines = [Segment(a: p2, b: p2 + wall.direction * opening.width)]
+            return symbol
+        default:
+            return DoorSymbol(
+                panelLine: Segment(a: p1, b: p1 + openDirection * opening.width),
+                arcCenter: p1, arcRadius: opening.width,
+                arcStartAngle: wallAngle, arcEndAngle: openAngle, gapInWall: gap)
+        }
+    }
+
+    private static func windowSymbol(wall: FloorPlanWall, opening: FloorPlanOpening,
+                                      p1: SIMD2<Float>, p2: SIMD2<Float>, gap: Segment) -> WindowSymbol {
+        let n = wall.normal * (wall.thickness / 2 + 0.03)
+        var lines = [Segment(a: p1 + n, b: p2 + n), Segment(a: p1 - n, b: p2 - n)]
+        let mid = (p1 + p2) / 2
+        switch opening.style {
+        case .casement:
+            lines.append(Segment(a: p1, b: p2))
+            lines.append(Segment(a: mid + n, b: mid - n))
+        case .doubleHung:
+            lines.append(Segment(a: p1 + n / 3, b: p2 + n / 3))
+            lines.append(Segment(a: p1 - n / 3, b: p2 - n / 3))
+        case .fixed:
+            lines.append(Segment(a: p1 + n, b: p2 - n))
+            lines.append(Segment(a: p1 - n, b: p2 + n))
+        default:
+            break
+        }
+        return WindowSymbol(gapInWall: gap, sillLines: lines)
+    }
 
     static func build(from plan: FloorPlan, dimensionOffset: Float = 0.5) -> BlueprintLayout {
         var layout = BlueprintLayout()
@@ -81,21 +159,9 @@ struct BlueprintLayout {
 
             switch opening.kind {
             case .door:
-                let hinge = p1
-                let openDirection = opening.swingsTowardNormal ? wall.normal : -wall.normal
-                let panelEnd = hinge + openDirection * opening.width
-                layout.doors.append(DoorSymbol(
-                    panelLine: Segment(a: hinge, b: panelEnd),
-                    arcCenter: hinge, arcRadius: opening.width,
-                    arcStartAngle: atan2(wall.direction.y, wall.direction.x),
-                    arcEndAngle: atan2(openDirection.y, openDirection.x),
-                    gapInWall: gap))
+                layout.doors.append(doorSymbol(wall: wall, opening: opening, p1: p1, p2: p2, gap: gap))
             case .window:
-                let n = wall.normal * (wall.thickness / 2 + 0.03)
-                layout.windows.append(WindowSymbol(gapInWall: gap, sillLines: [
-                    Segment(a: p1 + n, b: p2 + n),
-                    Segment(a: p1 - n, b: p2 - n),
-                ]))
+                layout.windows.append(windowSymbol(wall: wall, opening: opening, p1: p1, p2: p2, gap: gap))
             case .opening:
                 layout.plainOpenings.append(gap)
             }

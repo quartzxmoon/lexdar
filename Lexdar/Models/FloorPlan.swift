@@ -72,6 +72,35 @@ enum OpeningKind: String, Codable, CaseIterable, Identifiable {
     }
 }
 
+/// Drawing/construction style of a door or window. Optional on
+/// `FloorPlanOpening` so plans saved before styles existed still decode.
+enum OpeningStyle: String, Codable, CaseIterable, Identifiable {
+    case single, double, sliding, pocket          // doors
+    case casement, doubleHung, fixed              // windows
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .single: return "Single swing"
+        case .double: return "Double"
+        case .sliding: return "Sliding"
+        case .pocket: return "Pocket"
+        case .casement: return "Casement"
+        case .doubleHung: return "Double-hung"
+        case .fixed: return "Fixed / picture"
+        }
+    }
+
+    static func options(for kind: OpeningKind) -> [OpeningStyle] {
+        switch kind {
+        case .door: return [.single, .double, .sliding, .pocket]
+        case .window: return [.casement, .doubleHung, .fixed]
+        case .opening: return []
+        }
+    }
+}
+
 /// A door, window, or plain opening cut into exactly one wall.
 struct FloorPlanOpening: Identifiable, Codable, Hashable {
     let id: UUID
@@ -84,9 +113,11 @@ struct FloorPlanOpening: Identifiable, Codable, Hashable {
     /// Only meaningful for `.door`: which side of the wall (relative to its
     /// `normal`) the door swings open toward, for drawing the swing arc.
     var swingsTowardNormal: Bool
+    var style: OpeningStyle?
 
     init(id: UUID = UUID(), wallID: UUID, kind: OpeningKind, distanceFromWallStart: Float,
-         width: Float, swingsTowardNormal: Bool = true) {
+         width: Float, swingsTowardNormal: Bool = true, style: OpeningStyle? = nil) {
+        self.style = style
         self.id = id
         self.wallID = wallID
         self.kind = kind

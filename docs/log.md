@@ -197,3 +197,9 @@ Append-only. Newest entries at the bottom.
   IFC output prototyped in Python and validated with IfcOpenShell before the
   Swift port. Recorded SDK findings for SketchUp / Xactimate on
   [[blueprint-production]]. `verified_at: 4dd2154`.
+
+## [2026-11-03] feature | Door and window styles
+
+- Added `OpeningStyle`, style picker in the editor, and style-aware symbols in
+  `BlueprintLayout` (renderers only gained `drawsArc` / `extraLines`). Noted
+  on [[blueprint-production]]; `verified_at: d070fbe`.
