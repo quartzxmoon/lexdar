@@ -38,10 +38,19 @@ struct FloorPlanListView: View {
             .navigationTitle("Floor Plans")
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    NavigationLink {
-                        PropertySummaryView()
+                    Menu {
+                        NavigationLink {
+                            PropertySummaryView()
+                        } label: {
+                            Label("Property Summary", systemImage: "list.bullet.rectangle")
+                        }
+                        NavigationLink {
+                            LANSyncView()
+                        } label: {
+                            Label("Sync to Desktop", systemImage: "arrow.up.circle")
+                        }
                     } label: {
-                        Label("Property Summary", systemImage: "list.bullet.rectangle")
+                        Image(systemName: "ellipsis.circle")
                     }
                 }
                 ToolbarItem(placement: .primaryAction) {
@@ -143,7 +152,7 @@ struct FloorPlanDetailView: View {
                             Label("Export DXF (CAD)", systemImage: "square.and.arrow.up.on.square")
                         }
                         Button { showModelExport = true } label: {
-                            Label("Export IFC / OBJ / PLY / XYZ", systemImage: "cube")
+                            Label("Export IFC / OBJ / PLY / XYZ / CSV / JSON", systemImage: "cube")
                         }
                         Button { showPNGExport = true } label: {
                             Label("Export PNG Image", systemImage: "photo")

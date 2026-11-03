@@ -203,3 +203,13 @@ Append-only. Newest entries at the bottom.
 - Added `OpeningStyle`, style picker in the editor, and style-aware symbols in
   `BlueprintLayout` (renderers only gained `drawsArc` / `extraLines`). Noted
   on [[blueprint-production]]; `verified_at: d070fbe`.
+
+## [2026-11-03] feature | Stairs tool
+
+- Added `PlanStair`, the editor's Stairs tool, symbols in all three 2D
+  renderers, and 3D treads. Limits recorded on [[blueprint-production]].
+
+## [2026-11-03] feature | CSV / JSON export and LAN sync to a desktop receiver
+
+- Added `PlanScheduleExport`, `LANSyncView`, `tools/lexdar_receiver.py`, and
+  the local-network keys in Info.plist. Traps on [[blueprint-production]].

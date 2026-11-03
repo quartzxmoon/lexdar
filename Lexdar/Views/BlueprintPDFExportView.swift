@@ -202,6 +202,14 @@ struct BlueprintPDFRenderer {
             ctx.setLineWidth(4)
             ctx.move(to: project(opening.a)); ctx.addLine(to: project(opening.b)); ctx.strokePath()
         }
+
+        ctx.setStrokeColor(UIColor.black.cgColor)
+        ctx.setLineWidth(0.7)
+        for stair in layout.stairs {
+            for segment in stair.lines {
+                ctx.move(to: project(segment.a)); ctx.addLine(to: project(segment.b)); ctx.strokePath()
+            }
+        }
     }
 
     private func drawRooms(_ layout: BlueprintLayout, project: (SIMD2<Float>) -> CGPoint, ctx: CGContext) {

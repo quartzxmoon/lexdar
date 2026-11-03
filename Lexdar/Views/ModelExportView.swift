@@ -9,6 +9,8 @@ struct ModelExportView: View {
         case obj = "OBJ (mesh)"
         case ply = "PLY (mesh)"
         case xyz = "XYZ (vertices)"
+        case csv = "CSV (room, wall, opening schedule)"
+        case json = "JSON (full plan data)"
         var id: String { rawValue }
         var ext: String {
             switch self {
@@ -16,6 +18,8 @@ struct ModelExportView: View {
             case .obj: return "obj"
             case .ply: return "ply"
             case .xyz: return "xyz"
+            case .csv: return "csv"
+            case .json: return "json"
             }
         }
         var detail: String {
@@ -24,6 +28,8 @@ struct ModelExportView: View {
             case .obj: return "Triangle mesh in meters, Y up. SketchUp, Blender, and most 3D tools import it."
             case .ply: return "ASCII triangle mesh, meters, Y up."
             case .xyz: return "Corner points of the modeled walls and floors. Not a sampled scan point cloud."
+            case .csv: return "Rooms with areas, walls with lengths, openings, and stairs. Opens in Excel, Numbers, or Sheets for estimating."
+            case .json: return "The complete plan as structured data, for scripts and other software."
             }
         }
     }
@@ -49,7 +55,7 @@ struct ModelExportView: View {
                     }
                 }
             }
-            .navigationTitle("3D / BIM Export")
+            .navigationTitle("3D, BIM & Data Export")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -70,6 +76,8 @@ struct ModelExportView: View {
             case .obj: text = mesh.objText(name: base)
             case .ply: text = mesh.plyText()
             case .xyz: text = mesh.xyzText()
+            case .csv: text = PlanScheduleExport.csv(for: floorPlan)
+            case .json: text = PlanScheduleExport.json(for: floorPlan)
             }
             let url = FileManager.default.temporaryDirectory.appendingPathComponent("\(base).\(format.ext)")
             if (try? text.write(to: url, atomically: true, encoding: .utf8)) != nil {

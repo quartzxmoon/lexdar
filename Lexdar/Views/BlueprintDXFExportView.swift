@@ -61,10 +61,10 @@ enum BlueprintDXFExporter {
         emit(2, "TABLES")
         emit(0, "TABLE")
         emit(2, "LAYER")
-        emit(70, "7")
+        emit(70, "8")
         let layerDefs: [(name: String, aciColor: Int)] = [
             ("WALLS", 7), ("DOORS", 5), ("WINDOWS", 4), ("OPENINGS", 30),
-            ("ROOMS", 3), ("DIMENSIONS", 8), ("TEXT", 2),
+            ("ROOMS", 3), ("DIMENSIONS", 8), ("TEXT", 2), ("STAIRS", 6),
         ]
         for layer in layerDefs {
             emit(0, "LAYER")
@@ -118,6 +118,12 @@ enum BlueprintDXFExporter {
 
         for opening in layout.plainOpenings {
             line(opening.a, opening.b, layer: "OPENINGS")
+        }
+
+        for stair in layout.stairs {
+            for segment in stair.lines {
+                line(segment.a, segment.b, layer: "STAIRS")
+            }
         }
 
         for polygon in layout.roomPolygons where polygon.count >= 3 {

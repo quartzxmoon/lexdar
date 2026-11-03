@@ -23,6 +23,10 @@ enum FloorPlanSceneBuilder {
             root.addChildNode(wallNode(for: wall, openings: plan.openings(on: wall.id)))
         }
 
+        for stair in plan.stairList where stair.length > 0.1 {
+            root.addChildNode(stairNode(for: stair))
+        }
+
         let ambient = SCNNode()
         ambient.light = SCNLight()
         ambient.light?.type = .ambient
@@ -59,6 +63,30 @@ enum FloorPlanSceneBuilder {
             sun.light?.color = UIColor(red: 0.6, green: 0.65, blue: 0.9, alpha: 1)
             scene.background.contents = UIColor(red: 0.04, green: 0.04, blue: 0.1, alpha: 1)
         }
+    }
+
+    private static func stairNode(for stair: PlanStair) -> SCNNode {
+        let container = SCNNode()
+        container.name = "stair:\(stair.id.uuidString)"
+        let steps = max(stair.stepCount, 2)
+        let treadDepth = stair.length / Float(steps)
+        let riser: Float = 0.18
+        let d = (stair.end - stair.start) / stair.length
+        let angle = atan2(d.y, d.x)
+        let material = SCNMaterial()
+        material.diffuse.contents = UIColor(white: 0.7, alpha: 1)
+        for i in 0..<steps {
+            let height = riser * Float(i + 1)
+            let box = SCNBox(width: CGFloat(treadDepth), height: CGFloat(height),
+                              length: CGFloat(stair.width), chamferRadius: 0)
+            box.materials = [material]
+            let node = SCNNode(geometry: box)
+            let center = stair.start + d * (treadDepth * (Float(i) + 0.5))
+            node.position = SCNVector3(center.x, height / 2, center.y)
+            node.eulerAngles = SCNVector3(0, -angle, 0)
+            container.addChildNode(node)
+        }
+        return container
     }
 
     private static func floorNode(for room: FloorPlanRoom) -> SCNNode {

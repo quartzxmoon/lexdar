@@ -24,7 +24,7 @@ sources:
   - code: Lexdar/Views/FloorPlanIFCExport.swift
   - code: Lexdar/Views/ModelExportView.swift
   - code: Lexdar/Views/BlueprintPDFExportView.swift
-verified_at: d070fbe
+verified_at: 432a557
 ---
 
 A second, parallel subsystem to [[scan-to-renovation-flow]]'s
@@ -286,6 +286,39 @@ PDF, and DXF stay in step without per-style code in each renderer.
 > the key and must keep decoding, and `nil` draws the original single-swing
 > door / plain two-line window. Styles are drawn symbols only; the 3D view,
 > IFC, and mesh exports still model every door and window as the same cut-out.
+
+## Stairs
+
+`PlanStair` (start, end, width, step count) is drawn with the editor's Stairs
+tool: drag from the bottom step to the top step and the step count is
+suggested from an 11 in tread. `BlueprintLayout.stairSymbol` emits plain line
+segments (outline, treads, up-arrow) that the screen, PDF, and DXF (own
+`STAIRS` layer) renderers draw with one loop; `FloorPlanSceneBuilder` stacks
+box treads for the 3D and AR views.
+
+> ⚠️ `FloorPlan.stairs` is optional so older saved plans keep decoding; read
+> it through `stairList`. There is no delete-stair control yet (use undo), and
+> the IFC and mesh exports do not include stairs.
+
+## Data export and desktop sync
+
+- `PlanScheduleExport` writes a CSV (rooms with areas, walls with lengths and
+  wall area, openings, stairs) and a JSON dump of the whole plan; both are
+  listed in `ModelExportView`.
+- `LANSyncView` POSTs each plan's JSON to `tools/lexdar_receiver.py`, a
+  standard-library Python server that saves them under `received/`. The app
+  remembers the address and shared token with `@AppStorage`.
+
+> ⚠️ Sync is plain HTTP, allowed only for local addresses by
+> `NSAllowsLocalNetworking` in `Lexdar/Info.plist`; a public address or HTTPS
+> endpoint is a different ATS question. iOS asks for Local Network permission
+> on first use (`NSLocalNetworkUsageDescription`); if it was denied the send
+> fails with a generic connection error until it is re-enabled in Settings.
+> The token is stored in `UserDefaults` (not the Keychain) and is only a
+> guard against other devices on the same network. Sync is one-way, app to
+> computer, and sends plan JSON only (not photos or Pencil markup).
+> The receiver was tested locally with curl (good token, bad token, bad JSON);
+> the app side has been compile-checked only.
 
 ## Explicitly not built (checked against RoomScan Pro LiDAR, scope cut on purpose)
 

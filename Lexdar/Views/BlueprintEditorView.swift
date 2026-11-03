@@ -6,7 +6,7 @@ import simd
 /// with a finger or Apple Pencil — SwiftUI's gestures don't distinguish
 /// the two, so no Pencil-specific code is needed for precise placement.
 enum BlueprintTool: String, CaseIterable, Identifiable {
-    case wall, door, window, opening, room, note, select
+    case wall, door, window, opening, stairs, room, note, select
 
     var id: String { rawValue }
 
@@ -16,6 +16,7 @@ enum BlueprintTool: String, CaseIterable, Identifiable {
         case .door: return "Door"
         case .window: return "Window"
         case .opening: return "Opening"
+        case .stairs: return "Stairs"
         case .room: return "Room"
         case .note: return "Note"
         case .select: return "Select"
@@ -28,6 +29,7 @@ enum BlueprintTool: String, CaseIterable, Identifiable {
         case .door: return "door.left.hand.open"
         case .window: return "windshield.front.and.wiper.intermittent"
         case .opening: return "rectangle.portrait.and.arrow.right"
+        case .stairs: return "stairs"
         case .room: return "square.dashed"
         case .note: return "camera.badge.ellipsis"
         case .select: return "hand.point.up.left.fill"
@@ -256,7 +258,7 @@ struct BlueprintEditorView: View {
         DragGesture(minimumDistance: 2)
             .onChanged { value in
                 switch tool {
-                case .wall:
+                case .wall, .stairs:
                     let start = wallDragStart ?? snapPoint(screenToPlan(value.startLocation, canvasSize: canvasSize))
                     wallDragStart = start
                     let raw = screenToPlan(value.location, canvasSize: canvasSize)
@@ -280,6 +282,15 @@ struct BlueprintEditorView: View {
                     wallLengthFeet = "\(feet)"
                     wallLengthInches = "\(inches)"
                     showWallLengthConfirm = true
+                case .stairs:
+                    defer { wallDragStart = nil; wallDragCurrent = nil }
+                    guard let start = wallDragStart, let end = wallDragCurrent,
+                          simd_length(end - start) > 0.5 else { return }
+                    pushUndo()
+                    var stairs = floorPlan.stairs ?? []
+                    stairs.append(PlanStair(start: start, end: end))
+                    floorPlan.stairs = stairs
+                    persist()
                 case .select:
                     if draggingEndpoint != nil { persist() }
                     draggingEndpoint = nil
@@ -302,7 +313,7 @@ struct BlueprintEditorView: View {
                     placeOrEditAnnotation(at: point)
                 case .select:
                     selectNearestWall(at: point)
-                case .wall:
+                case .wall, .stairs:
                     break
                 }
             }

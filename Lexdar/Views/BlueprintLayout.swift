@@ -40,6 +40,12 @@ struct BlueprintLayout {
         var sillLines: [Segment]
     }
 
+    /// Outline, tread lines, and an up-arrow, as plain line segments so every
+    /// renderer (screen, PDF, DXF) draws them with one loop.
+    struct StairSymbol {
+        var lines: [Segment]
+    }
+
     struct RoomLabel {
         var name: String
         var areaLabel: String
@@ -51,6 +57,7 @@ struct BlueprintLayout {
     var doors: [DoorSymbol] = []
     var windows: [WindowSymbol] = []
     var plainOpenings: [Segment] = []
+    var stairs: [StairSymbol] = []
     var roomLabels: [RoomLabel] = []
     var roomPolygons: [[SIMD2<Float>]] = []
     /// Plan-space bounding box in meters, padded for dimension lines and
@@ -131,6 +138,25 @@ struct BlueprintLayout {
         return WindowSymbol(gapInWall: gap, sillLines: lines)
     }
 
+    private static func stairSymbol(_ stair: PlanStair) -> StairSymbol {
+        let d = (stair.end - stair.start) / stair.length
+        let n = SIMD2<Float>(-d.y, d.x) * (stair.width / 2)
+        let a = stair.start - n, b = stair.start + n, c = stair.end + n, e = stair.end - n
+        var lines = [Segment(a: a, b: b), Segment(a: b, b: c), Segment(a: c, b: e), Segment(a: e, b: a)]
+        let steps = max(stair.stepCount, 2)
+        for i in 1..<steps {
+            let p = stair.start + d * (stair.length * Float(i) / Float(steps))
+            lines.append(Segment(a: p - n, b: p + n))
+        }
+        let tail = stair.start + d * (stair.length * 0.1)
+        let tip = stair.start + d * (stair.length * 0.9)
+        let head = stair.width * 0.2
+        lines.append(Segment(a: tail, b: tip))
+        lines.append(Segment(a: tip, b: tip - d * head + SIMD2<Float>(-d.y, d.x) * head))
+        lines.append(Segment(a: tip, b: tip - d * head - SIMD2<Float>(-d.y, d.x) * head))
+        return StairSymbol(lines: lines)
+    }
+
     static func build(from plan: FloorPlan, dimensionOffset: Float = 0.5) -> BlueprintLayout {
         var layout = BlueprintLayout()
 
@@ -165,6 +191,10 @@ struct BlueprintLayout {
             case .opening:
                 layout.plainOpenings.append(gap)
             }
+        }
+
+        for stair in plan.stairList where stair.length > 0.1 {
+            layout.stairs.append(stairSymbol(stair))
         }
 
         for room in plan.rooms where room.polygon.count >= 3 {

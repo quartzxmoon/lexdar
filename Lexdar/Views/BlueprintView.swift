@@ -143,6 +143,15 @@ struct BlueprintView: View {
             gap.addLine(to: project(opening.b))
             context.stroke(gap, with: .color(.white), lineWidth: 5)
         }
+
+        for stair in layout.stairs {
+            for segment in stair.lines {
+                var path = Path()
+                path.move(to: project(segment.a))
+                path.addLine(to: project(segment.b))
+                context.stroke(path, with: .color(.black.opacity(0.85)), lineWidth: 0.9)
+            }
+        }
     }
 
     private func drawRooms(_ layout: BlueprintLayout, project: (SIMD2<Float>) -> CGPoint,

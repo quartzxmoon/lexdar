@@ -204,6 +204,30 @@ struct PlanAnnotation: Identifiable, Codable, Hashable {
     }
 }
 
+/// A straight staircase run drawn from its bottom step (`start`) to its top
+/// step (`end`). Treads are evenly spaced along that line.
+struct PlanStair: Identifiable, Codable, Hashable {
+    let id: UUID
+    var start: SIMD2<Float>
+    var end: SIMD2<Float>
+    var width: Float
+    var stepCount: Int
+
+    /// Typical residential tread depth (~11 in), used to suggest a step count.
+    static let typicalTreadDepth: Float = 0.28
+
+    init(id: UUID = UUID(), start: SIMD2<Float>, end: SIMD2<Float>, width: Float = 0.9144, stepCount: Int? = nil) {
+        self.id = id
+        self.start = start
+        self.end = end
+        self.width = width
+        let length = simd_length(end - start)
+        self.stepCount = stepCount ?? max(2, Int((length / PlanStair.typicalTreadDepth).rounded()))
+    }
+
+    var length: Float { simd_length(end - start) }
+}
+
 /// A complete floor plan: one level's worth of walls, openings, and room
 /// boundaries, at a known real-world scale. This is the thing contractor-
 /// grade blueprints are rendered from (see `BlueprintView` /
@@ -227,6 +251,8 @@ struct FloorPlan: Identifiable, Codable, Hashable {
     var propertyName: String?
     /// 0 = ground floor, 1 = first floor, -1 = basement, etc.
     var floorLevel: Int?
+    /// Optional so plans saved before stairs existed still decode.
+    var stairs: [PlanStair]?
 
     init(id: UUID = UUID(), name: String, source: FloorPlanSource,
          walls: [FloorPlanWall] = [], openings: [FloorPlanOpening] = [],
@@ -242,6 +268,8 @@ struct FloorPlan: Identifiable, Codable, Hashable {
         self.annotations = annotations
         self.notes = notes
     }
+
+    var stairList: [PlanStair] { stairs ?? [] }
 
     var scanID: UUID? {
         if case .lidarScan(let scanID) = source { return scanID }

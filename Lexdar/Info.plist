@@ -24,6 +24,13 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Lexdar uses the camera and LiDAR scanner to capture a 3D model and floor plan of your room.</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Lexdar sends your floor plans to a computer on your own network when you choose Sync to Desktop.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
