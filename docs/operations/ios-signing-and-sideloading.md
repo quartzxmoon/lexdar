@@ -12,7 +12,10 @@ verified_at: acf5af3
 
 No Mac is required to get `Lexdar` onto an iPad: Xcode itself only runs on
 macOS, but a GitHub Actions **macOS runner** can build and sign the app for
-you, and a Windows tool can install the resulting `.ipa` over USB. Every
+you, and a Windows tool can install the resulting `.ipa` over USB. This
+covers the whole app as it grows — the blueprint production subsystem
+(see [[blueprint-production]]) added no new frameworks or build steps, so
+nothing here changes when that code changes. Every
 step below runs from the Apple Developer *website* and OpenSSL — neither
 needs Xcode or Keychain Access.
 
