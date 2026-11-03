@@ -401,6 +401,19 @@ struct BlueprintEditorView: View {
     @ViewBuilder
     private var annotationSheet: some View {
         NavigationStack {
+            // Resolved here, in the MainActor-isolated body, rather than
+            // inside PhotosPicker's label closure below -- that closure
+            // isn't guaranteed MainActor-isolated under Swift 6's strict
+            // concurrency checking, and ScanStore (and so photoURL) is
+            // @MainActor. Capturing the already-resolved URL as a plain
+            // value sidesteps the actor-isolation call entirely.
+            let existingPhotoURL: URL? = {
+                guard let editingID = editingAnnotationID,
+                      let existing = floorPlan.annotations.first(where: { $0.id == editingID }),
+                      let filename = existing.photoFilename else { return nil }
+                return store.photoURL(filename: filename, for: floorPlan)
+            }()
+
             Form {
                 Section("Photo") {
                     PhotosPicker(selection: $annotationPhotoItem, matching: .images) {
@@ -409,10 +422,8 @@ struct BlueprintEditorView: View {
                                 .resizable()
                                 .scaledToFit()
                                 .frame(maxHeight: 180)
-                        } else if let editingID = editingAnnotationID,
-                                  let existing = floorPlan.annotations.first(where: { $0.id == editingID }),
-                                  let filename = existing.photoFilename {
-                            AsyncImage(url: store.photoURL(filename: filename, for: floorPlan)) { image in
+                        } else if let existingPhotoURL {
+                            AsyncImage(url: existingPhotoURL) { image in
                                 image.resizable().scaledToFit()
                             } placeholder: {
                                 ProgressView()
