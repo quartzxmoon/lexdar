@@ -57,6 +57,21 @@ struct ScanDetailView: View {
                 FloorPlanView(room: room)
                     .frame(height: 320)
                     .listRowInsets(EdgeInsets())
+
+                let generated = store.floorPlans(for: project.id)
+                if let plan = generated.first {
+                    NavigationLink {
+                        FloorPlanDetailView(floorPlan: plan)
+                    } label: {
+                        Label("Blueprint: \(plan.name)", systemImage: "pencil.and.ruler")
+                    }
+                } else {
+                    Button {
+                        _ = store.generateFloorPlan(from: project)
+                    } label: {
+                        Label("Generate Contractor-Grade Floor Plan", systemImage: "pencil.and.ruler")
+                    }
+                }
             }
 
             Section("Renovation Plans") {

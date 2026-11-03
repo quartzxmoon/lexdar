@@ -6,8 +6,13 @@ struct LexdarApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ScanListView()
-                .environmentObject(store)
+            TabView {
+                ScanListView()
+                    .tabItem { Label("Scans", systemImage: "camera.viewfinder") }
+                FloorPlanListView()
+                    .tabItem { Label("Floor Plans", systemImage: "pencil.and.ruler") }
+            }
+            .environmentObject(store)
         }
     }
 }

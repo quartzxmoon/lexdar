@@ -3,23 +3,37 @@ import Foundation
 import RoomPlan
 #endif
 
-/// Owns all on-disk persistence for scans and their renovation plans.
+/// Owns all on-disk persistence for scans, their renovation plans, and
+/// floor plans (LiDAR-generated or hand-drawn).
 ///
 /// Layout on disk:
 ///   Documents/Scans/<scanID>/metadata.json
 ///   Documents/Scans/<scanID>/room.json        (CapturedRoom, JSON)
 ///   Documents/Scans/<scanID>/model.usdz        (exported 3D model)
 ///   Documents/Scans/<scanID>/Plans/<planID>.json
+///   Documents/FloorPlans/<floorPlanID>.json     (FloorPlan, JSON --
+///     top-level, not nested under a scan, since a hand-drawn FloorPlan
+///     need not come from any scan at all)
 @MainActor
 final class ScanStore: ObservableObject {
     @Published private(set) var projects: [ScanProject] = []
     @Published private(set) var plans: [UUID: [RenovationPlan]] = [:] // keyed by scanID
+    @Published private(set) var floorPlans: [FloorPlan] = []
 
     private let fileManager = FileManager.default
 
     private var rootDirectory: URL {
         let docs = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let root = docs.appendingPathComponent("Scans", isDirectory: true)
+        if !fileManager.fileExists(atPath: root.path) {
+            try? fileManager.createDirectory(at: root, withIntermediateDirectories: true)
+        }
+        return root
+    }
+
+    private var floorPlansDirectory: URL {
+        let docs = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let root = docs.appendingPathComponent("FloorPlans", isDirectory: true)
         if !fileManager.fileExists(atPath: root.path) {
             try? fileManager.createDirectory(at: root, withIntermediateDirectories: true)
         }
@@ -82,6 +96,16 @@ final class ScanStore: ObservableObject {
 
         projects = loaded.sorted { $0.createdAt > $1.createdAt }
         plans = loadedPlans
+
+        let floorPlanFiles = (try? fileManager.contentsOfDirectory(at: floorPlansDirectory, includingPropertiesForKeys: nil)) ?? []
+        var loadedFloorPlans: [FloorPlan] = []
+        for file in floorPlanFiles where file.pathExtension == "json" {
+            if let data = try? Data(contentsOf: file),
+               let plan = try? JSONDecoder().decode(FloorPlan.self, from: data) {
+                loadedFloorPlans.append(plan)
+            }
+        }
+        floorPlans = loadedFloorPlans.sorted { $0.updatedAt > $1.updatedAt }
     }
 
     // MARK: - Scans
@@ -159,6 +183,56 @@ final class ScanStore: ObservableObject {
 
     func deletePlan(_ plan: RenovationPlan) {
         try? fileManager.removeItem(at: planURL(scanID: plan.scanID, planID: plan.id))
+        reload()
+    }
+
+    // MARK: - Floor plans (LiDAR-generated or hand-drawn)
+
+    private func floorPlanURL(_ floorPlan: FloorPlan) -> URL {
+        floorPlansDirectory.appendingPathComponent("\(floorPlan.id.uuidString).json")
+    }
+
+    func floorPlans(for scanID: UUID) -> [FloorPlan] {
+        floorPlans.filter { $0.scanID == scanID }
+    }
+
+    /// Hand-drawn floor plans with no originating scan -- documenting a
+    /// space that was never LiDAR-scanned, or a renovation concept sketched
+    /// before ever scanning the real room.
+    var handDrawnFloorPlans: [FloorPlan] {
+        floorPlans.filter { $0.scanID == nil }
+    }
+
+    func createHandDrawnFloorPlan(name: String) -> FloorPlan {
+        let plan = FloorPlan(name: name, source: .handDrawn)
+        save(plan)
+        return plan
+    }
+
+    #if canImport(RoomPlan)
+    /// Generates a new `FloorPlan` from a scan's `CapturedRoom`. Creates a
+    /// fresh plan every call (rather than overwriting) so re-generating
+    /// after a re-scan doesn't silently discard hand-corrections made to a
+    /// previous generation -- the user deletes the old one explicitly if
+    /// they want it gone.
+    func generateFloorPlan(from project: ScanProject) -> FloorPlan? {
+        guard let room = loadRoom(for: project) else { return nil }
+        let plan = RoomPlanImporter.makeFloorPlan(from: room, scanID: project.id, name: project.name)
+        save(plan)
+        return plan
+    }
+    #endif
+
+    func save(_ floorPlan: FloorPlan) {
+        var toSave = floorPlan
+        toSave.touch()
+        guard let data = try? JSONEncoder().encode(toSave) else { return }
+        try? data.write(to: floorPlanURL(toSave))
+        reload()
+    }
+
+    func deleteFloorPlan(_ floorPlan: FloorPlan) {
+        try? fileManager.removeItem(at: floorPlanURL(floorPlan))
         reload()
     }
 }

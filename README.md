@@ -92,6 +92,30 @@ open Lexdar.xcodeproj
   listing floor area, walls removed, material changes, and a full itemized
   furnish/fixture list with dimensions — shareable via the system share
   sheet (AirDrop, Mail, Files, print, hand to a contractor, etc.).
+- **Contractor-grade blueprints, from a scan or drawn by hand** — a
+  second, independent floor-plan pipeline (see
+  [`docs/subsystems/blueprint-production.md`](docs/subsystems/blueprint-production.md)
+  for the full design):
+  - `Models/FloorPlan.swift` — an app-owned wall/door/window/room model,
+    separate from `CapturedRoom` (which has no public initializer and so
+    can never be built from a hand-drawn sketch).
+  - `Scanning/RoomPlanImporter.swift` — converts a LiDAR scan's
+    `CapturedRoom` into a `FloorPlan`.
+  - `Views/BlueprintEditorView.swift` — precision drafting by hand (finger
+    or Apple Pencil): drag to place grid- and angle-snapped walls with an
+    editable exact-length confirm, tap a wall to drop a door/window/
+    opening, trace room boundaries, drag existing endpoints to correct
+    them (connected corners move together). Works on a LiDAR-generated
+    plan too, for hand-correcting a wall RoomPlan judged wrong.
+  - `Views/BlueprintView.swift` + `Views/BlueprintLayout.swift` — the
+    formal dimensioned drawing: walls at real thickness, dimension lines
+    with extension lines, door swing arcs, window break symbols, room
+    name + square-footage labels, a scale bar, a plan-north arrow.
+  - `Views/BlueprintPDFExportView.swift` — exports that same drawing as a
+    true-to-scale vector PDF (1/4" = 1'-0" when it fits the page, falling
+    back through smaller standard scales, or an explicitly-labeled "NOT TO
+    SCALE" fit) with a title block and a plain-language disclaimer that
+    it's a planning drawing, not a stamped/permit-ready document.
 
 ## Project layout
 
@@ -154,5 +178,13 @@ that permits this use) — this scaffold intentionally ships with zero bundled
   two pages). Natural next step: render the 2D floor plan itself into the
   PDF alongside the text.
 - No cloud sync/backup — everything lives in the app's local
-  `Documents/Scans/` folder. Consider adding iCloud Drive or a Files
-  document-based flow if you want scans to follow you across devices.
+  `Documents/Scans/`/`Documents/FloorPlans/` folders. Consider adding
+  iCloud Drive or a Files document-based flow if you want scans/plans to
+  follow you across devices.
+- Blueprints are a **planning aid, not a stamped or survey-grade
+  document** — LiDAR dimensional accuracy is typically within a few
+  centimeters, and hand-drawn plans are only as accurate as the person
+  drawing them. The exported PDF says so in its title block; don't remove
+  that language without an actual licensed review process behind it. No
+  true-north calibration exists either — the north arrow is the
+  conventional "plan north" placeholder, not a compass reading.
