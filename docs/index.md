@@ -8,7 +8,8 @@ repository. The rules are in [`CLAUDE.md`](CLAUDE.md).
 ## Start here
 
 1. [[scan-to-renovation-flow]] -- the whole scan -> plan -> edit -> export pipeline
-2. [[ios-signing-and-sideloading]] -- building and installing the app with no Mac
+2. [[blueprint-production]] -- hand-drawn / LiDAR contractor-grade blueprints
+3. [[ios-signing-and-sideloading]] -- building and installing the app with no Mac
 
 ---
 
@@ -24,7 +25,8 @@ repository. The rules are in [`CLAUDE.md`](CLAUDE.md).
 
 ## subsystems
 
-<!-- TODO: pages under Per-subsystem implementation. `- [[page-name]] -- one line` -->
+- [[blueprint-production]] -- hand-drawn + LiDAR-generated contractor-grade
+  blueprints, built on an app-owned `FloorPlan` model independent of `CapturedRoom`
 
 ## decisions
 

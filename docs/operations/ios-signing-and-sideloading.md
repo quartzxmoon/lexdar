@@ -7,7 +7,7 @@ sources:
   - code: .github/workflows/build-ios.yml
   - code: README.md
   - ext: https://developer.apple.com/account
-verified_at: 4701aea
+verified_at: acf5af3
 ---
 
 No Mac is required to get `Lexdar` onto an iPad: Xcode itself only runs on

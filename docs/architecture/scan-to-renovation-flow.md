@@ -17,7 +17,7 @@ sources:
   - code: Lexdar/Views/FloorPlanView.swift
   - code: Lexdar/Views/RenovationSummaryView.swift
   - code: Lexdar.xcodeproj/project.pbxproj
-verified_at: b99e638
+verified_at: acf5af3
 ---
 
 One LiDAR scan (`ScanProject`) can carry many independent renovation ideas
@@ -83,6 +83,13 @@ is reserved for swapping in real `.usdz` models later (see README).
 > cannot be found" — this broke the very first CI run. If the project ever
 > needs more files added by hand-editing the `.pbxproj` rather than through
 > Xcode, check this rule again.
+>
+> Also: the generator assigns a fresh random target id on every run, so
+> `Lexdar.xcodeproj/xcshareddata/xcschemes/Lexdar.xcscheme`'s
+> `BlueprintIdentifier` references go stale each regeneration and must be
+> `sed`'d to the new id (printed by the generator script) — missed once
+> already, caught before commit both times since the scheme simply
+> wouldn't resolve. Do this every time the generator is re-run.
 
 > ⚠️ `RoomCaptureViewDelegate` inherits from `NSCoding` (confirmed on
 > Apple's own doc page for the protocol — easy to miss since it's an

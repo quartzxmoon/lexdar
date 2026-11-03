@@ -43,3 +43,18 @@ Append-only. Newest entries at the bottom.
   now-honest failure (post-pipefail-fix) caught it. Added a minimal
   `init?(coder:)`/`encode(with:)` pair to `RoomCaptureCoordinator`. Documented
   as a trap on [[scan-to-renovation-flow]]; `verified_at: b99e638`.
+
+## [2026-11-03] grow | contractor-grade blueprint production
+
+- Added a second, parallel subsystem alongside the RoomPlan/SceneKit renovation
+  pipeline: [[blueprint-production]] -- an app-owned `FloorPlan` model (since
+  `CapturedRoom` has no public initializer and can't be hand-built), a LiDAR
+  importer, a hand-drawing editor (grid/angle-snapped precision drafting, works
+  with touch or Apple Pencil), a shared dimensioning layout, and two renderers
+  (on-screen SwiftUI Canvas + a true-to-scale PDF exporter).
+- New TabView root (Scans / Floor Plans) wires it into the app.
+- Regenerated `project.pbxproj` for the 7 new files; updated
+  [[scan-to-renovation-flow]] (pbxproj/scheme-id trap, now also covers
+  `ScanStore.swift`'s new floor-plan persistence) and
+  [[ios-signing-and-sideloading]] (README additions). All three pages'
+  `verified_at` moved to `acf5af3`.
