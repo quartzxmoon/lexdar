@@ -13,7 +13,9 @@ sources:
   - code: Lexdar/Views/FloorPlanListView.swift
   - code: Lexdar/LexdarApp.swift
   - code: Lexdar/Views/ScanDetailView.swift
-verified_at: acf5af3
+  - code: Lexdar/Scanning/FloorPlanSceneBuilder.swift
+  - code: Lexdar/Views/FloorPlan3DPreviewView.swift
+verified_at: edf889d
 ---
 
 A second, parallel subsystem to [[scan-to-renovation-flow]]'s
@@ -99,6 +101,35 @@ This keeps the dimensioning math in one place; only the "draw a line" /
 > calibration would mean capturing a heading via `CLLocationManager` at
 > scan/draw time and storing it, which this pass deliberately left out of
 > scope (see `FloorPlan` — no `northAngleRadians` field exists yet).
+
+## Live 2D/3D toggle
+
+`BlueprintEditorView` can flip between the drafting `Canvas` and a live 3D
+preview (`FloorPlan3DPreviewView` → `FloorPlanSceneBuilder`) in the same
+screen — draw a wall, tap the 3D button, see it standing up immediately.
+This is a separate, lighter builder from `RoomSceneBuilder` (which needs a
+RoomPlan `CapturedRoom` + `RenovationPlan` for the furnishing workflow):
+`FloorPlanSceneBuilder` only ever needs a `FloorPlan`, so it works equally
+for a hand-drawn plan or an imported LiDAR one.
+
+> ⚠️ `FloorPlanSceneBuilder.wallNode` does **not** perform a true geometric
+> boolean cut for door/window openings — like `RoomSceneBuilder`, it draws
+> solid wall segments between openings (sorted along the wall, gaps left
+> where each opening's width falls) plus a translucent colored box marking
+> each opening. A door/window very close to a wall's end, or two openings
+> closer together than their combined half-widths, can produce a
+> zero-or-negative-length segment; the `where segEnd - segStart > 0.02`
+> guard in `wallNode` drops those rather than crashing, but the wall will
+> visually show one continuous gap instead of two separate openings in
+> that case.
+>
+> ⚠️ The floor/wall coordinate mapping (`FloorPlanSceneBuilder`'s `-90°`
+> X-rotation for `SCNShape` floors, `-angle` Y-rotation for wall boxes) was
+> derived by hand from SceneKit's rotation conventions, not copied from
+> `RoomSceneBuilder` (which uses `CapturedRoom.Surface.transform` directly
+> instead of deriving rotations from a 2D direction vector). If either
+> renderer's coordinate convention changes, re-derive this one
+> independently rather than assuming they still match.
 
 ## Not yet built
 

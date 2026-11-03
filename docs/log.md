@@ -68,3 +68,17 @@ Append-only. Newest entries at the bottom.
   ShapeStyle member (real build failure, not a warning) -- fixed to
   `Color.accentColor`. Documented the nonisolated requirement as a trap on
   [[scan-to-renovation-flow]]; `verified_at: aa79d02`.
+
+## [2026-11-03] grow | live 2D/3D toggle + day/night
+
+- `BlueprintEditorView` can now flip between the drafting `Canvas` and a live
+  3D preview in the same screen (`FloorPlanSceneBuilder` + new
+  `FloorPlan3DPreviewView`), with a day/night lighting toggle -- matches the
+  workflow of reference floor-plan apps the user pointed to (own UI, not
+  copied). `FloorPlanSceneBuilder` is deliberately separate from
+  `RoomSceneBuilder`: it only needs a `FloorPlan`, no `CapturedRoom`/
+  `RenovationPlan`, so it works for hand-drawn and LiDAR-imported plans
+  alike. Documented the non-CSG wall-opening approach and the hand-derived
+  rotation conventions as traps on [[blueprint-production]].
+- Regenerated `project.pbxproj` for the 2 new files; both affected pages'
+  `verified_at` moved to `edf889d`.
