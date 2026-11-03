@@ -190,6 +190,12 @@ struct FloorPlan: Identifiable, Codable, Hashable {
     var annotations: [PlanAnnotation]
     /// Free-form notes shown on the blueprint's title block / cover sheet.
     var notes: String
+    /// Optional grouping so several plans (one per floor) roll up into one
+    /// property summary. Optional so plans saved before these existed
+    /// still decode (synthesized Codable uses decodeIfPresent for optionals).
+    var propertyName: String?
+    /// 0 = ground floor, 1 = first floor, -1 = basement, etc.
+    var floorLevel: Int?
 
     init(id: UUID = UUID(), name: String, source: FloorPlanSource,
          walls: [FloorPlanWall] = [], openings: [FloorPlanOpening] = [],

@@ -37,6 +37,13 @@ struct FloorPlanListView: View {
             }
             .navigationTitle("Floor Plans")
             .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    NavigationLink {
+                        PropertySummaryView()
+                    } label: {
+                        Label("Property Summary", systemImage: "list.bullet.rectangle")
+                    }
+                }
                 ToolbarItem(placement: .primaryAction) {
                     Button {
                         newPlanName = "New Floor Plan"
@@ -108,6 +115,9 @@ struct FloorPlanDetailView: View {
     @State private var showExport = false
     @State private var showDXFExport = false
     @State private var showAnnotate = false
+    @State private var showPNGExport = false
+    @State private var showAR = false
+    @State private var showPlacement = false
     @State private var liveFloorPlan: FloorPlan
 
     init(floorPlan: FloorPlan) {
@@ -131,6 +141,15 @@ struct FloorPlanDetailView: View {
                         Button { showDXFExport = true } label: {
                             Label("Export DXF (CAD)", systemImage: "square.and.arrow.up.on.square")
                         }
+                        Button { showPNGExport = true } label: {
+                            Label("Export PNG Image", systemImage: "photo")
+                        }
+                        Button { showAR = true } label: {
+                            Label("View in 3D / AR", systemImage: "arkit")
+                        }
+                        Button { showPlacement = true } label: {
+                            Label("Property & Floor…", systemImage: "building.2")
+                        }
                         Button { showAnnotate = true } label: {
                             Label("Annotate with Pencil", systemImage: "pencil.tip.crop.circle")
                         }
@@ -152,6 +171,18 @@ struct FloorPlanDetailView: View {
             }
             .sheet(isPresented: $showDXFExport) {
                 BlueprintDXFExportView(floorPlan: liveFloorPlan)
+            }
+            .sheet(isPresented: $showPNGExport) {
+                BlueprintPNGExportView(floorPlan: liveFloorPlan)
+            }
+            .fullScreenCover(isPresented: $showAR) {
+                FloorPlanARView(floorPlan: liveFloorPlan)
+            }
+            .sheet(isPresented: $showPlacement) {
+                PlanPlacementSheet(floorPlan: liveFloorPlan) { updated in
+                    store.save(updated)
+                    liveFloorPlan = updated
+                }
             }
             .fullScreenCover(isPresented: $showAnnotate, onDismiss: refresh) {
                 BlueprintAnnotationView(floorPlan: liveFloorPlan)

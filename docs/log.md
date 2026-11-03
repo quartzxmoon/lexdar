@@ -181,3 +181,11 @@ Append-only. Newest entries at the bottom.
   written inline inside a View's body. Resolved the URL as a plain `let`
   in the enclosing (MainActor-isolated) scope instead. Documented as a
   trap on [[blueprint-production]]; `verified_at: 416fb26`.
+
+## [2026-11-03] feature | Property summary, PNG export, View in AR
+
+- From the reference-app screenshots: added `PropertySummaryView` (plans
+  grouped by property and floor with room areas and totals),
+  `BlueprintPNGExportView`, and `FloorPlanARView`; `FloorPlan` gained optional
+  `propertyName`/`floorLevel`. Regenerated project.pbxproj for 3 new files.
+  Documented on [[blueprint-production]]; `verified_at: fd4a5fd`.

@@ -18,7 +18,10 @@ sources:
   - code: Lexdar/Views/BlueprintDXFExportView.swift
   - code: Lexdar/Views/BlueprintAnnotationView.swift
   - code: Lexdar/Models/ScanStore.swift
-verified_at: 416fb26
+  - code: Lexdar/Views/BlueprintPNGExportView.swift
+  - code: Lexdar/Views/FloorPlanARView.swift
+  - code: Lexdar/Views/PropertySummaryView.swift
+verified_at: fd4a5fd
 ---
 
 A second, parallel subsystem to [[scan-to-renovation-flow]]'s
@@ -213,6 +216,32 @@ copied from that app:
 > this project's settings — fix is to capture the resolved value as a
 > plain `let` in the enclosing scope and reference that inside the
 > closure instead of calling the actor-isolated method from within it.
+
+## Property roll-up, PNG export, View in AR (second RoomScan screenshot audit)
+
+Reviewing screenshots of the reference app surfaced three more functional
+gaps, closed with original code:
+
+- **Property summary** (`PropertySummaryView`): plans grouped by
+  `FloorPlan.propertyName`, then `FloorPlan.floorLevel`, with a per-room
+  area list and per-floor / per-property totals in m² and sq ft. Plans are
+  assigned via the "Property & Floor..." menu item (`PlanPlacementSheet`).
+- **PNG export** (`BlueprintPNGExportView`): renders `BlueprintView` through
+  SwiftUI `ImageRenderer` at a fixed 1600x1200 pt frame, 2x scale.
+- **View in AR** (`FloorPlanARView`): builds the extruded model with
+  `FloorPlanSceneBuilder`, writes it with `SCNScene.write(to:)` as a
+  `.usdz`, and opens it in `USDZPreviewView` (AR Quick Look).
+
+> ⚠️ `FloorPlan.propertyName` and `floorLevel` are deliberately **optional**.
+> Plans already saved to disk lack these keys, and synthesized `Codable`
+> only tolerates missing keys for optionals; making them non-optional would
+> make every existing saved plan fail to decode and silently vanish from
+> `ScanStore.reload`.
+
+> ⚠️ Not verified on device: whether `SCNScene.write` to USDZ keeps the
+> day/night lights and the wall/floor materials, and how the PNG looks when
+> `BlueprintView`'s Canvas is rendered via `ImageRenderer`. Both compile in
+> CI but need a hands-on check on the iPad.
 
 ## Explicitly not built (checked against RoomScan Pro LiDAR, scope cut on purpose)
 
