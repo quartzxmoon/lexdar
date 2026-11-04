@@ -20,6 +20,16 @@ struct ScanCaptureView: View {
             RoomCaptureRepresentable(coordinator: coordinator)
                 .ignoresSafeArea()
 
+            if coordinator.isScanning, coordinator.liveRoom != nil {
+                LiveRoomPreview(room: coordinator.liveRoom)
+                    .frame(width: 280, height: 210)
+                    .background(.black.opacity(0.3), in: RoundedRectangle(cornerRadius: 16))
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .allowsHitTesting(false)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+                    .padding()
+            }
+
             VStack(spacing: 10) {
                 if let instruction = coordinator.instruction, coordinator.isScanning {
                     Text(instruction)

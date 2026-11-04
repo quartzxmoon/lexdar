@@ -7,232 +7,235 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C31478DEC04944C9B7A8FD8A /* LexdarApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F0A4F09EAE34FC1A3411770 /* LexdarApp.swift */; };
-		443DB0D7D3674E21B7CF6B8B /* ScanProject.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB991AB22854D419AA78A2C /* ScanProject.swift */; };
-		720F31B731BE4B719169AA0C /* CatalogItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 579CA0DBC2E44B48AA7155D9 /* CatalogItem.swift */; };
-		064451CE94FB46BFB3504436 /* Catalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = A925963820C7420E9691854D /* Catalog.swift */; };
-		EEE59B546A9B4651A47A0694 /* RenovationPlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = F91E6145AD03479B82EAA5A2 /* RenovationPlan.swift */; };
-		B69D1D426EFE49B998B7BB62 /* ScanStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08BA4328551491882E3D8E8 /* ScanStore.swift */; };
-		68FA0064AED64613BD77017C /* FloorPlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70B6856A6FEF4E499480FBF2 /* FloorPlan.swift */; };
-		FCAB2B54310F4F6CABD6F105 /* RoomCaptureCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0884423CFAB44C381EA2E89 /* RoomCaptureCoordinator.swift */; };
-		075B5F291F8D4B288DC8BDA0 /* RoomCaptureRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FE816D482E44E18B7FF4C8E /* RoomCaptureRepresentable.swift */; };
-		168782DFBA374B51AE87C626 /* ScanCaptureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D56A3CD8DC48DC88F8BDC3 /* ScanCaptureView.swift */; };
-		3E71BAE99E784AB4811BFEF0 /* RoomSceneBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12049788F3064BA19DA6D839 /* RoomSceneBuilder.swift */; };
-		09A143F2F03C42698AFECC8F /* RenovationSceneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B20D47428F346EF8E118C4A /* RenovationSceneView.swift */; };
-		5C4BDBA63CE645FEAB521A08 /* RoomPlanImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9D2FE791A6C43848929D0CC /* RoomPlanImporter.swift */; };
-		125AEFA8CD3144C9A558E5BA /* FloorPlanSceneBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B68A90191E74C8EB0C332C5 /* FloorPlanSceneBuilder.swift */; };
-		475C5CC5F1B741F7A1C72797 /* FloorPlanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E13D8A1C055460BAE33F24F /* FloorPlanView.swift */; };
-		8EC0AFD1F8D3418EB050F7E1 /* CatalogBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 876B313D56F447FDB93B1777 /* CatalogBrowserView.swift */; };
-		E41ECD0BF6884A2B9CEC55BA /* RenovationEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7840A1E28EF44C1AA3C5BEC4 /* RenovationEditorView.swift */; };
-		07CDA587C3E5488E99065749 /* BlueprintLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11232B64C2D84CD8B74E0146 /* BlueprintLayout.swift */; };
-		6F2F4B3E14F440CF8DAFD61A /* BlueprintView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCF33B74E68B4AFBB4E1380E /* BlueprintView.swift */; };
-		422790D3AF1A4E80929F81C1 /* BlueprintEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B9E378711A846C8B233AF0E /* BlueprintEditorView.swift */; };
-		F6B48F1E8C464F449C7819DE /* BlueprintPDFExportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6174812BB3BF479796145867 /* BlueprintPDFExportView.swift */; };
-		4DF3A64FD3EE4CB4BD6E689A /* FloorPlanListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F00BDACD3AA4CEA9A698D31 /* FloorPlanListView.swift */; };
-		F2ADAC97D99348BEAC412C4B /* FloorPlan3DPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0912E9E4A955454A8FFBC139 /* FloorPlan3DPreviewView.swift */; };
-		9A0D4648A39247D1B4BD8371 /* BlueprintDXFExportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9646B081AAA8449BA4B587D1 /* BlueprintDXFExportView.swift */; };
-		BC42AD61D53A4FDDBEC308BE /* BlueprintAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C5BA56562C04874BCE15B93 /* BlueprintAnnotationView.swift */; };
-		2663106650814B1EB9A0B990 /* BlueprintPNGExportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDE97A1A0C3D4BE08EC008BF /* BlueprintPNGExportView.swift */; };
-		C66D4BDE06DF492CA050F0C2 /* FloorPlanARView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10A85B8039B8403E85152C7D /* FloorPlanARView.swift */; };
-		D40073BDFD594878AB543E72 /* PropertySummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAAFE97790B1476DB8E4A586 /* PropertySummaryView.swift */; };
-		FB9B733A15944CF59CED1D28 /* FloorPlanMeshExport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D497917968F430C8DE833F0 /* FloorPlanMeshExport.swift */; };
-		9C422853569A41D19D754E4A /* FloorPlanIFCExport.swift in Sources */ = {isa = PBXBuildFile; fileRef = B322B9FD369A499F93F4699D /* FloorPlanIFCExport.swift */; };
-		028C497E29C4458D82AE44D0 /* ModelExportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C593755DB04907A8C64FCE /* ModelExportView.swift */; };
-		54BCA41237A44876B962F3C9 /* PlanScheduleExport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FD33A0BDB6649D88DE1E3FF /* PlanScheduleExport.swift */; };
-		B3322D4BDDDD44D495DF459F /* LANSyncView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 744FC20ED27D446E97A962C7 /* LANSyncView.swift */; };
-		87B21365A52B47EE95A334CF /* MeasureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 288B18CC2F004283AE6D66AC /* MeasureView.swift */; };
-		A002633B3A2A4BA38E5F4911 /* RenovationSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0ECD57C84264EEC9B11CABE /* RenovationSummaryView.swift */; };
-		4D912831076B4404A693CE18 /* ScanListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF6FA02D8EFE4BF99B1CA786 /* ScanListView.swift */; };
-		CD4ABA044BE54545AC6B12CA /* ScanDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 419DB1991993451F8BC37E70 /* ScanDetailView.swift */; };
-		AC08DC5BF32D48B0ACDC4E16 /* USDZPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 270790D039E34BCC941C624E /* USDZPreviewView.swift */; };
-		4C9C34432259473ABCCEFCB1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 63926E1DFB5341EBB87C33A8 /* Assets.xcassets */; };
-		A9E145476BB04D55AEB3A80A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 909E1BD12E1E4DC7B1E9C7C6 /* Preview Assets.xcassets */; };
-		CC4AF178256E4D8DBD8A7BC3 /* RoomPlan.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA9B49861455404E8EDFD96E /* RoomPlan.framework */; };
-		8239B806D18148A396A63159 /* ARKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 789FD7A3AC024A08B0E82660 /* ARKit.framework */; };
-		7A5ED87EC7A54CFE8619992E /* SceneKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A9814A8416A048918DE511B6 /* SceneKit.framework */; };
-		C796DA32A821403BAC9E664B /* QuickLook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1BD731FCCE9F4323A4DFF329 /* QuickLook.framework */; };
-		6F7E3B2F928B4E5EB7ACA528 /* PDFKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 662E062F42AF4931A1D5B3A0 /* PDFKit.framework */; };
-		504CA222D4BC47EAB5EBFB80 /* PencilKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D887A85E193247039EA8C4DF /* PencilKit.framework */; };
-		0AA7800414D34172931ED6B9 /* PhotosUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB974EEAA9549D7B9FD2879 /* PhotosUI.framework */; };
+		4ECBC4CEBC9645078D1252F8 /* LexdarApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A54092E071343A0992866D7 /* LexdarApp.swift */; };
+		FCE806C6261141A69EBB9CEA /* ScanProject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5654B7BC675D44F497E82341 /* ScanProject.swift */; };
+		3AEB91EC329848D09D734ED4 /* CatalogItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 165C9C80974748348E72F6E9 /* CatalogItem.swift */; };
+		068CD5FDB87C46218A966E95 /* Catalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27F4DBB1A8994135BB969936 /* Catalog.swift */; };
+		9935F842612B415B935D0DC0 /* RenovationPlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = E79C65B400EC48BCA59D4A4F /* RenovationPlan.swift */; };
+		7454DEAA3C2440A39780E034 /* ScanStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 684537A6117F44D6AECC9CB2 /* ScanStore.swift */; };
+		2B9E6EA331524E0AB8DE61DB /* FloorPlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A10B1509034A819B44C195 /* FloorPlan.swift */; };
+		3DF64DE33D0F4ECDAB724FE7 /* RoomCaptureCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 873684DB82C34E348C768C3A /* RoomCaptureCoordinator.swift */; };
+		E6EFD202293049A9874FB7C4 /* RoomCaptureRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D3C43191C5A4D279981A352 /* RoomCaptureRepresentable.swift */; };
+		97011DCFDFD5412B9E376618 /* ScanCaptureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F40F0928984398A3CFE2A0 /* ScanCaptureView.swift */; };
+		50F1AD88B33946F78C264560 /* RoomSceneBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B734446652346B3A1F63D79 /* RoomSceneBuilder.swift */; };
+		BEF66FDE148C4D97969A2D8B /* RenovationSceneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CBF8436B5DD442885E9501B /* RenovationSceneView.swift */; };
+		0B311934E91946E182AAD78E /* RoomPlanImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A339F52FCEC645188A3B171E /* RoomPlanImporter.swift */; };
+		3CAB2EC9929A466992FC4D19 /* FloorPlanSceneBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC31DFF2A0494740A9540B6C /* FloorPlanSceneBuilder.swift */; };
+		00B1020C7A9C4758AFA194D2 /* LiveRoomPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEFDD218AA2E45EF9D239456 /* LiveRoomPreview.swift */; };
+		DF6A67340D644A9A84A21309 /* FloorPlanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB62EA61ECB4ABE895C5AF9 /* FloorPlanView.swift */; };
+		F764D52506C04FC5A741F45B /* CatalogBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7254DA0E4974D47AEEAC67F /* CatalogBrowserView.swift */; };
+		665D2931C1904DB7B7466D9B /* RenovationEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AABD7B2A0134E0CBFC4EB73 /* RenovationEditorView.swift */; };
+		194499DCE6D74C948CC0D4EB /* BlueprintLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7D614D93FB49A5A4BF35BC /* BlueprintLayout.swift */; };
+		D2CA306B35CC4986A4443D1D /* BlueprintView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3F4B08450984D75A035A037 /* BlueprintView.swift */; };
+		99A7B0FC7FE548698FBF559B /* BlueprintEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 323727675A5945618382E4B7 /* BlueprintEditorView.swift */; };
+		709A4F7F2B68431586CDB01F /* BlueprintPDFExportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 103E838311624AA6AD71C669 /* BlueprintPDFExportView.swift */; };
+		6B68D41DF9C64A77A6817E0E /* FloorPlanListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EA8CF99F4BB4B66950D692D /* FloorPlanListView.swift */; };
+		A9EE1253E27C4846B155F18A /* FloorPlan3DPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA4341B0DF434044AB123982 /* FloorPlan3DPreviewView.swift */; };
+		AA559ADB9C4040BC99EB336C /* BlueprintDXFExportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A32A7B45C1E74636B53D8855 /* BlueprintDXFExportView.swift */; };
+		6234EB517472408BB708B3D9 /* BlueprintAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D33034961CE84CB6905A935E /* BlueprintAnnotationView.swift */; };
+		8158E2846D43487FA951796D /* BlueprintPNGExportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A590C13A85A4252A4B91DE2 /* BlueprintPNGExportView.swift */; };
+		1141B2CCC3C145D1BF0A1893 /* FloorPlanARView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9398DC25A9894F6B8719A875 /* FloorPlanARView.swift */; };
+		C27F4DB3A8A04429BDBEDE94 /* PropertySummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DBC26024C994F7EA39F86C4 /* PropertySummaryView.swift */; };
+		B195C214A4F24E75BE066C20 /* FloorPlanMeshExport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 199F67C292724984B9453FB3 /* FloorPlanMeshExport.swift */; };
+		74AE0A9B5B2F4A198FB92B6D /* FloorPlanIFCExport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D241050ED7142DAA4DFF3D4 /* FloorPlanIFCExport.swift */; };
+		A966AE4C96A649648054E2C9 /* ModelExportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0745A86FA8DF4C71B178F1F5 /* ModelExportView.swift */; };
+		B44661183CFE4F2C8DCC535C /* PlanScheduleExport.swift in Sources */ = {isa = PBXBuildFile; fileRef = A08353DB32C74CCDAE15F1CF /* PlanScheduleExport.swift */; };
+		A1D1373E856D488EA356F43A /* LANSyncView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BF34A0863C34BCABBD82948 /* LANSyncView.swift */; };
+		8A9681F175A846B2BC5DFA21 /* MeasureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09A20D5D1D4B4448852BF3B8 /* MeasureView.swift */; };
+		F35FE1F729984E13AD022A45 /* RenovationSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB7D7AF2BF624867AE344171 /* RenovationSummaryView.swift */; };
+		E25B7DEF71604BE1A480B410 /* ScanListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F28D03913B664447A3006872 /* ScanListView.swift */; };
+		D88186CE498B422BB052C580 /* ScanDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD36FBD9A5F342CFB9B3EA74 /* ScanDetailView.swift */; };
+		F63CE1E415664174B6E02456 /* USDZPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 694315F7A8A14F819731A0A9 /* USDZPreviewView.swift */; };
+		5CA8E2131FF343638E34D789 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EE16E2078CF941789611E8D0 /* Assets.xcassets */; };
+		4B8F8ECDBC4D4F9E8616A8EE /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9265E613301842129B2F991E /* Preview Assets.xcassets */; };
+		F1991DBC508048D59D4CA4C2 /* RoomPlan.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7879EEEB9601438BA2218DBE /* RoomPlan.framework */; };
+		B3E453DFAB284952A704A28C /* ARKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C03A9095A5644D3B96BD70CC /* ARKit.framework */; };
+		6860851D72504EAF971E7592 /* SceneKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8686E64127224433A89A8C84 /* SceneKit.framework */; };
+		0DCECB2879EB4F26BC850484 /* QuickLook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07876E991FD146E7AF1686FB /* QuickLook.framework */; };
+		B857FA2B6BB244279BD16402 /* PDFKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 05203AE13C9B4EB193EEBE08 /* PDFKit.framework */; };
+		D7DC29B09161484288F2EBAB /* PencilKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5D83EA2E26DA4B3999D3BEA1 /* PencilKit.framework */; };
+		5D3EBA452D4748F4BDB34FCB /* PhotosUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0554F691263941CB830E7939 /* PhotosUI.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		3E4AFB77B5284F8BA759FA40 /* Lexdar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Lexdar.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		6F0A4F09EAE34FC1A3411770 /* LexdarApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LexdarApp.swift"; sourceTree = "<group>"; };
-		EBB991AB22854D419AA78A2C /* ScanProject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ScanProject.swift"; sourceTree = "<group>"; };
-		579CA0DBC2E44B48AA7155D9 /* CatalogItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CatalogItem.swift"; sourceTree = "<group>"; };
-		A925963820C7420E9691854D /* Catalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Catalog.swift"; sourceTree = "<group>"; };
-		F91E6145AD03479B82EAA5A2 /* RenovationPlan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RenovationPlan.swift"; sourceTree = "<group>"; };
-		F08BA4328551491882E3D8E8 /* ScanStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ScanStore.swift"; sourceTree = "<group>"; };
-		70B6856A6FEF4E499480FBF2 /* FloorPlan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FloorPlan.swift"; sourceTree = "<group>"; };
-		C0884423CFAB44C381EA2E89 /* RoomCaptureCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RoomCaptureCoordinator.swift"; sourceTree = "<group>"; };
-		2FE816D482E44E18B7FF4C8E /* RoomCaptureRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RoomCaptureRepresentable.swift"; sourceTree = "<group>"; };
-		50D56A3CD8DC48DC88F8BDC3 /* ScanCaptureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ScanCaptureView.swift"; sourceTree = "<group>"; };
-		12049788F3064BA19DA6D839 /* RoomSceneBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RoomSceneBuilder.swift"; sourceTree = "<group>"; };
-		3B20D47428F346EF8E118C4A /* RenovationSceneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RenovationSceneView.swift"; sourceTree = "<group>"; };
-		D9D2FE791A6C43848929D0CC /* RoomPlanImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RoomPlanImporter.swift"; sourceTree = "<group>"; };
-		9B68A90191E74C8EB0C332C5 /* FloorPlanSceneBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FloorPlanSceneBuilder.swift"; sourceTree = "<group>"; };
-		5E13D8A1C055460BAE33F24F /* FloorPlanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FloorPlanView.swift"; sourceTree = "<group>"; };
-		876B313D56F447FDB93B1777 /* CatalogBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CatalogBrowserView.swift"; sourceTree = "<group>"; };
-		7840A1E28EF44C1AA3C5BEC4 /* RenovationEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RenovationEditorView.swift"; sourceTree = "<group>"; };
-		11232B64C2D84CD8B74E0146 /* BlueprintLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BlueprintLayout.swift"; sourceTree = "<group>"; };
-		CCF33B74E68B4AFBB4E1380E /* BlueprintView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BlueprintView.swift"; sourceTree = "<group>"; };
-		1B9E378711A846C8B233AF0E /* BlueprintEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BlueprintEditorView.swift"; sourceTree = "<group>"; };
-		6174812BB3BF479796145867 /* BlueprintPDFExportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BlueprintPDFExportView.swift"; sourceTree = "<group>"; };
-		9F00BDACD3AA4CEA9A698D31 /* FloorPlanListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FloorPlanListView.swift"; sourceTree = "<group>"; };
-		0912E9E4A955454A8FFBC139 /* FloorPlan3DPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FloorPlan3DPreviewView.swift"; sourceTree = "<group>"; };
-		9646B081AAA8449BA4B587D1 /* BlueprintDXFExportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BlueprintDXFExportView.swift"; sourceTree = "<group>"; };
-		4C5BA56562C04874BCE15B93 /* BlueprintAnnotationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BlueprintAnnotationView.swift"; sourceTree = "<group>"; };
-		FDE97A1A0C3D4BE08EC008BF /* BlueprintPNGExportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BlueprintPNGExportView.swift"; sourceTree = "<group>"; };
-		10A85B8039B8403E85152C7D /* FloorPlanARView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FloorPlanARView.swift"; sourceTree = "<group>"; };
-		CAAFE97790B1476DB8E4A586 /* PropertySummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PropertySummaryView.swift"; sourceTree = "<group>"; };
-		9D497917968F430C8DE833F0 /* FloorPlanMeshExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FloorPlanMeshExport.swift"; sourceTree = "<group>"; };
-		B322B9FD369A499F93F4699D /* FloorPlanIFCExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FloorPlanIFCExport.swift"; sourceTree = "<group>"; };
-		50C593755DB04907A8C64FCE /* ModelExportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ModelExportView.swift"; sourceTree = "<group>"; };
-		3FD33A0BDB6649D88DE1E3FF /* PlanScheduleExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PlanScheduleExport.swift"; sourceTree = "<group>"; };
-		744FC20ED27D446E97A962C7 /* LANSyncView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LANSyncView.swift"; sourceTree = "<group>"; };
-		288B18CC2F004283AE6D66AC /* MeasureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MeasureView.swift"; sourceTree = "<group>"; };
-		C0ECD57C84264EEC9B11CABE /* RenovationSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RenovationSummaryView.swift"; sourceTree = "<group>"; };
-		EF6FA02D8EFE4BF99B1CA786 /* ScanListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ScanListView.swift"; sourceTree = "<group>"; };
-		419DB1991993451F8BC37E70 /* ScanDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ScanDetailView.swift"; sourceTree = "<group>"; };
-		270790D039E34BCC941C624E /* USDZPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USDZPreviewView.swift"; sourceTree = "<group>"; };
-		63926E1DFB5341EBB87C33A8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Assets.xcassets"; sourceTree = "<group>"; };
-		909E1BD12E1E4DC7B1E9C7C6 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		6F29C530AB4946B4B5A39195 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info.plist"; sourceTree = "<group>"; };
-		AA9B49861455404E8EDFD96E /* RoomPlan.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RoomPlan.framework; path = System/Library/Frameworks/RoomPlan.framework; sourceTree = SDKROOT; };
-		789FD7A3AC024A08B0E82660 /* ARKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ARKit.framework; path = System/Library/Frameworks/ARKit.framework; sourceTree = SDKROOT; };
-		A9814A8416A048918DE511B6 /* SceneKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SceneKit.framework; path = System/Library/Frameworks/SceneKit.framework; sourceTree = SDKROOT; };
-		1BD731FCCE9F4323A4DFF329 /* QuickLook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLook.framework; path = System/Library/Frameworks/QuickLook.framework; sourceTree = SDKROOT; };
-		662E062F42AF4931A1D5B3A0 /* PDFKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PDFKit.framework; path = System/Library/Frameworks/PDFKit.framework; sourceTree = SDKROOT; };
-		D887A85E193247039EA8C4DF /* PencilKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PencilKit.framework; path = System/Library/Frameworks/PencilKit.framework; sourceTree = SDKROOT; };
-		9CB974EEAA9549D7B9FD2879 /* PhotosUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PhotosUI.framework; path = System/Library/Frameworks/PhotosUI.framework; sourceTree = SDKROOT; };
+		497948C581DE44A285EBBFE7 /* Lexdar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Lexdar.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7A54092E071343A0992866D7 /* LexdarApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LexdarApp.swift"; sourceTree = "<group>"; };
+		5654B7BC675D44F497E82341 /* ScanProject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ScanProject.swift"; sourceTree = "<group>"; };
+		165C9C80974748348E72F6E9 /* CatalogItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CatalogItem.swift"; sourceTree = "<group>"; };
+		27F4DBB1A8994135BB969936 /* Catalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Catalog.swift"; sourceTree = "<group>"; };
+		E79C65B400EC48BCA59D4A4F /* RenovationPlan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RenovationPlan.swift"; sourceTree = "<group>"; };
+		684537A6117F44D6AECC9CB2 /* ScanStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ScanStore.swift"; sourceTree = "<group>"; };
+		E1A10B1509034A819B44C195 /* FloorPlan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FloorPlan.swift"; sourceTree = "<group>"; };
+		873684DB82C34E348C768C3A /* RoomCaptureCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RoomCaptureCoordinator.swift"; sourceTree = "<group>"; };
+		7D3C43191C5A4D279981A352 /* RoomCaptureRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RoomCaptureRepresentable.swift"; sourceTree = "<group>"; };
+		28F40F0928984398A3CFE2A0 /* ScanCaptureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ScanCaptureView.swift"; sourceTree = "<group>"; };
+		5B734446652346B3A1F63D79 /* RoomSceneBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RoomSceneBuilder.swift"; sourceTree = "<group>"; };
+		7CBF8436B5DD442885E9501B /* RenovationSceneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RenovationSceneView.swift"; sourceTree = "<group>"; };
+		A339F52FCEC645188A3B171E /* RoomPlanImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RoomPlanImporter.swift"; sourceTree = "<group>"; };
+		CC31DFF2A0494740A9540B6C /* FloorPlanSceneBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FloorPlanSceneBuilder.swift"; sourceTree = "<group>"; };
+		EEFDD218AA2E45EF9D239456 /* LiveRoomPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LiveRoomPreview.swift"; sourceTree = "<group>"; };
+		5AB62EA61ECB4ABE895C5AF9 /* FloorPlanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FloorPlanView.swift"; sourceTree = "<group>"; };
+		B7254DA0E4974D47AEEAC67F /* CatalogBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CatalogBrowserView.swift"; sourceTree = "<group>"; };
+		0AABD7B2A0134E0CBFC4EB73 /* RenovationEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RenovationEditorView.swift"; sourceTree = "<group>"; };
+		0A7D614D93FB49A5A4BF35BC /* BlueprintLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BlueprintLayout.swift"; sourceTree = "<group>"; };
+		B3F4B08450984D75A035A037 /* BlueprintView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BlueprintView.swift"; sourceTree = "<group>"; };
+		323727675A5945618382E4B7 /* BlueprintEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BlueprintEditorView.swift"; sourceTree = "<group>"; };
+		103E838311624AA6AD71C669 /* BlueprintPDFExportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BlueprintPDFExportView.swift"; sourceTree = "<group>"; };
+		8EA8CF99F4BB4B66950D692D /* FloorPlanListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FloorPlanListView.swift"; sourceTree = "<group>"; };
+		CA4341B0DF434044AB123982 /* FloorPlan3DPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FloorPlan3DPreviewView.swift"; sourceTree = "<group>"; };
+		A32A7B45C1E74636B53D8855 /* BlueprintDXFExportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BlueprintDXFExportView.swift"; sourceTree = "<group>"; };
+		D33034961CE84CB6905A935E /* BlueprintAnnotationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BlueprintAnnotationView.swift"; sourceTree = "<group>"; };
+		1A590C13A85A4252A4B91DE2 /* BlueprintPNGExportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BlueprintPNGExportView.swift"; sourceTree = "<group>"; };
+		9398DC25A9894F6B8719A875 /* FloorPlanARView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FloorPlanARView.swift"; sourceTree = "<group>"; };
+		0DBC26024C994F7EA39F86C4 /* PropertySummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PropertySummaryView.swift"; sourceTree = "<group>"; };
+		199F67C292724984B9453FB3 /* FloorPlanMeshExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FloorPlanMeshExport.swift"; sourceTree = "<group>"; };
+		4D241050ED7142DAA4DFF3D4 /* FloorPlanIFCExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FloorPlanIFCExport.swift"; sourceTree = "<group>"; };
+		0745A86FA8DF4C71B178F1F5 /* ModelExportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ModelExportView.swift"; sourceTree = "<group>"; };
+		A08353DB32C74CCDAE15F1CF /* PlanScheduleExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PlanScheduleExport.swift"; sourceTree = "<group>"; };
+		5BF34A0863C34BCABBD82948 /* LANSyncView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LANSyncView.swift"; sourceTree = "<group>"; };
+		09A20D5D1D4B4448852BF3B8 /* MeasureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MeasureView.swift"; sourceTree = "<group>"; };
+		AB7D7AF2BF624867AE344171 /* RenovationSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RenovationSummaryView.swift"; sourceTree = "<group>"; };
+		F28D03913B664447A3006872 /* ScanListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ScanListView.swift"; sourceTree = "<group>"; };
+		FD36FBD9A5F342CFB9B3EA74 /* ScanDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ScanDetailView.swift"; sourceTree = "<group>"; };
+		694315F7A8A14F819731A0A9 /* USDZPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USDZPreviewView.swift"; sourceTree = "<group>"; };
+		EE16E2078CF941789611E8D0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Assets.xcassets"; sourceTree = "<group>"; };
+		9265E613301842129B2F991E /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		4E0DA63CDD2449D1A51BA2F4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info.plist"; sourceTree = "<group>"; };
+		7879EEEB9601438BA2218DBE /* RoomPlan.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RoomPlan.framework; path = System/Library/Frameworks/RoomPlan.framework; sourceTree = SDKROOT; };
+		C03A9095A5644D3B96BD70CC /* ARKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ARKit.framework; path = System/Library/Frameworks/ARKit.framework; sourceTree = SDKROOT; };
+		8686E64127224433A89A8C84 /* SceneKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SceneKit.framework; path = System/Library/Frameworks/SceneKit.framework; sourceTree = SDKROOT; };
+		07876E991FD146E7AF1686FB /* QuickLook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLook.framework; path = System/Library/Frameworks/QuickLook.framework; sourceTree = SDKROOT; };
+		05203AE13C9B4EB193EEBE08 /* PDFKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PDFKit.framework; path = System/Library/Frameworks/PDFKit.framework; sourceTree = SDKROOT; };
+		5D83EA2E26DA4B3999D3BEA1 /* PencilKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PencilKit.framework; path = System/Library/Frameworks/PencilKit.framework; sourceTree = SDKROOT; };
+		0554F691263941CB830E7939 /* PhotosUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PhotosUI.framework; path = System/Library/Frameworks/PhotosUI.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		CFDBC74981D144B194CFEC00 /* Frameworks */ = {
+		174419C25F6B4B7F9E44BC29 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CC4AF178256E4D8DBD8A7BC3 /* RoomPlan.framework in Frameworks */,
-				8239B806D18148A396A63159 /* ARKit.framework in Frameworks */,
-				7A5ED87EC7A54CFE8619992E /* SceneKit.framework in Frameworks */,
-				C796DA32A821403BAC9E664B /* QuickLook.framework in Frameworks */,
-				6F7E3B2F928B4E5EB7ACA528 /* PDFKit.framework in Frameworks */,
-				504CA222D4BC47EAB5EBFB80 /* PencilKit.framework in Frameworks */,
-				0AA7800414D34172931ED6B9 /* PhotosUI.framework in Frameworks */,
+				F1991DBC508048D59D4CA4C2 /* RoomPlan.framework in Frameworks */,
+				B3E453DFAB284952A704A28C /* ARKit.framework in Frameworks */,
+				6860851D72504EAF971E7592 /* SceneKit.framework in Frameworks */,
+				0DCECB2879EB4F26BC850484 /* QuickLook.framework in Frameworks */,
+				B857FA2B6BB244279BD16402 /* PDFKit.framework in Frameworks */,
+				D7DC29B09161484288F2EBAB /* PencilKit.framework in Frameworks */,
+				5D3EBA452D4748F4BDB34FCB /* PhotosUI.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		54FE47136A1F46F99CE7F290 = {
+		571B557F34AB47EFA2F50863 = {
 			isa = PBXGroup;
 			children = (
-				BCB47183331744EF98F7C4DF /* Lexdar */,
-				12F1B5FA3ABB48D9BD085D0F /* Frameworks */,
-				0DD0ABA0A97D448FAC6C6094 /* Products */,
+				2718CA24188F4DCE9810D649 /* Lexdar */,
+				F99546D16B7148E8AE765005 /* Frameworks */,
+				2F4A96F053284607B3ED9369 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		0DD0ABA0A97D448FAC6C6094 /* Products */ = {
+		2F4A96F053284607B3ED9369 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				3E4AFB77B5284F8BA759FA40 /* Lexdar.app */,
+				497948C581DE44A285EBBFE7 /* Lexdar.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		12F1B5FA3ABB48D9BD085D0F /* Frameworks */ = {
+		F99546D16B7148E8AE765005 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				AA9B49861455404E8EDFD96E /* RoomPlan.framework */,
-				789FD7A3AC024A08B0E82660 /* ARKit.framework */,
-				A9814A8416A048918DE511B6 /* SceneKit.framework */,
-				1BD731FCCE9F4323A4DFF329 /* QuickLook.framework */,
-				662E062F42AF4931A1D5B3A0 /* PDFKit.framework */,
-				D887A85E193247039EA8C4DF /* PencilKit.framework */,
-				9CB974EEAA9549D7B9FD2879 /* PhotosUI.framework */,
+				7879EEEB9601438BA2218DBE /* RoomPlan.framework */,
+				C03A9095A5644D3B96BD70CC /* ARKit.framework */,
+				8686E64127224433A89A8C84 /* SceneKit.framework */,
+				07876E991FD146E7AF1686FB /* QuickLook.framework */,
+				05203AE13C9B4EB193EEBE08 /* PDFKit.framework */,
+				5D83EA2E26DA4B3999D3BEA1 /* PencilKit.framework */,
+				0554F691263941CB830E7939 /* PhotosUI.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		BCB47183331744EF98F7C4DF /* Lexdar */ = {
+		2718CA24188F4DCE9810D649 /* Lexdar */ = {
 			isa = PBXGroup;
 			children = (
-				6F0A4F09EAE34FC1A3411770 /* LexdarApp.swift */,
-				F93C4FAA3F65443F8B3A4134 /* Models */,
-				8EDE6D5806A54C5485D49CB6 /* Scanning */,
-				54AEDCB989544FA081D543E9 /* Views */,
-				B26F647A8F0847759BF6FDF8 /* Preview Content */,
-				6F29C530AB4946B4B5A39195 /* Info.plist */,
-				63926E1DFB5341EBB87C33A8 /* Assets.xcassets */,
+				7A54092E071343A0992866D7 /* LexdarApp.swift */,
+				71129D9E55EC4503B65A039C /* Models */,
+				D43B5F9FD8A043EB8ED8C715 /* Scanning */,
+				EB8F04E275E1412F91A42824 /* Views */,
+				430747837052442A93732C5F /* Preview Content */,
+				4E0DA63CDD2449D1A51BA2F4 /* Info.plist */,
+				EE16E2078CF941789611E8D0 /* Assets.xcassets */,
 			);
 			path = Lexdar;
 			sourceTree = "<group>";
 		};
-		F93C4FAA3F65443F8B3A4134 /* Models */ = {
+		71129D9E55EC4503B65A039C /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				EBB991AB22854D419AA78A2C /* ScanProject.swift */,
-				579CA0DBC2E44B48AA7155D9 /* CatalogItem.swift */,
-				A925963820C7420E9691854D /* Catalog.swift */,
-				F91E6145AD03479B82EAA5A2 /* RenovationPlan.swift */,
-				F08BA4328551491882E3D8E8 /* ScanStore.swift */,
-				70B6856A6FEF4E499480FBF2 /* FloorPlan.swift */,
+				5654B7BC675D44F497E82341 /* ScanProject.swift */,
+				165C9C80974748348E72F6E9 /* CatalogItem.swift */,
+				27F4DBB1A8994135BB969936 /* Catalog.swift */,
+				E79C65B400EC48BCA59D4A4F /* RenovationPlan.swift */,
+				684537A6117F44D6AECC9CB2 /* ScanStore.swift */,
+				E1A10B1509034A819B44C195 /* FloorPlan.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
 		};
-		8EDE6D5806A54C5485D49CB6 /* Scanning */ = {
+		D43B5F9FD8A043EB8ED8C715 /* Scanning */ = {
 			isa = PBXGroup;
 			children = (
-				C0884423CFAB44C381EA2E89 /* RoomCaptureCoordinator.swift */,
-				2FE816D482E44E18B7FF4C8E /* RoomCaptureRepresentable.swift */,
-				50D56A3CD8DC48DC88F8BDC3 /* ScanCaptureView.swift */,
-				12049788F3064BA19DA6D839 /* RoomSceneBuilder.swift */,
-				3B20D47428F346EF8E118C4A /* RenovationSceneView.swift */,
-				D9D2FE791A6C43848929D0CC /* RoomPlanImporter.swift */,
-				9B68A90191E74C8EB0C332C5 /* FloorPlanSceneBuilder.swift */,
+				873684DB82C34E348C768C3A /* RoomCaptureCoordinator.swift */,
+				7D3C43191C5A4D279981A352 /* RoomCaptureRepresentable.swift */,
+				28F40F0928984398A3CFE2A0 /* ScanCaptureView.swift */,
+				5B734446652346B3A1F63D79 /* RoomSceneBuilder.swift */,
+				7CBF8436B5DD442885E9501B /* RenovationSceneView.swift */,
+				A339F52FCEC645188A3B171E /* RoomPlanImporter.swift */,
+				CC31DFF2A0494740A9540B6C /* FloorPlanSceneBuilder.swift */,
+				EEFDD218AA2E45EF9D239456 /* LiveRoomPreview.swift */,
 			);
 			path = Scanning;
 			sourceTree = "<group>";
 		};
-		54AEDCB989544FA081D543E9 /* Views */ = {
+		EB8F04E275E1412F91A42824 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				5E13D8A1C055460BAE33F24F /* FloorPlanView.swift */,
-				876B313D56F447FDB93B1777 /* CatalogBrowserView.swift */,
-				7840A1E28EF44C1AA3C5BEC4 /* RenovationEditorView.swift */,
-				11232B64C2D84CD8B74E0146 /* BlueprintLayout.swift */,
-				CCF33B74E68B4AFBB4E1380E /* BlueprintView.swift */,
-				1B9E378711A846C8B233AF0E /* BlueprintEditorView.swift */,
-				6174812BB3BF479796145867 /* BlueprintPDFExportView.swift */,
-				9F00BDACD3AA4CEA9A698D31 /* FloorPlanListView.swift */,
-				0912E9E4A955454A8FFBC139 /* FloorPlan3DPreviewView.swift */,
-				9646B081AAA8449BA4B587D1 /* BlueprintDXFExportView.swift */,
-				4C5BA56562C04874BCE15B93 /* BlueprintAnnotationView.swift */,
-				FDE97A1A0C3D4BE08EC008BF /* BlueprintPNGExportView.swift */,
-				10A85B8039B8403E85152C7D /* FloorPlanARView.swift */,
-				CAAFE97790B1476DB8E4A586 /* PropertySummaryView.swift */,
-				9D497917968F430C8DE833F0 /* FloorPlanMeshExport.swift */,
-				B322B9FD369A499F93F4699D /* FloorPlanIFCExport.swift */,
-				50C593755DB04907A8C64FCE /* ModelExportView.swift */,
-				3FD33A0BDB6649D88DE1E3FF /* PlanScheduleExport.swift */,
-				744FC20ED27D446E97A962C7 /* LANSyncView.swift */,
-				288B18CC2F004283AE6D66AC /* MeasureView.swift */,
-				C0ECD57C84264EEC9B11CABE /* RenovationSummaryView.swift */,
-				EF6FA02D8EFE4BF99B1CA786 /* ScanListView.swift */,
-				419DB1991993451F8BC37E70 /* ScanDetailView.swift */,
-				270790D039E34BCC941C624E /* USDZPreviewView.swift */,
+				5AB62EA61ECB4ABE895C5AF9 /* FloorPlanView.swift */,
+				B7254DA0E4974D47AEEAC67F /* CatalogBrowserView.swift */,
+				0AABD7B2A0134E0CBFC4EB73 /* RenovationEditorView.swift */,
+				0A7D614D93FB49A5A4BF35BC /* BlueprintLayout.swift */,
+				B3F4B08450984D75A035A037 /* BlueprintView.swift */,
+				323727675A5945618382E4B7 /* BlueprintEditorView.swift */,
+				103E838311624AA6AD71C669 /* BlueprintPDFExportView.swift */,
+				8EA8CF99F4BB4B66950D692D /* FloorPlanListView.swift */,
+				CA4341B0DF434044AB123982 /* FloorPlan3DPreviewView.swift */,
+				A32A7B45C1E74636B53D8855 /* BlueprintDXFExportView.swift */,
+				D33034961CE84CB6905A935E /* BlueprintAnnotationView.swift */,
+				1A590C13A85A4252A4B91DE2 /* BlueprintPNGExportView.swift */,
+				9398DC25A9894F6B8719A875 /* FloorPlanARView.swift */,
+				0DBC26024C994F7EA39F86C4 /* PropertySummaryView.swift */,
+				199F67C292724984B9453FB3 /* FloorPlanMeshExport.swift */,
+				4D241050ED7142DAA4DFF3D4 /* FloorPlanIFCExport.swift */,
+				0745A86FA8DF4C71B178F1F5 /* ModelExportView.swift */,
+				A08353DB32C74CCDAE15F1CF /* PlanScheduleExport.swift */,
+				5BF34A0863C34BCABBD82948 /* LANSyncView.swift */,
+				09A20D5D1D4B4448852BF3B8 /* MeasureView.swift */,
+				AB7D7AF2BF624867AE344171 /* RenovationSummaryView.swift */,
+				F28D03913B664447A3006872 /* ScanListView.swift */,
+				FD36FBD9A5F342CFB9B3EA74 /* ScanDetailView.swift */,
+				694315F7A8A14F819731A0A9 /* USDZPreviewView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
 		};
-		B26F647A8F0847759BF6FDF8 /* Preview Content */ = {
+		430747837052442A93732C5F /* Preview Content */ = {
 			isa = PBXGroup;
 			children = (
-				909E1BD12E1E4DC7B1E9C7C6 /* Preview Assets.xcassets */,
+				9265E613301842129B2F991E /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
 			sourceTree = "<group>";
@@ -240,13 +243,13 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		40A8131428FE4BF7BD8106D6 /* Lexdar */ = {
+		2B88351852D5494D95C3B093 /* Lexdar */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 9C97D06DC4CF4E6CB45F8DBA /* Build configuration list for PBXNativeTarget "Lexdar" */;
+			buildConfigurationList = 79A8B215CBB2496AAC42E3A7 /* Build configuration list for PBXNativeTarget "Lexdar" */;
 			buildPhases = (
-				61597038A9A4403788B47E23 /* Sources */,
-				CFDBC74981D144B194CFEC00 /* Frameworks */,
-				E9DD3640541944009551AF0F /* Resources */,
+				F198029814CD4C43911EC9AB /* Sources */,
+				174419C25F6B4B7F9E44BC29 /* Frameworks */,
+				12A9D00767D9465D9995CA85 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -254,25 +257,25 @@
 			);
 			name = Lexdar;
 			productName = Lexdar;
-			productReference = 3E4AFB77B5284F8BA759FA40 /* Lexdar.app */;
+			productReference = 497948C581DE44A285EBBFE7 /* Lexdar.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		D04CCA65CF1048228FDAB172 /* Project object */ = {
+		C1642725302447868A77CB34 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1540;
 				LastUpgradeCheck = 1540;
 				TargetAttributes = {
-					40A8131428FE4BF7BD8106D6 = {
+					2B88351852D5494D95C3B093 = {
 						CreatedOnToolsVersion = 15.4;
 					};
 				};
 			};
-			buildConfigurationList = 63889B8024364D689C06CA59 /* Build configuration list for PBXProject "Lexdar" */;
+			buildConfigurationList = B1366DDEF31345A4A65F9073 /* Build configuration list for PBXProject "Lexdar" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -280,78 +283,79 @@
 				en,
 				Base,
 			);
-			mainGroup = 54FE47136A1F46F99CE7F290;
-			productRefGroup = 0DD0ABA0A97D448FAC6C6094 /* Products */;
+			mainGroup = 571B557F34AB47EFA2F50863;
+			productRefGroup = 2F4A96F053284607B3ED9369 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				40A8131428FE4BF7BD8106D6 /* Lexdar */,
+				2B88351852D5494D95C3B093 /* Lexdar */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		E9DD3640541944009551AF0F /* Resources */ = {
+		12A9D00767D9465D9995CA85 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4C9C34432259473ABCCEFCB1 /* Assets.xcassets in Resources */,
-				A9E145476BB04D55AEB3A80A /* Preview Assets.xcassets in Resources */,
+				5CA8E2131FF343638E34D789 /* Assets.xcassets in Resources */,
+				4B8F8ECDBC4D4F9E8616A8EE /* Preview Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		61597038A9A4403788B47E23 /* Sources */ = {
+		F198029814CD4C43911EC9AB /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C31478DEC04944C9B7A8FD8A /* LexdarApp.swift in Sources */,
-				443DB0D7D3674E21B7CF6B8B /* ScanProject.swift in Sources */,
-				720F31B731BE4B719169AA0C /* CatalogItem.swift in Sources */,
-				064451CE94FB46BFB3504436 /* Catalog.swift in Sources */,
-				EEE59B546A9B4651A47A0694 /* RenovationPlan.swift in Sources */,
-				B69D1D426EFE49B998B7BB62 /* ScanStore.swift in Sources */,
-				68FA0064AED64613BD77017C /* FloorPlan.swift in Sources */,
-				FCAB2B54310F4F6CABD6F105 /* RoomCaptureCoordinator.swift in Sources */,
-				075B5F291F8D4B288DC8BDA0 /* RoomCaptureRepresentable.swift in Sources */,
-				168782DFBA374B51AE87C626 /* ScanCaptureView.swift in Sources */,
-				3E71BAE99E784AB4811BFEF0 /* RoomSceneBuilder.swift in Sources */,
-				09A143F2F03C42698AFECC8F /* RenovationSceneView.swift in Sources */,
-				5C4BDBA63CE645FEAB521A08 /* RoomPlanImporter.swift in Sources */,
-				125AEFA8CD3144C9A558E5BA /* FloorPlanSceneBuilder.swift in Sources */,
-				475C5CC5F1B741F7A1C72797 /* FloorPlanView.swift in Sources */,
-				8EC0AFD1F8D3418EB050F7E1 /* CatalogBrowserView.swift in Sources */,
-				E41ECD0BF6884A2B9CEC55BA /* RenovationEditorView.swift in Sources */,
-				07CDA587C3E5488E99065749 /* BlueprintLayout.swift in Sources */,
-				6F2F4B3E14F440CF8DAFD61A /* BlueprintView.swift in Sources */,
-				422790D3AF1A4E80929F81C1 /* BlueprintEditorView.swift in Sources */,
-				F6B48F1E8C464F449C7819DE /* BlueprintPDFExportView.swift in Sources */,
-				4DF3A64FD3EE4CB4BD6E689A /* FloorPlanListView.swift in Sources */,
-				F2ADAC97D99348BEAC412C4B /* FloorPlan3DPreviewView.swift in Sources */,
-				9A0D4648A39247D1B4BD8371 /* BlueprintDXFExportView.swift in Sources */,
-				BC42AD61D53A4FDDBEC308BE /* BlueprintAnnotationView.swift in Sources */,
-				2663106650814B1EB9A0B990 /* BlueprintPNGExportView.swift in Sources */,
-				C66D4BDE06DF492CA050F0C2 /* FloorPlanARView.swift in Sources */,
-				D40073BDFD594878AB543E72 /* PropertySummaryView.swift in Sources */,
-				FB9B733A15944CF59CED1D28 /* FloorPlanMeshExport.swift in Sources */,
-				9C422853569A41D19D754E4A /* FloorPlanIFCExport.swift in Sources */,
-				028C497E29C4458D82AE44D0 /* ModelExportView.swift in Sources */,
-				54BCA41237A44876B962F3C9 /* PlanScheduleExport.swift in Sources */,
-				B3322D4BDDDD44D495DF459F /* LANSyncView.swift in Sources */,
-				87B21365A52B47EE95A334CF /* MeasureView.swift in Sources */,
-				A002633B3A2A4BA38E5F4911 /* RenovationSummaryView.swift in Sources */,
-				4D912831076B4404A693CE18 /* ScanListView.swift in Sources */,
-				CD4ABA044BE54545AC6B12CA /* ScanDetailView.swift in Sources */,
-				AC08DC5BF32D48B0ACDC4E16 /* USDZPreviewView.swift in Sources */,
+				4ECBC4CEBC9645078D1252F8 /* LexdarApp.swift in Sources */,
+				FCE806C6261141A69EBB9CEA /* ScanProject.swift in Sources */,
+				3AEB91EC329848D09D734ED4 /* CatalogItem.swift in Sources */,
+				068CD5FDB87C46218A966E95 /* Catalog.swift in Sources */,
+				9935F842612B415B935D0DC0 /* RenovationPlan.swift in Sources */,
+				7454DEAA3C2440A39780E034 /* ScanStore.swift in Sources */,
+				2B9E6EA331524E0AB8DE61DB /* FloorPlan.swift in Sources */,
+				3DF64DE33D0F4ECDAB724FE7 /* RoomCaptureCoordinator.swift in Sources */,
+				E6EFD202293049A9874FB7C4 /* RoomCaptureRepresentable.swift in Sources */,
+				97011DCFDFD5412B9E376618 /* ScanCaptureView.swift in Sources */,
+				50F1AD88B33946F78C264560 /* RoomSceneBuilder.swift in Sources */,
+				BEF66FDE148C4D97969A2D8B /* RenovationSceneView.swift in Sources */,
+				0B311934E91946E182AAD78E /* RoomPlanImporter.swift in Sources */,
+				3CAB2EC9929A466992FC4D19 /* FloorPlanSceneBuilder.swift in Sources */,
+				00B1020C7A9C4758AFA194D2 /* LiveRoomPreview.swift in Sources */,
+				DF6A67340D644A9A84A21309 /* FloorPlanView.swift in Sources */,
+				F764D52506C04FC5A741F45B /* CatalogBrowserView.swift in Sources */,
+				665D2931C1904DB7B7466D9B /* RenovationEditorView.swift in Sources */,
+				194499DCE6D74C948CC0D4EB /* BlueprintLayout.swift in Sources */,
+				D2CA306B35CC4986A4443D1D /* BlueprintView.swift in Sources */,
+				99A7B0FC7FE548698FBF559B /* BlueprintEditorView.swift in Sources */,
+				709A4F7F2B68431586CDB01F /* BlueprintPDFExportView.swift in Sources */,
+				6B68D41DF9C64A77A6817E0E /* FloorPlanListView.swift in Sources */,
+				A9EE1253E27C4846B155F18A /* FloorPlan3DPreviewView.swift in Sources */,
+				AA559ADB9C4040BC99EB336C /* BlueprintDXFExportView.swift in Sources */,
+				6234EB517472408BB708B3D9 /* BlueprintAnnotationView.swift in Sources */,
+				8158E2846D43487FA951796D /* BlueprintPNGExportView.swift in Sources */,
+				1141B2CCC3C145D1BF0A1893 /* FloorPlanARView.swift in Sources */,
+				C27F4DB3A8A04429BDBEDE94 /* PropertySummaryView.swift in Sources */,
+				B195C214A4F24E75BE066C20 /* FloorPlanMeshExport.swift in Sources */,
+				74AE0A9B5B2F4A198FB92B6D /* FloorPlanIFCExport.swift in Sources */,
+				A966AE4C96A649648054E2C9 /* ModelExportView.swift in Sources */,
+				B44661183CFE4F2C8DCC535C /* PlanScheduleExport.swift in Sources */,
+				A1D1373E856D488EA356F43A /* LANSyncView.swift in Sources */,
+				8A9681F175A846B2BC5DFA21 /* MeasureView.swift in Sources */,
+				F35FE1F729984E13AD022A45 /* RenovationSummaryView.swift in Sources */,
+				E25B7DEF71604BE1A480B410 /* ScanListView.swift in Sources */,
+				D88186CE498B422BB052C580 /* ScanDetailView.swift in Sources */,
+				F63CE1E415664174B6E02456 /* USDZPreviewView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		D832096180384E89925B7E5E /* Debug */ = {
+		681FC315659843BD95AF1C62 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 
@@ -414,7 +418,7 @@
 			};
 			name = Debug;
 		};
-		5642C0B2E6314F20998058C3 /* Release */ = {
+		44886DC1BFB24EFC93C6E3FE /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 
@@ -470,7 +474,7 @@
 			};
 			name = Release;
 		};
-		EFAB97F009894EAC9734AB8D /* Debug */ = {
+		51775EFA59E149CBB99F6752 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 
@@ -502,7 +506,7 @@
 			};
 			name = Debug;
 		};
-		B8C317929F4F4B86B849D4A2 /* Release */ = {
+		F6145B10A98A44EBAF1DA625 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 
@@ -537,20 +541,20 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		63889B8024364D689C06CA59 /* Build configuration list for PBXProject "Lexdar" */ = {
+		B1366DDEF31345A4A65F9073 /* Build configuration list for PBXProject "Lexdar" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D832096180384E89925B7E5E /* Debug */,
-				5642C0B2E6314F20998058C3 /* Release */,
+				681FC315659843BD95AF1C62 /* Debug */,
+				44886DC1BFB24EFC93C6E3FE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		9C97D06DC4CF4E6CB45F8DBA /* Build configuration list for PBXNativeTarget "Lexdar" */ = {
+		79A8B215CBB2496AAC42E3A7 /* Build configuration list for PBXNativeTarget "Lexdar" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				EFAB97F009894EAC9734AB8D /* Debug */,
-				B8C317929F4F4B86B849D4A2 /* Release */,
+				51775EFA59E149CBB99F6752 /* Debug */,
+				F6145B10A98A44EBAF1DA625 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -558,5 +562,5 @@
 /* End XCConfigurationList section */
 
 	};
-	rootObject = D04CCA65CF1048228FDAB172 /* Project object */;
+	rootObject = C1642725302447868A77CB34 /* Project object */;
 }

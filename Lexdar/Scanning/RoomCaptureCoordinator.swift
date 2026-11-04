@@ -14,6 +14,10 @@ final class RoomCaptureCoordinator: NSObject, ObservableObject {
     /// slower, etc.) — mirrors RoomPlan's own on-screen instructions so the
     /// SwiftUI chrome can show a consistent banner alongside them.
     @Published var instruction: String?
+    /// Latest in-progress room model from RoomPlan, throttled, for the live
+    /// 3D preview shown while scanning.
+    @Published var liveRoom: CapturedRoom?
+    private var lastLiveUpdate = Date.distantPast
 
     static var isSupported: Bool {
         RoomCaptureSession.isSupported
@@ -35,7 +39,14 @@ final class RoomCaptureCoordinator: NSObject, ObservableObject {
         captureView.captureSession.run(configuration: configuration)
         isScanning = true
         finalRoom = nil
+        liveRoom = nil
         errorMessage = nil
+    }
+
+    func acceptLiveUpdate(_ room: CapturedRoom) {
+        guard Date().timeIntervalSince(lastLiveUpdate) > 0.6 else { return }
+        lastLiveUpdate = Date()
+        liveRoom = room
     }
 
     func stop() {
@@ -71,6 +82,12 @@ extension RoomCaptureCoordinator: RoomCaptureViewDelegate {
 }
 
 extension RoomCaptureCoordinator: RoomCaptureSessionDelegate {
+    nonisolated func captureSession(_ session: RoomCaptureSession, didUpdate room: CapturedRoom) {
+        Task { @MainActor in
+            self.acceptLiveUpdate(room)
+        }
+    }
+
     nonisolated func captureSession(_ session: RoomCaptureSession, didProvideInstructions instruction: RoomCaptureSession.Instruction) {
         Task { @MainActor in
             self.instruction = Self.describe(instruction)

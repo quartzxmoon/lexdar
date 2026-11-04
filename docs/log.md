@@ -219,3 +219,8 @@ Append-only. Newest entries at the bottom.
 - Added `MeasureView` (ARKit raycast point-to-point measuring with running
   total) so no external laser meter is needed; Bluetooth meter support is
   dropped from the plan. New page [[ar-measure]].
+
+## [2026-11-03] feature | Live 3D dollhouse preview while scanning
+
+- Added `LiveRoomPreview` and the `didUpdate` hook in `RoomCaptureCoordinator`;
+  recorded on [[scan-to-renovation-flow]].

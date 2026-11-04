@@ -18,7 +18,8 @@ sources:
   - code: Lexdar/Views/RenovationSummaryView.swift
   - code: Lexdar.xcodeproj/project.pbxproj
   - code: Lexdar/Views/ScanListView.swift
-verified_at: d77a5d0
+  - code: Lexdar/Scanning/LiveRoomPreview.swift
+verified_at: 16a90e1
 ---
 
 One LiDAR scan (`ScanProject`) can carry many independent renovation ideas
@@ -113,6 +114,23 @@ is reserved for swapping in real `.usdz` models later (see README).
 > Swift 6 language mode treats the mismatch as an error (a warning under
 > this project's current settings, caught in CI anyway). Neither method
 > touches actor-isolated state, so `nonisolated` is free here.
+
+## Live 3D preview while scanning
+
+While a scan runs, `RoomCaptureCoordinator` receives RoomPlan's
+`captureSession(_:didUpdate:)` callbacks (a fresh in-progress `CapturedRoom`),
+keeps at most one every 0.6 s in `liveRoom`, and `ScanCaptureView` shows
+`LiveRoomPreview` in the top corner: a slowly spinning dollhouse built with
+the same `RoomSceneBuilder` as the editor, so walls, doors, windows, and
+objects appear in 3D as they are found. It hides itself when scanning stops
+(RoomPlan's own view then shows its processed result).
+
+> ⚠️ Every update rebuilds the whole preview scene from scratch (as
+> `RoomSceneBuilder` always does), which is why updates are throttled. If the
+> preview stutters on a large scan, lengthen the throttle in
+> `RoomCaptureCoordinator.acceptLiveUpdate` before touching anything else.
+> Not yet run on a device; the camera framing in `LiveRoomPreview` (distance
+> from the room's bounding box) is a guess to tune once seen.
 
 ## Not yet built
 
