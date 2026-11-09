@@ -1,0 +1,191 @@
+name: Build iOS app
+
+# Two jobs:
+#   validate  - always runs on push/PR. No signing, no secrets needed.
+#               Just proves the project compiles. Good fast feedback since
+#               there's no local Xcode available to check this before pushing.
+#   archive   - only runs if the four signing secrets below are present.
+#               Produces a signed, installable .ipa as a workflow artifact.
+#               See docs/operations/ios-signing-and-sideloading.md for how to
+#               get those secrets without ever touching a Mac.
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch: {}
+
+jobs:
+  validate:
+    name: Compile (unsigned)
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Show toolchain versions
+        # Deliberately no "Select Xcode" step. This runner image carries
+        # several Xcode versions (16.0 through 16.4, plus 26.x), and
+        # pinning to a specific one by path (we tried Xcode_16.app) landed
+        # on a copy whose bundled iOS SDK didn't match *any* simulator
+        # runtime installed on the runner, nor was its device-platform
+        # support fully registered -- see the long comment below and
+        # docs/operations/ios-signing-and-sideloading.md for the two dead
+        # ends this took before landing here. `xcode-select`'s own default
+        # (whatever DEVELOPER_DIR the image ships pointed at /Applications
+        # /Xcode.app) is the one GitHub keeps fully provisioned for both
+        # device and simulator destinations, so just use that.
+        run: |
+          xcodebuild -version
+          swift --version
+
+      - name: Build (no code signing)
+        # set -o pipefail matters: without it, `xcodebuild | xcpretty`'s exit
+        # status is xcpretty's (which exits 0 as long as it could parse the
+        # output), so a real BUILD FAILED silently reports as a green check.
+        #
+        # SUPPORTED_PLATFORMS=iphoneos overrides the project's own
+        # "iphoneos iphonesimulator" (kept there so Simulator builds still
+        # work in Xcode locally, for UI-only screens that don't need
+        # RoomPlan). CompileAssetCatalog/actool validates the asset catalog
+        # against every platform in SUPPORTED_PLATFORMS regardless of what
+        # -destination actually targets, so with iphonesimulator still
+        # listed it tries to resolve a matching simulator runtime even for
+        # this device-only build -- and GitHub's macOS runner images
+        # periodically ship a simulator runtime that doesn't match what the
+        # resident Xcode's SDK expects (actions/runner-images#13317),
+        # failing with "No simulator runtime version ... available to use
+        # with iphonesimulator SDK version ...". Neither ENABLE_PREVIEWS=NO
+        # (that flag stopped controlling anything relevant under Xcode 16)
+        # nor switching to a Release build (tried first; same failure,
+        # config-independent) fixed this -- restricting SUPPORTED_PLATFORMS
+        # for this CI invocation is what actually removes the simulator
+        # check.
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project Lexdar.xcodeproj \
+            -scheme Lexdar \
+            -destination "generic/platform=iOS" \
+            -configuration Release \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            SUPPORTED_PLATFORMS=iphoneos \
+            | xcpretty
+
+      - name: Package unsigned .ipa
+        # An unsigned .ipa needs no paid Apple Developer account and no
+        # repository settings: Sideloadly (Windows) signs it with a free
+        # Apple ID when it installs it on the iPad.
+        run: |
+          set -euo pipefail
+          APP=$(find build/Build/Products -maxdepth 3 -name "Lexdar.app" | head -1)
+          test -n "$APP"
+          mkdir -p Payload
+          cp -R "$APP" Payload/
+          zip -qry Lexdar-unsigned.ipa Payload
+
+      - name: Upload unsigned .ipa
+        uses: actions/upload-artifact@v4
+        with:
+          name: Lexdar-unsigned-ipa
+          path: Lexdar-unsigned.ipa
+          retention-days: 30
+
+  archive:
+    name: Archive + export signed .ipa
+    runs-on: macos-15
+    needs: validate
+    # Skip cleanly instead of failing when the signing secrets haven't been
+    # added yet (see the docs page above for how to create and add them).
+    if: ${{ github.repository_owner != '' && vars.SIGNING_CONFIGURED == 'true' }}
+    env:
+      BUNDLE_ID: com.lexdar.app
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Import signing certificate and provisioning profile
+        env:
+          BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+          P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
+          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: |
+          set -euo pipefail
+          CERT_PATH="$RUNNER_TEMP/build_certificate.p12"
+          PP_PATH="$RUNNER_TEMP/build_pp.mobileprovision"
+          KEYCHAIN_PATH="$RUNNER_TEMP/app-signing.keychain-db"
+
+          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o "$CERT_PATH"
+          echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o "$PP_PATH"
+
+          # Fresh, isolated keychain for this run only.
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security import "$CERT_PATH" -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
+          security list-keychain -d user -s "$KEYCHAIN_PATH" $(security list-keychains -d user | sed 's/"//g')
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp "$PP_PATH" ~/Library/MobileDevice/Provisioning\ Profiles/
+
+      - name: Archive
+        run: |
+          xcodebuild archive \
+            -project Lexdar.xcodeproj \
+            -scheme Lexdar \
+            -configuration Release \
+            -archivePath "$RUNNER_TEMP/Lexdar.xcarchive" \
+            -destination "generic/platform=iOS" \
+            DEVELOPMENT_TEAM="${{ vars.APPLE_TEAM_ID }}" \
+            PRODUCT_BUNDLE_IDENTIFIER="$BUNDLE_ID" \
+            CODE_SIGN_STYLE=Manual \
+            PROVISIONING_PROFILE_SPECIFIER="${{ vars.PROVISIONING_PROFILE_NAME }}" \
+            SUPPORTED_PLATFORMS=iphoneos
+          # SUPPORTED_PLATFORMS=iphoneos for the same reason as the validate
+          # job above: without it, CompileAssetCatalog/actool tries to
+          # validate against iphonesimulator too and can hit a runner-image
+          # simulator-runtime mismatch (actions/runner-images#13317),
+          # regardless of build configuration.
+
+      - name: Write exportOptions.plist
+        run: |
+          cat > "$RUNNER_TEMP/exportOptions.plist" <<PLIST
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>${{ vars.EXPORT_METHOD || 'development' }}</string>
+            <key>teamID</key>
+            <string>${{ vars.APPLE_TEAM_ID }}</string>
+            <key>signingStyle</key>
+            <string>manual</string>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>${{ env.BUNDLE_ID }}</key>
+              <string>${{ vars.PROVISIONING_PROFILE_NAME }}</string>
+            </dict>
+            <key>compileBitcode</key>
+            <false/>
+          </dict>
+          </plist>
+          PLIST
+
+      - name: Export .ipa
+        run: |
+          xcodebuild -exportArchive \
+            -archivePath "$RUNNER_TEMP/Lexdar.xcarchive" \
+            -exportOptionsPlist "$RUNNER_TEMP/exportOptions.plist" \
+            -exportPath "$RUNNER_TEMP/export"
+
+      - name: Upload .ipa
+        uses: actions/upload-artifact@v4
+        with:
+          name: Lexdar-ipa
+          path: ${{ runner.temp }}/export/*.ipa
+          retention-days: 14
+
+      - name: Clean up temporary keychain
+        if: always()
+        run: |
+          security delete-keychain "$RUNNER_TEMP/app-signing.keychain-db" || true
