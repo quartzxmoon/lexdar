@@ -66,9 +66,29 @@ jobs:
             -scheme Lexdar \
             -destination "generic/platform=iOS" \
             -configuration Release \
+            -derivedDataPath build \
             CODE_SIGNING_ALLOWED=NO \
             SUPPORTED_PLATFORMS=iphoneos \
             | xcpretty
+
+      - name: Package unsigned .ipa
+        # An unsigned .ipa needs no paid Apple Developer account and no
+        # repository settings: Sideloadly (Windows) signs it with a free
+        # Apple ID when it installs it on the iPad.
+        run: |
+          set -euo pipefail
+          APP=$(find build/Build/Products -maxdepth 3 -name "Lexdar.app" | head -1)
+          test -n "$APP"
+          mkdir -p Payload
+          cp -R "$APP" Payload/
+          zip -qry Lexdar-unsigned.ipa Payload
+
+      - name: Upload unsigned .ipa
+        uses: actions/upload-artifact@v4
+        with:
+          name: Lexdar-unsigned-ipa
+          path: Lexdar-unsigned.ipa
+          retention-days: 30
 
   archive:
     name: Archive + export signed .ipa

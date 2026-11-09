@@ -224,3 +224,7 @@ Append-only. Newest entries at the bottom.
 
 - Added `LiveRoomPreview` and the `didUpdate` hook in `RoomCaptureCoordinator`;
   recorded on [[scan-to-renovation-flow]].
+
+## [2026-11-09] feature | Unsigned .ipa artifact for free-Apple-ID installs
+
+- CI now packages and uploads Lexdar-unsigned.ipa; documented the Sideloadly route on [[ios-signing-and-sideloading]].

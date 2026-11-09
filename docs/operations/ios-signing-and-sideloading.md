@@ -2,12 +2,12 @@
 title: Building + installing without a Mac (CI signing & sideloading)
 type: operation
 created: 2026-11-03
-updated: 2026-11-03
+updated: 2026-11-09
 sources:
   - code: .github/workflows/build-ios.yml
   - code: README.md
   - ext: https://developer.apple.com/account
-verified_at: d77a5d0
+verified_at: a13e0bb
 ---
 
 No Mac is required to get `Lexdar` onto an iPad: Xcode itself only runs on
@@ -21,10 +21,40 @@ RoomPlan/ARKit/SceneKit/QuickLook/PDFKit, so nothing here changes when
 new frameworks are added that way. Every step below runs from the Apple
 Developer *website* and OpenSSL — neither needs Xcode or Keychain Access.
 
-Requires an **Apple Developer Program** membership ($99/yr). The free
-tier's web portal does not expose certificate/profile creation — that's an
-Apple restriction on the free tier, not something this workflow can route
-around.
+The **signed** route (steps 1-6 below) requires an **Apple Developer Program**
+membership ($99/yr). The free tier's web portal does not expose
+certificate/profile creation — that's an Apple restriction on the free tier,
+not something this workflow can route around. If you only want the app on
+your own iPad, skip all of that and use the next section.
+
+## Quickest path: unsigned .ipa + free Apple ID
+
+The `validate` job in `.github/workflows/build-ios.yml` also packages the
+compiled app as `Lexdar-unsigned.ipa` and uploads it as the workflow artifact
+`Lexdar-unsigned-ipa` (kept 30 days). It needs no secrets and no paid
+membership, because Sideloadly signs it with your own free Apple ID at install
+time.
+
+1. GitHub repo > **Actions** > open a green run on the branch > download the
+   `Lexdar-unsigned-ipa` artifact and unzip it to get `Lexdar-unsigned.ipa`.
+2. On Windows, install [Sideloadly](https://sideloadly.io/) (it needs Apple's
+   device support from iTunes or the Apple Devices app).
+3. Plug the iPad in, trust the computer, enter your Apple ID in Sideloadly, drag
+   in `Lexdar-unsigned.ipa`, press Start.
+4. On the iPad: turn on **Settings > Privacy & Security > Developer Mode**
+   (restarts the iPad), then **Settings > General > VPN & Device Management**
+   and trust your Apple ID's developer entry. Open Lexdar.
+
+> ⚠️ A free Apple ID's install **expires after 7 days** (open Sideloadly and
+> install again over the top; data inside the app is kept when the bundle id
+> is unchanged) and a free ID is limited to a few sideloaded apps at once. If
+> Sideloadly reports the bundle id `com.lexdar.app` is taken, let it
+> rewrite it to a unique one. This path was written from Sideloadly's
+> documented behavior; it has not been run end to end from this repository.
+
+> ⚠️ The unsigned build packages whatever `build/Build/Products/Release-iphoneos/Lexdar.app`
+> the compile step produced. The compile step must keep `-derivedDataPath
+> build`, or the packaging step cannot find the app and fails.
 
 ## 1. Generate a certificate request with OpenSSL (Windows or any OS)
 
