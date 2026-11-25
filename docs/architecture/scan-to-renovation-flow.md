@@ -2,7 +2,7 @@
 title: Scan-to-renovation data flow
 type: architecture
 created: 2026-11-02
-updated: 2026-11-02
+updated: 2026-11-26
 sources:
   - code: Lexdar/Scanning/RoomCaptureCoordinator.swift
   - code: Lexdar/Scanning/ScanCaptureView.swift
@@ -19,7 +19,7 @@ sources:
   - code: Lexdar.xcodeproj/project.pbxproj
   - code: Lexdar/Views/ScanListView.swift
   - code: Lexdar/Scanning/LiveRoomPreview.swift
-verified_at: 16a90e1
+verified_at: c94f735
 ---
 
 One LiDAR scan (`ScanProject`) can carry many independent renovation ideas
@@ -114,6 +114,34 @@ is reserved for swapping in real `.usdz` models later (see README).
 > Swift 6 language mode treats the mismatch as an error (a warning under
 > this project's current settings, caught in CI anyway). Neither method
 > touches actor-isolated state, so `nonisolated` is free here.
+
+## Renovation editor: placing items and drawing walls
+
+- **Place Item** opens the furnish catalog; choosing an item sets
+  `pendingPlacementItemID`, and `RenovationSceneView.updateUIView` hands it to
+  the coordinator, which drops the item on the floor under the middle of the
+  screen (resting on the floor, or hung from the ceiling for pendants), selects
+  it, and returns to Select so it can be dragged straight away. Dragging uses a
+  ray-to-floor-plane intersection (`floorPoint(at:planeY:)`) so the item follows
+  the finger.
+- **Draw Wall** (`RenovationTool.drawWall`) switches to a top-down camera and
+  turns a one-finger/Pencil drag into an `AddedWall` stored in
+  `RenovationPlan.addedWalls`, snapped to existing wall ends, 15 degree angles
+  and a 5 cm grid. New walls render as `newwall:<uuid>` nodes; Remove Walls on
+  one deletes it, and Wall Finish can paint it.
+
+> ⚠️ The old placement flow waited for a tap on a `floor:` node. If RoomPlan
+> returns no floor surfaces, nothing could be hit and the tap silently did
+> nothing. `RoomSceneBuilder` now adds a synthetic floor slab (fixed id
+> `syntheticFloorID`) when `room.floors` is empty, and placement/drawing
+> intersect an imaginary plane at the scan's floor height (from the walls)
+> instead of depending on a floor node.
+
+> ⚠️ `RenovationPlan.addedWalls` is optional so plans saved earlier still decode;
+> read it through `newWalls`. New walls are not in the 2D plan view, the
+> renovation summary export, or any export format yet. Compile-checked in CI
+> only; never run on a device, so gesture feel (snapping distances, drag
+> response, top-down framing) is untested.
 
 ## Live 3D preview while scanning
 

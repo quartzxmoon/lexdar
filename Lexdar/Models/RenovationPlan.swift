@@ -28,6 +28,30 @@ struct PlacedItem: Identifiable, Codable, Hashable {
     var catalogItem: CatalogItem? { Catalog.item(id: catalogItemID) }
 }
 
+/// A brand-new wall the user drew in the renovation view (not part of the
+/// scan). Positions are plan-view meters in the CapturedRoom's world space
+/// (`x`, `z`); the wall stands on `baseY`, the scan's floor height.
+struct AddedWall: Identifiable, Codable, Hashable {
+    let id: UUID
+    var start: SIMD2<Float>
+    var end: SIMD2<Float>
+    var baseY: Float
+    var height: Float
+    var thickness: Float
+
+    init(id: UUID = UUID(), start: SIMD2<Float>, end: SIMD2<Float>, baseY: Float,
+         height: Float = 2.4384, thickness: Float = 0.1143) {
+        self.id = id
+        self.start = start
+        self.end = end
+        self.baseY = baseY
+        self.height = height
+        self.thickness = thickness
+    }
+
+    var length: Float { simd_length(end - start) }
+}
+
 /// A material override applied to one captured surface (a wall, or the
 /// floor) by `identifier` — RoomPlan's `CapturedRoom.Surface.identifier`
 /// stays stable across the life of a single capture, which is what lets us
@@ -67,6 +91,11 @@ struct RenovationPlan: Identifiable, Codable, Hashable {
     /// the identifier of that room's floor surface.
     var roomLabels: [UUID: String]
     var notes: String
+    /// Walls drawn by hand in the renovation view. Optional so renovation
+    /// plans saved before this existed still decode; read via `newWalls`.
+    var addedWalls: [AddedWall]?
+
+    var newWalls: [AddedWall] { addedWalls ?? [] }
 
     init(id: UUID = UUID(), scanID: UUID, name: String) {
         self.id = id
@@ -88,6 +117,29 @@ struct RenovationPlan: Identifiable, Codable, Hashable {
         } else {
             removedWallIDs.insert(id)
         }
+        updatedAt = Date()
+    }
+
+    mutating func addWall(_ wall: AddedWall) {
+        var walls = addedWalls ?? []
+        walls.append(wall)
+        addedWalls = walls
+        updatedAt = Date()
+    }
+
+    mutating func removeAddedWall(_ id: UUID) {
+        addedWalls?.removeAll { $0.id == id }
+        surfaceMaterials.removeAll { $0.surfaceID == id }
+        updatedAt = Date()
+    }
+
+    mutating func removeLastAddedWall() {
+        guard let last = addedWalls?.last else { return }
+        removeAddedWall(last.id)
+    }
+
+    mutating func clearAddedWalls() {
+        addedWalls = nil
         updatedAt = Date()
     }
 

@@ -228,3 +228,7 @@ Append-only. Newest entries at the bottom.
 ## [2026-11-09] feature | Unsigned .ipa artifact for free-Apple-ID installs
 
 - CI now packages and uploads Lexdar-unsigned.ipa; documented the Sideloadly route on [[ios-signing-and-sideloading]].
+
+## [2026-11-26] fix | Renovation editor: item placement and wall drawing; app icon
+
+- Items now drop into the room when chosen from the catalog and drag under the finger; added a Draw Wall tool (finger/Pencil); synthetic floor when the scan has none. New app icon added. Details and traps on [[scan-to-renovation-flow]].

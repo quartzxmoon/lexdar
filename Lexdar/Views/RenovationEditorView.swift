@@ -16,6 +16,8 @@ struct RenovationEditorView: View {
     @State private var tool: RenovationTool = .inspect
     @State private var activeCatalogItemID: String?
     @State private var selectedPlacedItemID: UUID?
+    @State private var pendingPlacementItemID: String?
+    @State private var hudText: String?
     @State private var showCatalogSheet = false
     @State private var showSummary = false
     @State private var showDeleteConfirm = false
@@ -25,16 +27,30 @@ struct RenovationEditorView: View {
             ZStack(alignment: .bottom) {
                 RenovationSceneView(room: room, plan: $plan, tool: $tool,
                                      activeCatalogItemID: $activeCatalogItemID,
-                                     selectedPlacedItemID: $selectedPlacedItemID)
+                                     selectedPlacedItemID: $selectedPlacedItemID,
+                                     pendingPlacementItemID: $pendingPlacementItemID,
+                                     hudText: $hudText)
                     .ignoresSafeArea(edges: .bottom)
 
                 VStack(spacing: 10) {
                     if selectedPlacedItemID != nil, tool == .inspect {
                         selectedItemBar
                     }
+                    if tool == .drawWall {
+                        drawWallBar
+                    }
                     toolBar
                 }
                 .padding(.bottom, 8)
+            }
+            .overlay(alignment: .top) {
+                if let hudText {
+                    Text(hudText)
+                        .font(.headline.monospacedDigit())
+                        .padding(.horizontal, 14).padding(.vertical, 8)
+                        .background(.ultraThinMaterial, in: Capsule())
+                        .padding(.top, 8)
+                }
             }
             .navigationTitle(plan.name)
             .navigationBarTitleDisplayMode(.inline)
@@ -65,7 +81,11 @@ struct RenovationEditorView: View {
             .onChange(of: plan) { _, newValue in
                 store.save(newValue)
             }
-            .sheet(isPresented: $showCatalogSheet) {
+            .sheet(isPresented: $showCatalogSheet, onDismiss: {
+                // Backing out of the furnish catalog without choosing leaves
+                // nothing to do in Place mode, so return to Select.
+                if tool == .place { tool = .inspect }
+            }) {
                 catalogSheet
             }
             .sheet(isPresented: $showSummary) {
@@ -135,10 +155,29 @@ struct RenovationEditorView: View {
         .padding(.horizontal)
     }
 
+    private var drawWallBar: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "pencil.and.ruler.fill")
+            Text("Drag on the floor with your finger or Pencil to build a wall. It snaps to corners, 15° angles, and a 2 in grid. Tap Select to turn the view.")
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+            Spacer()
+            Button("Undo") { plan.removeLastAddedWall() }
+                .disabled(plan.newWalls.isEmpty)
+            Button("Clear", role: .destructive) { plan.clearAddedWalls() }
+                .disabled(plan.newWalls.isEmpty)
+        }
+        .font(.caption.weight(.medium))
+        .padding(10)
+        .background(.ultraThinMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .padding(.horizontal)
+    }
+
     private func selectTool(_ t: RenovationTool) {
         selectedPlacedItemID = nil
         switch t {
-        case .inspect, .removeWalls:
+        case .inspect, .removeWalls, .drawWall:
             tool = t
         case .paintFloor, .paintWall, .place:
             tool = t
@@ -163,8 +202,9 @@ struct RenovationEditorView: View {
             CatalogBrowserView(categories: [.kitchenFixture, .bathroomFixture, .appliance, .furniture, .lighting, .outdoor],
                                 title: "Furnish the Room") { item in
                 activeCatalogItemID = item.id
+                pendingPlacementItemID = item.id
             }
-        case .inspect, .removeWalls:
+        case .inspect, .removeWalls, .drawWall:
             EmptyView()
         }
     }

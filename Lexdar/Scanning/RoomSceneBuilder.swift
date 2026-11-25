@@ -9,7 +9,7 @@ import RoomPlan
 /// a `RenovationPlan`'s wall removals, material swaps, hidden-object list,
 /// and placed catalog items. Node naming convention used for hit-testing in
 /// `RenovationSceneView`:
-///   "wall:<uuid>"    "floor:<uuid>"    "object:<uuid>"    "placed:<uuid>"
+///   "wall:<uuid>"    "newwall:<uuid>"    "floor:<uuid>"    "object:<uuid>"    "placed:<uuid>"
 enum RoomSceneBuilder {
     static func build(room: CapturedRoom, plan: RenovationPlan) -> SCNScene {
         let scene = SCNScene()
@@ -18,8 +18,14 @@ enum RoomSceneBuilder {
         for floor in room.floors {
             root.addChildNode(floorNode(for: floor, plan: plan))
         }
+        if room.floors.isEmpty {
+            root.addChildNode(syntheticFloorNode(for: bounds(of: room), plan: plan))
+        }
         for wall in room.walls where !plan.removedWallIDs.contains(wall.identifier) {
             root.addChildNode(wallNode(for: wall, plan: plan))
+        }
+        for added in plan.newWalls where added.length > 0.02 {
+            root.addChildNode(addedWallNode(for: added, plan: plan))
         }
         for door in room.doors {
             root.addChildNode(openingNode(for: door, color: .systemBlue, prefix: "door"))
@@ -53,7 +59,93 @@ enum RoomSceneBuilder {
         return scene
     }
 
+    // MARK: - Room extents
+
+    struct RoomBounds {
+        var minX: Float
+        var maxX: Float
+        var minZ: Float
+        var maxZ: Float
+        var floorY: Float
+        var ceilingY: Float
+
+        var center: SIMD3<Float> { SIMD3<Float>((minX + maxX) / 2, floorY, (minZ + maxZ) / 2) }
+        var extent: Float { max(maxX - minX, maxZ - minZ) }
+        var wallHeight: Float {
+            let h = ceilingY - floorY
+            return (h > 1.8 && h < 5) ? h : 2.4384
+        }
+    }
+
+    /// Fixed id for the floor slab drawn when RoomPlan returned no floor
+    /// surface, so floor materials can still be applied and remembered.
+    static let syntheticFloorID = UUID(uuidString: "F100F100-F100-F100-F100-F100F100F100")!
+
+    /// Extents of the scan, from the walls' end points; falls back to a
+    /// small default box when the scan has no walls.
+    static func bounds(of room: CapturedRoom) -> RoomBounds {
+        var minX = Float.greatestFiniteMagnitude, maxX = -Float.greatestFiniteMagnitude
+        var minZ = Float.greatestFiniteMagnitude, maxZ = -Float.greatestFiniteMagnitude
+        var floorY = Float.greatestFiniteMagnitude, ceilingY = -Float.greatestFiniteMagnitude
+        for wall in room.walls {
+            let t = wall.transform
+            let center = SIMD3<Float>(t.columns.3.x, t.columns.3.y, t.columns.3.z)
+            let axis = SIMD3<Float>(t.columns.0.x, t.columns.0.y, t.columns.0.z)
+            let half = wall.dimensions.x / 2
+            for sign: Float in [-1, 1] {
+                let p = center + axis * (half * sign)
+                minX = min(minX, p.x)
+                maxX = max(maxX, p.x)
+                minZ = min(minZ, p.z)
+                maxZ = max(maxZ, p.z)
+            }
+            floorY = min(floorY, center.y - wall.dimensions.y / 2)
+            ceilingY = max(ceilingY, center.y + wall.dimensions.y / 2)
+        }
+        if minX > maxX {
+            return RoomBounds(minX: -2, maxX: 2, minZ: -2, maxZ: 2, floorY: 0, ceilingY: 2.4384)
+        }
+        return RoomBounds(minX: minX, maxX: maxX, minZ: minZ, maxZ: maxZ, floorY: floorY, ceilingY: ceilingY)
+    }
+
     // MARK: - Surfaces
+
+    private static func syntheticFloorNode(for bounds: RoomBounds, plan: RenovationPlan) -> SCNNode {
+        let margin: Float = 0.3
+        let geometry = SCNBox(width: CGFloat(bounds.maxX - bounds.minX + margin * 2), height: 0.03,
+                               length: CGFloat(bounds.maxZ - bounds.minZ + margin * 2), chamferRadius: 0)
+        let material = SCNMaterial()
+        if let override = plan.material(for: syntheticFloorID) {
+            material.diffuse.contents = UIColor(override.color)
+        } else {
+            material.diffuse.contents = UIColor(white: 0.85, alpha: 1)
+        }
+        geometry.materials = [material]
+        let node = SCNNode(geometry: geometry)
+        node.name = "floor:\(syntheticFloorID.uuidString)"
+        node.position = SCNVector3(bounds.center.x, bounds.floorY - 0.015, bounds.center.z)
+        return node
+    }
+
+    private static func addedWallNode(for wall: AddedWall, plan: RenovationPlan) -> SCNNode {
+        let geometry = SCNBox(width: CGFloat(wall.length), height: CGFloat(wall.height),
+                               length: CGFloat(max(wall.thickness, 0.08)), chamferRadius: 0)
+        let material = SCNMaterial()
+        if let override = plan.material(for: wall.id) {
+            material.diffuse.contents = UIColor(override.color)
+        } else {
+            material.diffuse.contents = UIColor(red: 0.86, green: 0.93, blue: 1, alpha: 1)
+        }
+        geometry.materials = [material]
+        let node = SCNNode(geometry: geometry)
+        node.name = "newwall:\(wall.id.uuidString)"
+        node.position = SCNVector3((wall.start.x + wall.end.x) / 2,
+                                    wall.baseY + wall.height / 2,
+                                    (wall.start.y + wall.end.y) / 2)
+        let angle = atan2(wall.end.y - wall.start.y, wall.end.x - wall.start.x)
+        node.eulerAngles = SCNVector3(0, -angle, 0)
+        return node
+    }
 
     private static func floorNode(for floor: CapturedRoom.Surface, plan: RenovationPlan) -> SCNNode {
         let geometry = SCNBox(width: CGFloat(floor.dimensions.x), height: 0.03,
