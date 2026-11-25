@@ -55,6 +55,8 @@ struct RenovationSceneView: UIViewRepresentable {
     @Binding var pendingPlacementItemID: String?
     /// Live readout (e.g. a wall's length) shown over the scene while drawing.
     @Binding var hudText: String?
+    /// False hides the furniture/fixtures RoomPlan detected during the scan.
+    var showDetectedObjects: Bool = true
 
     func makeUIView(context: Context) -> SCNView {
         let view = SCNView()
@@ -145,7 +147,8 @@ struct RenovationSceneView: UIViewRepresentable {
         func rebuildScene(room: CapturedRoom, plan: RenovationPlan) {
             guard let view else { return }
             let pov = view.pointOfView
-            let scene = RoomSceneBuilder.build(room: room, plan: plan)
+            let scene = RoomSceneBuilder.build(room: room, plan: plan,
+                                               showDetectedObjects: parent.showDetectedObjects)
             if let pov {
                 pov.removeFromParentNode()
                 scene.rootNode.addChildNode(pov)

@@ -11,7 +11,7 @@ import RoomPlan
 /// `RenovationSceneView`:
 ///   "wall:<uuid>"    "newwall:<uuid>"    "floor:<uuid>"    "object:<uuid>"    "placed:<uuid>"
 enum RoomSceneBuilder {
-    static func build(room: CapturedRoom, plan: RenovationPlan) -> SCNScene {
+    static func build(room: CapturedRoom, plan: RenovationPlan, showDetectedObjects: Bool = true) -> SCNScene {
         let scene = SCNScene()
         let root = scene.rootNode
 
@@ -33,7 +33,7 @@ enum RoomSceneBuilder {
         for window in room.windows {
             root.addChildNode(openingNode(for: window, color: .systemCyan, prefix: "window"))
         }
-        for object in room.objects where !plan.hiddenObjectIDs.contains(object.identifier) {
+        for object in room.objects where showDetectedObjects && !plan.hiddenObjectIDs.contains(object.identifier) {
             root.addChildNode(capturedObjectNode(for: object))
         }
         for item in plan.placedItems {

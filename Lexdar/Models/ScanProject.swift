@@ -15,13 +15,21 @@ struct ScanProject: Identifiable, Codable, Hashable {
     /// Rough total floor area in square meters, filled in after processing
     /// (sum of CapturedRoom.floors area). Nil until a scan has been saved.
     var floorAreaSquareMeters: Double?
+    /// Whether the furniture and fixtures RoomPlan detected (cabinets,
+    /// tables, sofas, beds, toilets, ...) are shown and exported. Optional so
+    /// scans saved before this existed still decode; nil means included.
+    var includeObjects: Bool?
 
     var folderName: String { id.uuidString }
 
-    init(id: UUID = UUID(), name: String, createdAt: Date = Date(), floorAreaSquareMeters: Double? = nil) {
+    var showsDetectedObjects: Bool { includeObjects ?? true }
+
+    init(id: UUID = UUID(), name: String, createdAt: Date = Date(), floorAreaSquareMeters: Double? = nil,
+         includeObjects: Bool? = nil) {
         self.id = id
         self.name = name
         self.createdAt = createdAt
         self.floorAreaSquareMeters = floorAreaSquareMeters
+        self.includeObjects = includeObjects
     }
 }

@@ -232,3 +232,7 @@ Append-only. Newest entries at the bottom.
 ## [2026-11-26] fix | Renovation editor: item placement and wall drawing; app icon
 
 - Items now drop into the room when chosen from the catalog and drag under the finger; added a Draw Wall tool (finger/Pencil); synthetic floor when the scan has none. New app icon added. Details and traps on [[scan-to-renovation-flow]].
+
+## [2026-11-26] feature | Furniture and fixtures switch for scans
+
+- Toggle on the scan screen and in scan details; see [[scan-to-renovation-flow]].

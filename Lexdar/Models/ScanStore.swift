@@ -114,11 +114,12 @@ final class ScanStore: ObservableObject {
     /// Persists a freshly-processed `CapturedRoom`: exports a combined
     /// parametric+mesh USDZ, writes the raw room JSON for later re-export
     /// and floor-plan regeneration, and records the metadata entry.
-    func saveNewScan(name: String, room: CapturedRoom) async throws -> ScanProject {
+    func saveNewScan(name: String, room: CapturedRoom, includeObjects: Bool = true) async throws -> ScanProject {
         let area = room.floors.reduce(0.0) { partial, floor in
             partial + Double(floor.dimensions.x * floor.dimensions.z)
         }
-        let project = ScanProject(name: name, floorAreaSquareMeters: area > 0 ? area : nil)
+        let project = ScanProject(name: name, floorAreaSquareMeters: area > 0 ? area : nil,
+                                  includeObjects: includeObjects)
         let folder = folderURL(for: project)
         try fileManager.createDirectory(at: folder, withIntermediateDirectories: true)
         try fileManager.createDirectory(at: plansFolderURL(for: project.id), withIntermediateDirectories: true)
@@ -126,13 +127,51 @@ final class ScanStore: ObservableObject {
         let roomData = try JSONEncoder().encode(room)
         try roomData.write(to: roomJSONURL(for: project))
 
-        try room.export(to: modelURL(for: project), exportOptions: .parametric)
+        try writeModel(for: project, room: room)
 
         let metadata = try JSONEncoder().encode(project)
         try metadata.write(to: metadataURL(for: project))
 
         reload()
         return project
+    }
+
+    /// Exports the 3D model. The full scan stays in room.json either way, so
+    /// the furniture switch can be flipped later without losing anything.
+    private func writeModel(for project: ScanProject, room: CapturedRoom) throws {
+        var source = room
+        if !project.showsDetectedObjects, let stripped = Self.withoutObjects(room) {
+            source = stripped
+        }
+        try source.export(to: modelURL(for: project), exportOptions: .parametric)
+    }
+
+    /// A copy of the room with its detected objects removed, made by editing
+    /// the room's JSON form (CapturedRoom has no public initializer). Returns
+    /// nil if that did not produce a room with no objects, in which case
+    /// callers keep the original.
+    static func withoutObjects(_ room: CapturedRoom) -> CapturedRoom? {
+        guard let data = try? JSONEncoder().encode(room),
+              var json = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any],
+              json["objects"] != nil else { return nil }
+        json["objects"] = [Any]()
+        guard let edited = try? JSONSerialization.data(withJSONObject: json),
+              let stripped = try? JSONDecoder().decode(CapturedRoom.self, from: edited),
+              stripped.objects.isEmpty else { return nil }
+        return stripped
+    }
+
+    /// Turns the furniture and fixtures on or off for a saved scan and
+    /// rebuilds its 3D model to match.
+    func setIncludeObjects(_ include: Bool, for project: ScanProject) {
+        guard var updated = projects.first(where: { $0.id == project.id }) else { return }
+        updated.includeObjects = include
+        guard let data = try? JSONEncoder().encode(updated) else { return }
+        try? data.write(to: metadataURL(for: updated))
+        if let room = loadRoom(for: updated) {
+            try? writeModel(for: updated, room: room)
+        }
+        reload()
     }
 
     func loadRoom(for project: ScanProject) -> CapturedRoom? {
@@ -144,7 +183,7 @@ final class ScanStore: ObservableObject {
     /// passes, or if the export options change.
     func reexportModel(for project: ScanProject) throws {
         guard let room = loadRoom(for: project) else { return }
-        try room.export(to: modelURL(for: project), exportOptions: .parametric)
+        try writeModel(for: project, room: room)
     }
     #endif
 

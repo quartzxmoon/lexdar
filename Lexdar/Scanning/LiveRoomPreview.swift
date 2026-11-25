@@ -10,6 +10,8 @@ import RoomPlan
 /// they are found.
 struct LiveRoomPreview: UIViewRepresentable {
     let room: CapturedRoom?
+    /// False leaves out furniture and fixtures, showing only the room shell.
+    var showObjects: Bool = true
 
     func makeCoordinator() -> Coordinator { Coordinator() }
 
@@ -26,7 +28,7 @@ struct LiveRoomPreview: UIViewRepresentable {
     }
 
     func updateUIView(_ view: SCNView, context: Context) {
-        if let room { context.coordinator.update(with: room) }
+        if let room { context.coordinator.update(with: room, showObjects: showObjects) }
     }
 
     @MainActor
@@ -46,8 +48,9 @@ struct LiveRoomPreview: UIViewRepresentable {
             cameraNode.look(at: SCNVector3Zero)
         }
 
-        func update(with room: CapturedRoom) {
-            let built = RoomSceneBuilder.build(room: room, plan: RenovationPlan(scanID: UUID(), name: "live"))
+        func update(with room: CapturedRoom, showObjects: Bool) {
+            let built = RoomSceneBuilder.build(room: room, plan: RenovationPlan(scanID: UUID(), name: "live"),
+                                               showDetectedObjects: showObjects)
             let newContent = SCNNode()
             for child in Array(built.rootNode.childNodes) {
                 newContent.addChildNode(child)

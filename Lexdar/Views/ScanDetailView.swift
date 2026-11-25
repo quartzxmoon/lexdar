@@ -14,6 +14,11 @@ struct ScanDetailView: View {
     @State private var newPlanName = "Renovation Idea"
     @State private var openPlan: RenovationPlan?
 
+    /// The saved copy of this scan, which reflects switches flipped here.
+    private var current: ScanProject {
+        store.projects.first(where: { $0.id == project.id }) ?? project
+    }
+
     var body: some View {
         Group {
             if let room {
@@ -35,7 +40,7 @@ struct ScanDetailView: View {
         }
         .fullScreenCover(item: $openPlan) { plan in
             if let room {
-                RenovationEditorView(room: room, plan: plan)
+                RenovationEditorView(room: room, plan: plan, showDetectedObjects: current.showsDetectedObjects)
             }
         }
     }
@@ -78,7 +83,19 @@ struct ScanDetailView: View {
                 scanSummaryRows(room: room)
             }
 
-            if !room.objects.isEmpty {
+            Section("Scan Options") {
+                Toggle(isOn: Binding(
+                    get: { current.showsDetectedObjects },
+                    set: { store.setIncludeObjects($0, for: project) }
+                )) {
+                    Label("Include furniture & fixtures", systemImage: "sofa")
+                }
+                Text("Cabinets, tables, sofas, beds, toilets, and other items recognized during the scan. Turning this off hides them in this list, in the renovation editor, and in the 3D model. The full scan is kept, so you can turn it back on.")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+
+            if current.showsDetectedObjects, !room.objects.isEmpty {
                 Section("Detected Fixtures & Furniture") {
                     ForEach(detectedObjectCounts(room: room), id: \.category) { entry in
                         HStack {

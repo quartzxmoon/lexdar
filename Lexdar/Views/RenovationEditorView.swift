@@ -10,6 +10,8 @@ import RoomPlan
 struct RenovationEditorView: View {
     let room: CapturedRoom
     @State var plan: RenovationPlan
+    /// Whether to draw the furniture/fixtures detected during the scan.
+    var showDetectedObjects: Bool = true
     @EnvironmentObject private var store: ScanStore
     @Environment(\.dismiss) private var dismiss
 
@@ -29,7 +31,8 @@ struct RenovationEditorView: View {
                                      activeCatalogItemID: $activeCatalogItemID,
                                      selectedPlacedItemID: $selectedPlacedItemID,
                                      pendingPlacementItemID: $pendingPlacementItemID,
-                                     hudText: $hudText)
+                                     hudText: $hudText,
+                                     showDetectedObjects: showDetectedObjects)
                     .ignoresSafeArea(edges: .bottom)
 
                 VStack(spacing: 10) {

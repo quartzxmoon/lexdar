@@ -14,14 +14,28 @@ struct ScanCaptureView: View {
     @State private var projectName: String = Self.defaultName()
     @State private var isSaving = false
     @State private var showNamePrompt = false
+    /// Remembered between scans. Off keeps the saved scan to walls, doors,
+    /// windows and openings; on also keeps cabinets, tables, sofas, beds,
+    /// toilets and the other fixtures RoomPlan recognizes.
+    @AppStorage("scanIncludeObjects") private var includeObjects = true
 
     var body: some View {
         ZStack(alignment: .bottom) {
             RoomCaptureRepresentable(coordinator: coordinator)
                 .ignoresSafeArea()
 
+            Toggle(isOn: $includeObjects) {
+                Label("Furniture & fixtures", systemImage: "sofa")
+                    .font(.footnote.weight(.medium))
+            }
+            .fixedSize()
+            .padding(.horizontal, 12).padding(.vertical, 8)
+            .background(.ultraThinMaterial, in: Capsule())
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            .padding()
+
             if coordinator.isScanning, coordinator.liveRoom != nil {
-                LiveRoomPreview(room: coordinator.liveRoom)
+                LiveRoomPreview(room: coordinator.liveRoom, showObjects: includeObjects)
                     .frame(width: 280, height: 210)
                     .background(.black.opacity(0.3), in: RoundedRectangle(cornerRadius: 16))
                     .clipShape(RoundedRectangle(cornerRadius: 16))
@@ -110,7 +124,7 @@ struct ScanCaptureView: View {
         isSaving = true
         Task {
             do {
-                _ = try await store.saveNewScan(name: projectName, room: room)
+                _ = try await store.saveNewScan(name: projectName, room: room, includeObjects: includeObjects)
                 isSaving = false
                 dismiss()
             } catch {

@@ -19,7 +19,7 @@ sources:
   - code: Lexdar.xcodeproj/project.pbxproj
   - code: Lexdar/Views/ScanListView.swift
   - code: Lexdar/Scanning/LiveRoomPreview.swift
-verified_at: c94f735
+verified_at: 9506a51
 ---
 
 One LiDAR scan (`ScanProject`) can carry many independent renovation ideas
@@ -142,6 +142,29 @@ is reserved for swapping in real `.usdz` models later (see README).
 > renovation summary export, or any export format yet. Compile-checked in CI
 > only; never run on a device, so gesture feel (snapping distances, drag
 > response, top-down framing) is untested.
+
+## Furniture and fixtures switch
+
+RoomPlan always detects furniture and fixtures (`CapturedRoom.objects`), and
+its own scanning view always draws them, so the switch works on what the app
+saves and shows. `ScanCaptureView` has a "Furniture & fixtures" toggle
+(remembered in `@AppStorage("scanIncludeObjects")`) that also hides them in the
+live preview; the choice is stored as `ScanProject.includeObjects` and can be
+flipped later in `ScanDetailView` ("Scan Options"). Off hides them in the
+fixtures list and the renovation editor (`RoomSceneBuilder.build(...,
+showDetectedObjects:)`) and rebuilds the USDZ without them.
+
+> ⚠️ `room.json` always keeps the full scan; only display and the exported
+> USDZ change, so the switch is reversible. The USDZ has no objects because
+> `ScanStore.withoutObjects` edits the room's JSON form (key `"objects"`) and
+> decodes it again, since `CapturedRoom` has no public initializer. That key
+> name is an assumption about RoomPlan's coding format; if it is wrong the
+> function returns nil and the model keeps its objects while everything else
+> still honors the switch. Not yet checked on a device.
+
+> ⚠️ `ScanProject.includeObjects` is optional (nil means included) so scans
+> saved before the switch still decode. RoomPlan's own camera overlay during
+> scanning still outlines furniture whatever the switch says.
 
 ## Live 3D preview while scanning
 
