@@ -12,6 +12,14 @@ enum CatalogCategory: String, CaseIterable, Identifiable, Codable {
     case furniture
     case lighting
     case outdoor
+    case decor
+    case storage
+    case doorWindow
+    case stairs
+    case exteriorFinish
+    case roofing
+    case structure
+    case landscaping
 
     var id: String { rawValue }
 
@@ -24,7 +32,15 @@ enum CatalogCategory: String, CaseIterable, Identifiable, Codable {
         case .appliance: return "Appliances"
         case .furniture: return "Furniture"
         case .lighting: return "Lighting"
-        case .outdoor: return "Outdoor"
+        case .outdoor: return "Outdoor & Pools"
+        case .decor: return "Decor & Plants"
+        case .storage: return "Storage & Closets"
+        case .doorWindow: return "Doors & Windows"
+        case .stairs: return "Stairs"
+        case .exteriorFinish: return "Exterior Finishes"
+        case .roofing: return "Roofs"
+        case .structure: return "Structures & Foundations"
+        case .landscaping: return "Landscaping"
         }
     }
 
@@ -37,14 +53,22 @@ enum CatalogCategory: String, CaseIterable, Identifiable, Codable {
         case .appliance: return "refrigerator.fill"
         case .furniture: return "sofa.fill"
         case .lighting: return "lightbulb.fill"
-        case .outdoor: return "leaf.fill"
+        case .outdoor: return "sun.max.fill"
+        case .decor: return "photo.fill"
+        case .storage: return "archivebox.fill"
+        case .doorWindow: return "rectangle.portrait.fill"
+        case .stairs: return "square.stack.3d.up.fill"
+        case .exteriorFinish: return "building.2.fill"
+        case .roofing: return "house.fill"
+        case .structure: return "building.columns.fill"
+        case .landscaping: return "leaf.fill"
         }
     }
 
     /// Flooring and wall finishes are "surface materials" — applied to an
     /// existing floor/wall rather than placed as a free-standing object.
     var isSurfaceMaterial: Bool {
-        self == .flooring || self == .wallFinish
+        self == .flooring || self == .wallFinish || self == .exteriorFinish
     }
 }
 

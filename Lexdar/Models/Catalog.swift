@@ -8,8 +8,13 @@ import Foundation
 ///
 /// Dimensions are (width, height, depth) in meters.
 enum Catalog {
-    static let items: [CatalogItem] = flooring + wallFinishes + kitchenFixtures
-        + bathroomFixtures + appliances + furniture + lighting + outdoor
+    static let items: [CatalogItem] = ([
+        flooring, wallFinishes, kitchenFixtures, bathroomFixtures, appliances, furniture,
+        lighting, outdoor,
+        moreFlooring, moreWallFinishes, exteriorFinishes, roofs, stairs, doorsAndWindows,
+        structures, landscaping, moreKitchen, moreBathroom, moreAppliances, moreFurniture,
+        moreLighting, decor, storage, moreOutdoor,
+    ] as [[CatalogItem]]).flatMap { $0 }
 
     static func items(in category: CatalogCategory) -> [CatalogItem] {
         items.filter { $0.category == category }

@@ -45,16 +45,31 @@ enum RoomSceneBuilder {
         let ambient = SCNNode()
         ambient.light = SCNLight()
         ambient.light?.type = .ambient
-        ambient.light?.intensity = 350
+        ambient.light?.intensity = 520
+        ambient.light?.color = UIColor(white: 1, alpha: 1)
         root.addChildNode(ambient)
 
+        // Key light with soft shadows, plus a dimmer fill from the other side
+        // so walls facing away from the key are still readable.
         let sun = SCNNode()
         sun.light = SCNLight()
         sun.light?.type = .directional
-        sun.light?.intensity = 900
+        sun.light?.intensity = 1000
+        sun.light?.color = UIColor(red: 1, green: 0.97, blue: 0.92, alpha: 1)
         sun.light?.castsShadow = true
+        sun.light?.shadowRadius = 5
+        sun.light?.shadowSampleCount = 8
+        sun.light?.shadowColor = UIColor(white: 0, alpha: 0.35)
         sun.eulerAngles = SCNVector3(-Float.pi / 3, Float.pi / 4, 0)
         root.addChildNode(sun)
+
+        let fill = SCNNode()
+        fill.light = SCNLight()
+        fill.light?.type = .directional
+        fill.light?.intensity = 350
+        fill.light?.color = UIColor(red: 0.88, green: 0.93, blue: 1, alpha: 1)
+        fill.eulerAngles = SCNVector3(-Float.pi / 4, -Float.pi * 0.8, 0)
+        root.addChildNode(fill)
 
         return scene
     }
@@ -110,16 +125,33 @@ enum RoomSceneBuilder {
 
     // MARK: - Surfaces
 
+    /// A material for a floor, wall, or exterior surface. With a catalog item
+    /// it uses that item's texture when it has one (planks, tile, brick,
+    /// siding, ...) tiled to real-world scale, otherwise its flat color.
+    static func surfaceMaterial(_ item: CatalogItem?, fallback: UIColor, width: Float, height: Float) -> SCNMaterial {
+        let material = SCNMaterial()
+        material.specular.contents = UIColor(white: 0.12, alpha: 1)
+        guard let item else {
+            material.diffuse.contents = fallback
+            return material
+        }
+        material.diffuse.contents = UIColor(item.color)
+        if let pattern = MaterialTextures.pattern(for: item), let image = MaterialTextures.image(for: item) {
+            let cover = MaterialTextures.coverage(of: pattern)
+            material.diffuse.contents = image
+            material.diffuse.wrapS = .repeat
+            material.diffuse.wrapT = .repeat
+            material.diffuse.contentsTransform = SCNMatrix4MakeScale(max(width, 0.1) / cover, max(height, 0.1) / cover, 1)
+        }
+        return material
+    }
+
     private static func syntheticFloorNode(for bounds: RoomBounds, plan: RenovationPlan) -> SCNNode {
         let margin: Float = 0.3
         let geometry = SCNBox(width: CGFloat(bounds.maxX - bounds.minX + margin * 2), height: 0.03,
                                length: CGFloat(bounds.maxZ - bounds.minZ + margin * 2), chamferRadius: 0)
-        let material = SCNMaterial()
-        if let override = plan.material(for: syntheticFloorID) {
-            material.diffuse.contents = UIColor(override.color)
-        } else {
-            material.diffuse.contents = UIColor(white: 0.85, alpha: 1)
-        }
+        let material = surfaceMaterial(plan.material(for: syntheticFloorID), fallback: UIColor(white: 0.85, alpha: 1),
+                                       width: bounds.maxX - bounds.minX + margin * 2, height: bounds.maxZ - bounds.minZ + margin * 2)
         geometry.materials = [material]
         let node = SCNNode(geometry: geometry)
         node.name = "floor:\(syntheticFloorID.uuidString)"
@@ -130,12 +162,8 @@ enum RoomSceneBuilder {
     private static func addedWallNode(for wall: AddedWall, plan: RenovationPlan) -> SCNNode {
         let geometry = SCNBox(width: CGFloat(wall.length), height: CGFloat(wall.height),
                                length: CGFloat(max(wall.thickness, 0.08)), chamferRadius: 0)
-        let material = SCNMaterial()
-        if let override = plan.material(for: wall.id) {
-            material.diffuse.contents = UIColor(override.color)
-        } else {
-            material.diffuse.contents = UIColor(red: 0.86, green: 0.93, blue: 1, alpha: 1)
-        }
+        let material = surfaceMaterial(plan.material(for: wall.id), fallback: UIColor(red: 0.86, green: 0.93, blue: 1, alpha: 1),
+                                       width: wall.length, height: wall.height)
         geometry.materials = [material]
         let node = SCNNode(geometry: geometry)
         node.name = "newwall:\(wall.id.uuidString)"
@@ -150,12 +178,8 @@ enum RoomSceneBuilder {
     private static func floorNode(for floor: CapturedRoom.Surface, plan: RenovationPlan) -> SCNNode {
         let geometry = SCNBox(width: CGFloat(floor.dimensions.x), height: 0.03,
                                length: CGFloat(floor.dimensions.z), chamferRadius: 0)
-        let material = SCNMaterial()
-        if let override = plan.material(for: floor.identifier) {
-            material.diffuse.contents = UIColor(override.color)
-        } else {
-            material.diffuse.contents = UIColor(white: 0.85, alpha: 1)
-        }
+        let material = surfaceMaterial(plan.material(for: floor.identifier), fallback: UIColor(white: 0.85, alpha: 1),
+                                       width: floor.dimensions.x, height: floor.dimensions.z)
         geometry.materials = [material]
         let node = SCNNode(geometry: geometry)
         node.name = "floor:\(floor.identifier.uuidString)"
@@ -166,21 +190,28 @@ enum RoomSceneBuilder {
     private static func wallNode(for wall: CapturedRoom.Surface, plan: RenovationPlan) -> SCNNode {
         let geometry = SCNBox(width: CGFloat(wall.dimensions.x), height: CGFloat(wall.dimensions.y),
                                length: CGFloat(max(wall.dimensions.z, 0.08)), chamferRadius: 0)
-        let material = SCNMaterial()
-        if let override = plan.material(for: wall.identifier) {
-            material.diffuse.contents = UIColor(override.color)
-        } else {
-            material.diffuse.contents = UIColor(white: 0.93, alpha: 1)
-        }
+        let material = surfaceMaterial(plan.material(for: wall.identifier), fallback: UIColor(white: 0.93, alpha: 1),
+                                       width: wall.dimensions.x, height: wall.dimensions.y)
         geometry.materials = [material]
         let node = SCNNode(geometry: geometry)
         node.name = "wall:\(wall.identifier.uuidString)"
         node.simdTransform = wall.transform
+
+        // Baseboard along the foot of the wall, for a finished look.
+        let board = SCNBox(width: CGFloat(wall.dimensions.x), height: 0.1,
+                           length: CGFloat(max(wall.dimensions.z, 0.08) + 0.03), chamferRadius: 0.004)
+        let boardMaterial = SCNMaterial()
+        boardMaterial.diffuse.contents = UIColor(white: 0.97, alpha: 1)
+        board.materials = [boardMaterial]
+        let boardNode = SCNNode(geometry: board)
+        boardNode.position = SCNVector3(0, -wall.dimensions.y / 2 + 0.05, 0)
+        node.addChildNode(boardNode)
         return node
     }
 
     private static func openingNode(for surface: CapturedRoom.Surface, color: UIColor, prefix: String) -> SCNNode {
-        let geometry = SCNBox(width: CGFloat(surface.dimensions.x), height: CGFloat(surface.dimensions.y),
+        let w = surface.dimensions.x, h = surface.dimensions.y
+        let geometry = SCNBox(width: CGFloat(w), height: CGFloat(h),
                                length: CGFloat(max(surface.dimensions.z, 0.04)), chamferRadius: 0)
         let material = SCNMaterial()
         material.diffuse.contents = color.withAlphaComponent(0.55)
@@ -189,6 +220,25 @@ enum RoomSceneBuilder {
         let node = SCNNode(geometry: geometry)
         node.name = "\(prefix):\(surface.identifier.uuidString)"
         node.simdTransform = surface.transform
+
+        // Trim around the opening: wood for doors, white for windows.
+        let trim = prefix == "door" ? UIColor(red: 0.55, green: 0.38, blue: 0.22, alpha: 1) : UIColor(white: 0.97, alpha: 1)
+        let f: Float = 0.06
+        let depth = CGFloat(max(surface.dimensions.z, 0.04) + 0.04)
+        func bar(_ bw: Float, _ bh: Float, _ x: Float, _ y: Float) {
+            let g = SCNBox(width: CGFloat(bw), height: CGFloat(bh), length: depth, chamferRadius: 0)
+            let m = SCNMaterial()
+            m.diffuse.contents = trim
+            g.materials = [m]
+            let n = SCNNode(geometry: g)
+            n.position = SCNVector3(x, y, 0)
+            node.addChildNode(n)
+        }
+        bar(w, f, 0, h / 2 - f / 2)
+        bar(w, f, 0, -h / 2 + f / 2)
+        bar(f, h, -w / 2 + f / 2, 0)
+        bar(f, h, w / 2 - f / 2, 0)
+        if prefix == "window" { bar(f * 0.6, h, 0, 0) }
         return node
     }
 
@@ -213,12 +263,19 @@ enum RoomSceneBuilder {
 
     static func placedItemNode(for item: PlacedItem) -> SCNNode? {
         guard let catalogItem = item.catalogItem else { return nil }
-        let geometry = primitiveGeometry(for: catalogItem)
-        let material = SCNMaterial()
-        material.diffuse.contents = UIColor(catalogItem.color)
-        geometry.materials = [material]
-
-        let node = SCNNode(geometry: geometry)
+        let node: SCNNode
+        if catalogItem.primitive != .plane, let model = ItemModels.node(for: catalogItem) {
+            node = model
+        } else {
+            let geometry = primitiveGeometry(for: catalogItem)
+            let material = SCNMaterial()
+            material.diffuse.contents = UIColor(catalogItem.color)
+            if let image = MaterialTextures.image(for: catalogItem) {
+                material.diffuse.contents = image
+            }
+            geometry.materials = [material]
+            node = SCNNode(geometry: geometry)
+        }
         node.name = "placed:\(item.id.uuidString)"
         node.position = SCNVector3(item.position.x, item.position.y, item.position.z)
         node.scale = SCNVector3(item.scale, item.scale, item.scale)

@@ -23,6 +23,18 @@ struct RenovationEditorView: View {
     @State private var showCatalogSheet = false
     @State private var showSummary = false
     @State private var showDeleteConfirm = false
+    /// Which story new walls and items go on (0 = the scanned floor).
+    @State private var level = 0
+
+    private static func levelName(_ level: Int) -> String {
+        switch level {
+        case ..<0: return "Basement"
+        case 0: return "Ground Floor"
+        case 1: return "2nd Floor"
+        case 2: return "3rd Floor"
+        default: return "Attic / Roof Level"
+        }
+    }
 
     var body: some View {
         NavigationStack {
@@ -32,7 +44,8 @@ struct RenovationEditorView: View {
                                      selectedPlacedItemID: $selectedPlacedItemID,
                                      pendingPlacementItemID: $pendingPlacementItemID,
                                      hudText: $hudText,
-                                     showDetectedObjects: showDetectedObjects)
+                                     showDetectedObjects: showDetectedObjects,
+                                     levelIndex: level)
                     .ignoresSafeArea(edges: .bottom)
 
                 VStack(spacing: 10) {
@@ -45,6 +58,23 @@ struct RenovationEditorView: View {
                     toolBar
                 }
                 .padding(.bottom, 8)
+            }
+            .overlay(alignment: .topLeading) {
+                Menu {
+                    ForEach([4, 3, 2, 1, 0, -1], id: \.self) { l in
+                        Button {
+                            level = l
+                        } label: {
+                            Label(Self.levelName(l), systemImage: level == l ? "checkmark" : "square.3.layers.3d")
+                        }
+                    }
+                } label: {
+                    Label(Self.levelName(level), systemImage: "square.3.layers.3d")
+                        .font(.footnote.weight(.semibold))
+                        .padding(.horizontal, 12).padding(.vertical, 8)
+                        .background(.ultraThinMaterial, in: Capsule())
+                }
+                .padding(.leading, 12).padding(.top, 8)
             }
             .overlay(alignment: .top) {
                 if let hudText {
@@ -198,12 +228,12 @@ struct RenovationEditorView: View {
                 activeCatalogItemID = item.id
             }
         case .paintWall:
-            CatalogBrowserView(categories: [.wallFinish], title: "Wall Finishes") { item in
+            CatalogBrowserView(categories: [.wallFinish, .exteriorFinish], title: "Wall & Exterior Finishes") { item in
                 activeCatalogItemID = item.id
             }
         case .place:
-            CatalogBrowserView(categories: [.kitchenFixture, .bathroomFixture, .appliance, .furniture, .lighting, .outdoor],
-                                title: "Furnish the Room") { item in
+            CatalogBrowserView(categories: CatalogCategory.allCases.filter { !$0.isSurfaceMaterial },
+                                title: "Furnish & Build") { item in
                 activeCatalogItemID = item.id
                 pendingPlacementItemID = item.id
             }

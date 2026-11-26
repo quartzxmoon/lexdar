@@ -57,6 +57,9 @@ struct RenovationSceneView: UIViewRepresentable {
     @Binding var hudText: String?
     /// False hides the furniture/fixtures RoomPlan detected during the scan.
     var showDetectedObjects: Bool = true
+    /// Which story new walls and items are placed on: 0 is the scanned floor,
+    /// -1 a basement, 1 the floor above, and so on.
+    var levelIndex: Int = 0
 
     func makeUIView(context: Context) -> SCNView {
         let view = SCNView()
@@ -98,8 +101,9 @@ struct RenovationSceneView: UIViewRepresentable {
         }
         uiView.allowsCameraControl = (selectedPlacedItemID == nil && tool != .drawWall)
 
-        if tool != coordinator.lastTool {
+        if tool != coordinator.lastTool || levelIndex != coordinator.lastLevel {
             coordinator.lastTool = tool
+            coordinator.lastLevel = levelIndex
             if tool == .drawWall { coordinator.setTopDownCamera() }
         }
 
@@ -122,8 +126,13 @@ struct RenovationSceneView: UIViewRepresentable {
         weak var view: SCNView?
         var lastPlanUpdatedAt: Date = .distantPast
         var lastTool: RenovationTool = .inspect
+        var lastLevel = 0
         var isPlacing = false
         let bounds: RoomSceneBuilder.RoomBounds
+
+        /// Height of the current story's floor above the scanned floor.
+        var levelOffset: Float { Float(parent.levelIndex) * (bounds.wallHeight + 0.25) }
+        var levelFloorY: Float { bounds.floorY + levelOffset }
 
         private var dragStartPosition: SCNVector3?
         private var dragStartHit: SIMD3<Float>?
@@ -181,7 +190,7 @@ struct RenovationSceneView: UIViewRepresentable {
             guard let camera = view?.pointOfView else { return }
             let c = bounds.center
             let height = max(bounds.extent, 3) * 0.95 + 1
-            camera.position = SCNVector3(c.x, bounds.floorY + height, c.z)
+            camera.position = SCNVector3(c.x, levelFloorY + height, c.z)
             camera.eulerAngles = SCNVector3(-Float.pi / 2, 0, 0)
         }
 
@@ -207,20 +216,36 @@ struct RenovationSceneView: UIViewRepresentable {
             guard let view, let item = Catalog.item(id: itemID) else { return }
 
             let center = CGPoint(x: view.bounds.midX, y: view.bounds.midY)
-            var spot = floorPoint(at: center, planeY: bounds.floorY) ?? bounds.center
-            spot.x = min(max(spot.x, bounds.minX), bounds.maxX)
-            spot.z = min(max(spot.z, bounds.minZ), bounds.maxZ)
+            var spot = floorPoint(at: center, planeY: levelFloorY) ?? bounds.center
+            // Yard, roof, and structure items may go well outside the scanned
+            // room; everything else stays inside it.
+            let outdoors = ["land.", "out.", "roof.", "found.", "struct.", "outdoor."].contains { item.id.hasPrefix($0) }
+            let slack: Float = outdoors ? 40 : 0
+            spot.x = min(max(spot.x, bounds.minX - slack), bounds.maxX + slack)
+            spot.z = min(max(spot.z, bounds.minZ - slack), bounds.maxZ + slack)
 
             let d = item.dimensions
+            let floorY = levelFloorY
+            let ceilingY = floorY + bounds.wallHeight
             let y: Float
             if item.primitive == .plane {
-                y = bounds.floorY + 0.01
-            } else if ["light.pendant", "light.chandelier", "light.recessed"].contains(where: { item.id.hasPrefix($0) }) {
-                y = bounds.ceilingY - d.y / 2
-            } else if item.id.hasPrefix("light.sconce") {
-                y = bounds.floorY + 1.6
+                y = floorY + 0.01
+            } else if ["light.pendant", "light.chandelier", "light.recessed", "light.ceilingfan"].contains(where: { item.id.hasPrefix($0) }) {
+                y = ceilingY - d.y / 2
+            } else if item.id.hasPrefix("light.sconce") || item.id.hasPrefix("light.wallsconce") {
+                y = floorY + 1.6
+            } else if item.id.hasPrefix("window.") {
+                y = floorY + 0.9 + d.y / 2
+            } else if ["decor.tv", "decor.art", "decor.clock", "bath.mirror", "kitchen.cabinets.upper", "storage.shelf",
+                       "light.track", "bath.towel"].contains(where: { item.id.hasPrefix($0) }) {
+                y = floorY + (item.id.hasPrefix("kitchen.cabinets.upper") ? 1.45 : 1.0) + d.y / 2
+            } else if item.id.hasPrefix("roof.") || item.id.hasPrefix("land.") || item.id.hasPrefix("out.") {
+                // Roofs sit on top of the walls; yard items sit on the ground.
+                y = item.id.hasPrefix("roof.") ? ceilingY + d.y / 2 : bounds.floorY + d.y / 2 + (item.primitive == .plane ? 0.01 : 0)
+            } else if item.id.hasPrefix("found.basement") || item.id.hasPrefix("found.stemwall") {
+                y = floorY - d.y / 2
             } else {
-                y = bounds.floorY + d.y / 2
+                y = floorY + d.y / 2
             }
 
             let placed = parent.plan.addItem(item.id, at: SIMD3<Float>(spot.x, y, spot.z))
@@ -230,49 +255,52 @@ struct RenovationSceneView: UIViewRepresentable {
 
         // MARK: - Tap
 
+        /// The nearest named node at or above `node`, so a tap on one part of a
+        /// multi-part model (a sofa's arm, a wall's baseboard) resolves to the
+        /// whole item.
+        static func tag(_ node: SCNNode) -> String? {
+            var current: SCNNode? = node
+            while let n = current {
+                if let name = n.name, name.contains(":") { return name }
+                current = n.parent
+            }
+            return nil
+        }
+
         @objc func handleTap(_ gesture: UITapGestureRecognizer) {
             guard let view else { return }
             let point = gesture.location(in: view)
             let hits = view.hitTest(point, options: [.searchMode: NSNumber(value: 1)])
+            let tags = hits.compactMap { Self.tag($0.node) }
+
+            func firstID(_ prefix: String) -> UUID? {
+                guard let name = tags.first(where: { $0.hasPrefix(prefix) }) else { return nil }
+                return UUID(uuidString: String(name.dropFirst(prefix.count)))
+            }
 
             switch parent.tool {
             case .inspect:
-                if let hit = hits.first(where: { $0.node.name?.hasPrefix("placed:") == true }) {
-                    let idString = String(hit.node.name!.dropFirst("placed:".count))
-                    parent.selectedPlacedItemID = UUID(uuidString: idString)
-                } else {
-                    parent.selectedPlacedItemID = nil
-                }
+                parent.selectedPlacedItemID = firstID("placed:")
 
             case .removeWalls:
-                if let hit = hits.first(where: { $0.node.name?.hasPrefix("newwall:") == true }) {
-                    let idString = String(hit.node.name!.dropFirst("newwall:".count))
-                    if let id = UUID(uuidString: idString) {
-                        parent.plan.removeAddedWall(id)
-                    }
-                } else if let hit = hits.first(where: { $0.node.name?.hasPrefix("wall:") == true }) {
-                    let idString = String(hit.node.name!.dropFirst("wall:".count))
-                    if let id = UUID(uuidString: idString) {
-                        parent.plan.toggleWallRemoved(id)
-                    }
+                if let id = firstID("newwall:") {
+                    parent.plan.removeAddedWall(id)
+                } else if let id = firstID("wall:") {
+                    parent.plan.toggleWallRemoved(id)
                 }
 
             case .paintFloor:
-                guard let itemID = parent.activeCatalogItemID else { return }
-                if let hit = hits.first(where: { $0.node.name?.hasPrefix("floor:") == true }) {
-                    let idString = String(hit.node.name!.dropFirst("floor:".count))
-                    if let id = UUID(uuidString: idString) {
-                        parent.plan.setMaterial(surfaceID: id, catalogItemID: itemID)
-                    }
-                }
+                guard let itemID = parent.activeCatalogItemID, let id = firstID("floor:") else { return }
+                parent.plan.setMaterial(surfaceID: id, catalogItemID: itemID)
 
             case .paintWall:
                 guard let itemID = parent.activeCatalogItemID else { return }
-                if let hit = hits.first(where: { $0.node.name?.hasPrefix("newwall:") == true || $0.node.name?.hasPrefix("wall:") == true }),
-                   let name = hit.node.name {
-                    let prefix = name.hasPrefix("newwall:") ? "newwall:" : "wall:"
-                    if let id = UUID(uuidString: String(name.dropFirst(prefix.count))) {
+                // The first wall-like thing under the finger, front to back.
+                for name in tags {
+                    let prefix = name.hasPrefix("newwall:") ? "newwall:" : (name.hasPrefix("wall:") ? "wall:" : nil)
+                    if let prefix, let id = UUID(uuidString: String(name.dropFirst(prefix.count))) {
                         parent.plan.setMaterial(surfaceID: id, catalogItemID: itemID)
+                        break
                     }
                 }
 
@@ -370,12 +398,12 @@ struct RenovationSceneView: UIViewRepresentable {
 
             switch gesture.state {
             case .began:
-                guard let hit = floorPoint(at: point, planeY: bounds.floorY) else { return }
+                guard let hit = floorPoint(at: point, planeY: levelFloorY) else { return }
                 drawStart = snapPoint(SIMD2<Float>(hit.x, hit.z), from: nil)
                 drawEnd = drawStart
             case .changed:
                 guard let start = drawStart,
-                      let hit = floorPoint(at: point, planeY: bounds.floorY) else { return }
+                      let hit = floorPoint(at: point, planeY: levelFloorY) else { return }
                 let end = snapPoint(SIMD2<Float>(hit.x, hit.z), from: start)
                 drawEnd = end
                 updatePreview(start: start, end: end)
@@ -383,7 +411,7 @@ struct RenovationSceneView: UIViewRepresentable {
             case .ended:
                 if let start = drawStart, let end = drawEnd, simd_length(end - start) >= 0.2 {
                     parent.plan.addWall(AddedWall(start: start, end: end,
-                                                  baseY: bounds.floorY, height: bounds.wallHeight))
+                                                  baseY: levelFloorY, height: bounds.wallHeight))
                 }
                 finishDrawing()
             default:
@@ -401,7 +429,7 @@ struct RenovationSceneView: UIViewRepresentable {
             geometry.materials = [material]
             let node = SCNNode(geometry: geometry)
             node.position = SCNVector3((start.x + end.x) / 2,
-                                        bounds.floorY + bounds.wallHeight / 2,
+                                        levelFloorY + bounds.wallHeight / 2,
                                         (start.y + end.y) / 2)
             node.eulerAngles = SCNVector3(0, -atan2(end.y - start.y, end.x - start.x), 0)
             view?.scene?.rootNode.addChildNode(node)

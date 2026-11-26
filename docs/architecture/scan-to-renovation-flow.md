@@ -19,7 +19,10 @@ sources:
   - code: Lexdar.xcodeproj/project.pbxproj
   - code: Lexdar/Views/ScanListView.swift
   - code: Lexdar/Scanning/LiveRoomPreview.swift
-verified_at: 9506a51
+  - code: Lexdar/Scanning/MaterialTextures.swift
+  - code: Lexdar/Scanning/ItemModels.swift
+  - code: Lexdar/Models/CatalogExtra.swift
+verified_at: 172997e
 ---
 
 One LiDAR scan (`ScanProject`) can carry many independent renovation ideas
@@ -189,6 +192,37 @@ objects appear in 3D as they are found. It hides itself when scanning stops
 > `RoomCaptureCoordinator.acceptLiveUpdate` before touching anything else.
 > Not yet run on a device; the camera framing in `LiveRoomPreview` (distance
 > from the room's bounding box) is a guess to tune once seen.
+
+## Look, library, and levels
+
+- `MaterialTextures` draws wood, tile, brick, siding, shingle, carpet and similar
+  textures once per catalog item (cached) and `RoomSceneBuilder.surfaceMaterial` tiles
+  them at real-world scale on floors, walls, and exteriors.
+- `ItemModels` builds multi-part shapes (sofas, beds, trees, stairs, roofs, pools,
+  garages, glass showers, free-standing tubs, doors, windows) from the item's id.
+  Items it does not recognize fall back to the plain box in `RoomSceneBuilder`.
+- `CatalogExtra` holds the larger library: more flooring and wall finishes, exterior
+  finishes, roofs, stairs, doors and windows, foundations and structures,
+  landscaping, decor, storage, and more kitchen, bath, appliance, furniture, lighting
+  and outdoor items.
+- The editor's level menu (`RenovationEditorView.level`, `RenovationSceneView.levelIndex`)
+  moves where new walls and items are placed up or down by one story height.
+
+> ⚠️ Keywords in a catalog item's id decide its model (`ItemModels.kind(for:)`) and
+> texture (`MaterialTextures.pattern(for:)`). Order matters: earlier checks win, and ids
+> share words ("furn.deskchair" must be caught as a chair before "desk" makes it a table).
+> A new item with an unlucky id silently falls back to a box or flat color.
+
+> ⚠️ Each model is built centered on the item's dimension box, with `y` measured up from
+> its bottom, because placement assumes the node's origin is the middle of that box.
+> Parts must not be named: tap handling resolves the nearest *named* ancestor
+> (`RenovationSceneView.Coordinator.tag`) so any part selects the whole item.
+
+> ⚠️ Levels only move placement height. Upper stories get no automatic floor slab or
+> stair opening; place an "Upper Floor Deck" from Structures. Roofs, yard items, and
+> structures may be placed outside the scanned room's bounds; everything else is clamped
+> inside it at placement. Compile-checked in CI only; the look of the models and
+> textures has never been seen on a device.
 
 ## Multi-room scanning
 
