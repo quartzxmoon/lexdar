@@ -502,7 +502,7 @@ enum ItemModels {
         case .conifer:
             p.cylinder(max(0.06, d.x * 0.04), d.y * 0.15, bark)
             let tiers: [(Float, Float, Float)] = [(0.5, 0.12, 0.38), (0.4, 0.32, 0.36), (0.3, 0.5, 0.32), (0.2, 0.68, 0.32)]
-            for t in tiers { p.cone(0, d.x * t.0, d.y * t.2, shade(main, 0.9 + t.1 * 0.2), y: d.y * t.1) }
+            for t in tiers { p.cone(0, d.x * t.0, d.y * t.2, shade(main, 0.9 + CGFloat(t.1) * 0.2), y: d.y * t.1) }
 
         case .palm:
             p.cylinder(max(0.1, d.x * 0.04), d.y * 0.78, bark)
