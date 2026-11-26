@@ -48,6 +48,24 @@ struct ScanDetailView: View {
     @ViewBuilder
     private func content(room: CapturedRoom) -> some View {
         List {
+            Section {
+                Button {
+                    startDesigning()
+                } label: {
+                    Label("Design & Renovate", systemImage: "paintbrush.pointed.fill")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.vertical, 6)
+                }
+                .buttonStyle(.borderedProminent)
+                .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                Text("Opens the editor on this scan. The toolbar along the bottom has Select, Remove Walls, Draw Wall, Floor (flooring), Wall Finish (paint, tile, siding), and Place (furniture, fixtures, appliances, lighting, outdoor). Doors and windows are edited in the Blueprint below.")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            } header: {
+                Text("Start Here")
+            }
+
             Section("3D Model") {
                 NavigationLink {
                     USDZPreviewView(url: store.modelURL(for: project))
@@ -144,6 +162,16 @@ struct ScanDetailView: View {
                     Label("New Renovation Plan", systemImage: "plus.circle.fill")
                 }
             }
+        }
+    }
+
+    /// Opens the most recent renovation plan for this scan, or makes one first,
+    /// so furnishing and finishing is one tap away.
+    private func startDesigning() {
+        if let existing = store.plans(for: project.id).first {
+            openPlan = existing
+        } else {
+            openPlan = store.createPlan(scanID: project.id, name: "My Design")
         }
     }
 

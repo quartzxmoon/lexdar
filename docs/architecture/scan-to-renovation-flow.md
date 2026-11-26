@@ -115,6 +115,13 @@ is reserved for swapping in real `.usdz` models later (see README).
 > this project's current settings, caught in CI anyway). Neither method
 > touches actor-isolated state, so `nonisolated` is free here.
 
+## Entry point: Design & Renovate
+
+`ScanDetailView` leads with a "Design & Renovate" button (`startDesigning`). It opens
+the scan's most recent `RenovationPlan`, or creates one named "My Design" first, so
+furnishing and finishing is one tap from the scan instead of buried under
+"New Renovation Plan". Not yet run on a device.
+
 ## Renovation editor: placing items and drawing walls
 
 - **Place Item** opens the furnish catalog; choosing an item sets
