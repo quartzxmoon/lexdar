@@ -236,3 +236,7 @@ Append-only. Newest entries at the bottom.
 ## [2026-11-26] feature | Furniture and fixtures switch for scans
 
 - Toggle on the scan screen and in scan details; see [[scan-to-renovation-flow]].
+
+## [2026-11-26] feature | Cost estimate and shopping list
+
+- ZIP-scaled estimates using BEA price levels and live FRED construction trends; see [[cost-estimates]].

@@ -22,6 +22,7 @@ struct RenovationEditorView: View {
     @State private var hudText: String?
     @State private var showCatalogSheet = false
     @State private var showSummary = false
+    @State private var showCost = false
     @State private var showDeleteConfirm = false
     /// Which story new walls and items go on (0 = the scanned floor).
     @State private var level = 0
@@ -97,6 +98,11 @@ struct RenovationEditorView: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Menu {
                         Button {
+                            showCost = true
+                        } label: {
+                            Label("Cost Estimate & Shopping List", systemImage: "dollarsign.circle")
+                        }
+                        Button {
                             showSummary = true
                         } label: {
                             Label("Export Summary", systemImage: "square.and.arrow.up")
@@ -120,6 +126,9 @@ struct RenovationEditorView: View {
                 if tool == .place { tool = .inspect }
             }) {
                 catalogSheet
+            }
+            .sheet(isPresented: $showCost) {
+                CostEstimateView(room: room, plan: plan)
             }
             .sheet(isPresented: $showSummary) {
                 RenovationSummaryView(room: room, plan: plan)
