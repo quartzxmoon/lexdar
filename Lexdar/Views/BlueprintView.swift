@@ -152,6 +152,35 @@ struct BlueprintView: View {
                 context.stroke(path, with: .color(.black.opacity(0.85)), lineWidth: 0.9)
             }
         }
+
+        // Electrical, plumbing, and data symbols, each category in its own color.
+        for glyph in layout.symbols {
+            let color: Color
+            switch glyph.kind.category {
+            case .electrical: color = Color(red: 0.8, green: 0.4, blue: 0)
+            case .plumbing: color = Color(red: 0, green: 0.35, blue: 0.75)
+            case .dataSafety: color = Color(red: 0, green: 0.5, blue: 0.2)
+            }
+            var path = Path()
+            for segment in glyph.lines {
+                path.move(to: project(segment.a))
+                path.addLine(to: project(segment.b))
+            }
+            context.stroke(path, with: .color(color), lineWidth: 1)
+            if !glyph.tag.isEmpty {
+                context.draw(Text(glyph.tag).font(.system(size: 6, weight: .semibold)).foregroundStyle(color),
+                             at: project(glyph.tagPosition))
+            }
+        }
+
+        // Cross-ticks along walls marked load-bearing (a note by the person who
+        // drew the plan, not a structural finding).
+        var ticks = Path()
+        for segment in layout.bearingTicks {
+            ticks.move(to: project(segment.a))
+            ticks.addLine(to: project(segment.b))
+        }
+        context.stroke(ticks, with: .color(.red.opacity(0.8)), lineWidth: 0.8)
     }
 
     private func drawRooms(_ layout: BlueprintLayout, project: (SIMD2<Float>) -> CGPoint,

@@ -210,6 +210,29 @@ struct BlueprintPDFRenderer {
                 ctx.move(to: project(segment.a)); ctx.addLine(to: project(segment.b)); ctx.strokePath()
             }
         }
+
+        for glyph in layout.symbols {
+            let color: UIColor
+            switch glyph.kind.category {
+            case .electrical: color = UIColor(red: 0.8, green: 0.4, blue: 0, alpha: 1)
+            case .plumbing: color = UIColor(red: 0, green: 0.35, blue: 0.75, alpha: 1)
+            case .dataSafety: color = UIColor(red: 0, green: 0.5, blue: 0.2, alpha: 1)
+            }
+            ctx.setStrokeColor(color.cgColor)
+            ctx.setLineWidth(0.6)
+            for segment in glyph.lines {
+                ctx.move(to: project(segment.a)); ctx.addLine(to: project(segment.b)); ctx.strokePath()
+            }
+            if !glyph.tag.isEmpty {
+                drawCenteredText(glyph.tag, at: project(glyph.tagPosition), fontSize: 5, bold: true)
+            }
+        }
+
+        ctx.setStrokeColor(UIColor.red.withAlphaComponent(0.8).cgColor)
+        ctx.setLineWidth(0.5)
+        for segment in layout.bearingTicks {
+            ctx.move(to: project(segment.a)); ctx.addLine(to: project(segment.b)); ctx.strokePath()
+        }
     }
 
     private func drawRooms(_ layout: BlueprintLayout, project: (SIMD2<Float>) -> CGPoint, ctx: CGContext) {

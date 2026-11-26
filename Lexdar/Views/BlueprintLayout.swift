@@ -46,6 +46,15 @@ struct BlueprintLayout {
         var lines: [Segment]
     }
 
+    /// A drawn electrical/plumbing/data symbol: lines only, so every renderer
+    /// strokes it with one loop. `tagPosition` is where the short tag text goes.
+    struct SymbolGlyph {
+        var kind: SymbolKind
+        var lines: [Segment]
+        var tag: String
+        var tagPosition: SIMD2<Float>
+    }
+
     struct RoomLabel {
         var name: String
         var areaLabel: String
@@ -58,6 +67,9 @@ struct BlueprintLayout {
     var windows: [WindowSymbol] = []
     var plainOpenings: [Segment] = []
     var stairs: [StairSymbol] = []
+    var symbols: [SymbolGlyph] = []
+    /// Cross-ticks along walls the user marked as load-bearing.
+    var bearingTicks: [Segment] = []
     var roomLabels: [RoomLabel] = []
     var roomPolygons: [[SIMD2<Float>]] = []
     /// Plan-space bounding box in meters, padded for dimension lines and
@@ -138,6 +150,72 @@ struct BlueprintLayout {
         return WindowSymbol(gapInWall: gap, sillLines: lines)
     }
 
+    private static func circle(_ c: SIMD2<Float>, _ r: Float, steps: Int = 12) -> [Segment] {
+        (0..<steps).map { i in
+            let a0 = Float(i) / Float(steps) * 2 * .pi
+            let a1 = Float(i + 1) / Float(steps) * 2 * .pi
+            return Segment(a: c + SIMD2<Float>(cos(a0), sin(a0)) * r, b: c + SIMD2<Float>(cos(a1), sin(a1)) * r)
+        }
+    }
+
+    private static func polygon(_ pts: [SIMD2<Float>]) -> [Segment] {
+        (0..<pts.count).map { Segment(a: pts[$0], b: pts[($0 + 1) % pts.count]) }
+    }
+
+    /// Line-art glyph for a symbol, about 0.3 m across, centered on `c`.
+    static func glyph(for kind: SymbolKind, at c: SIMD2<Float>) -> [Segment] {
+        let r: Float = 0.15
+        func p(_ x: Float, _ y: Float) -> SIMD2<Float> { c + SIMD2<Float>(x, y) }
+        func seg(_ a: SIMD2<Float>, _ b: SIMD2<Float>) -> Segment { Segment(a: a, b: b) }
+        switch kind {
+        case .outlet:
+            return circle(c, r) + [seg(p(-r * 0.5, -r), p(-r * 0.5, r)), seg(p(r * 0.5, -r), p(r * 0.5, r))]
+        case .outletGFCI:
+            return circle(c, r) + [seg(p(-r * 0.5, -r), p(-r * 0.5, r)), seg(p(r * 0.5, -r), p(r * 0.5, r)),
+                                   seg(p(-r, 0), p(r, 0))]
+        case .outlet240:
+            return circle(c, r) + [seg(p(-r * 0.6, -r * 0.5), p(r * 0.6, -r * 0.5)), seg(p(-r * 0.6, r * 0.5), p(r * 0.6, r * 0.5)),
+                                   seg(p(0, -r), p(0, r))]
+        case .switchSingle, .switchThreeWay, .dimmer:
+            var lines = circle(c, r * 0.55) + [seg(p(r * 0.4, -r * 0.4), p(r * 1.4, -r * 1.4))]
+            if kind == .switchThreeWay { lines.append(seg(p(r * 0.9, -r * 1.7), p(r * 1.9, -r * 0.7))) }
+            if kind == .dimmer { lines += circle(c, r * 0.9, steps: 10) }
+            return lines
+        case .ceilingLight:
+            return circle(c, r) + [seg(p(-r * 0.7, -r * 0.7), p(r * 0.7, r * 0.7)), seg(p(-r * 0.7, r * 0.7), p(r * 0.7, -r * 0.7))]
+        case .recessedLight:
+            return circle(c, r) + circle(c, r * 0.5, steps: 8)
+        case .ceilingFan:
+            return circle(c, r * 1.2) + [seg(p(-r * 1.2, 0), p(r * 1.2, 0)), seg(p(0, -r * 1.2), p(0, r * 1.2))]
+        case .panel:
+            return polygon([p(-r, -r * 1.3), p(r, -r * 1.3), p(r, r * 1.3), p(-r, r * 1.3)]) + [seg(p(-r, -r * 1.3), p(r, r * 1.3))]
+        case .junction:
+            return circle(c, r * 0.8) + [seg(p(-r * 0.6, -r * 0.6), p(r * 0.6, r * 0.6)), seg(p(-r * 0.6, r * 0.6), p(r * 0.6, -r * 0.6))]
+        case .waterHeater:
+            return circle(c, r * 1.2) + [seg(p(-r * 0.6, -r * 0.6), p(r * 0.6, r * 0.6))]
+        case .hoseBib:
+            return polygon([p(0, -r), p(r, r), p(-r, r)])
+        case .cleanout:
+            return circle(c, r) + [seg(p(-r, 0), p(r, 0))]
+        case .floorDrain:
+            return polygon([p(-r, -r), p(r, -r), p(r, r), p(-r, r)]) + [seg(p(-r, -r), p(r, r)), seg(p(-r, r), p(r, -r))]
+        case .shutoff:
+            return polygon([p(0, -r * 1.2), p(r * 1.2, 0), p(0, r * 1.2), p(-r * 1.2, 0)])
+        case .gasShutoff:
+            return polygon([p(0, -r * 1.2), p(r * 1.2, 0), p(0, r * 1.2), p(-r * 1.2, 0)]) + [seg(p(-r * 0.6, 0), p(r * 0.6, 0))]
+        case .ethernet:
+            return polygon([p(0, -r), p(r, r), p(-r, r)]) + [seg(p(0, -r * 0.1), p(0, r * 0.6))]
+        case .coax:
+            return polygon([p(-r, -r), p(r, -r), p(r, r), p(-r, r)]) + circle(c, r * 0.4, steps: 8)
+        case .smokeAlarm:
+            return circle(c, r) + circle(c, r * 0.6, steps: 10)
+        case .coAlarm:
+            return circle(c, r) + [seg(p(-r * 0.5, -r * 0.5), p(r * 0.5, -r * 0.5)), seg(p(-r * 0.5, r * 0.5), p(r * 0.5, r * 0.5))]
+        case .thermostat:
+            return polygon([p(-r, -r * 0.8), p(r, -r * 0.8), p(r, r * 0.8), p(-r, r * 0.8)]) + circle(c, r * 0.4, steps: 8)
+        }
+    }
+
     private static func stairSymbol(_ stair: PlanStair) -> StairSymbol {
         let d = (stair.end - stair.start) / stair.length
         let n = SIMD2<Float>(-d.y, d.x) * (stair.width / 2)
@@ -195,6 +273,20 @@ struct BlueprintLayout {
 
         for stair in plan.stairList where stair.length > 0.1 {
             layout.stairs.append(stairSymbol(stair))
+        }
+
+        for symbol in plan.symbolList {
+            layout.symbols.append(SymbolGlyph(kind: symbol.kind, lines: glyph(for: symbol.kind, at: symbol.position),
+                                              tag: symbol.kind.tag, tagPosition: symbol.position + SIMD2<Float>(0, 0.32)))
+        }
+
+        for wall in plan.walls where wall.structure == .loadBearing && wall.lengthMeters > 0.3 {
+            let half = wall.normal * (wall.thickness / 2 + 0.03)
+            let count = max(2, Int(wall.lengthMeters / 0.3))
+            for i in 0...count {
+                let c = wall.point(atDistance: wall.lengthMeters * Float(i) / Float(count))
+                layout.bearingTicks.append(Segment(a: c - half, b: c + half))
+            }
         }
 
         for room in plan.rooms where room.polygon.count >= 3 {

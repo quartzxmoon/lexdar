@@ -6,7 +6,7 @@ import simd
 /// with a finger or Apple Pencil — SwiftUI's gestures don't distinguish
 /// the two, so no Pencil-specific code is needed for precise placement.
 enum BlueprintTool: String, CaseIterable, Identifiable {
-    case wall, door, window, opening, stairs, room, note, select
+    case wall, door, window, opening, stairs, symbol, room, note, select
 
     var id: String { rawValue }
 
@@ -17,6 +17,7 @@ enum BlueprintTool: String, CaseIterable, Identifiable {
         case .window: return "Window"
         case .opening: return "Opening"
         case .stairs: return "Stairs"
+        case .symbol: return "Symbols"
         case .room: return "Room"
         case .note: return "Note"
         case .select: return "Select"
@@ -30,6 +31,7 @@ enum BlueprintTool: String, CaseIterable, Identifiable {
         case .window: return "windshield.front.and.wiper.intermittent"
         case .opening: return "rectangle.portrait.and.arrow.right"
         case .stairs: return "stairs"
+        case .symbol: return "bolt.fill"
         case .room: return "square.dashed"
         case .note: return "camera.badge.ellipsis"
         case .select: return "hand.point.up.left.fill"
@@ -83,6 +85,8 @@ struct BlueprintEditorView: View {
     @State private var pendingOpeningStyle: OpeningStyle?
 
     @State private var selectedWallID: UUID?
+    @State private var symbolKind: SymbolKind = .outlet
+    @State private var showChecks = false
     @State private var draggingEndpoint: (wallID: UUID, isStart: Bool)?
 
     @State private var showAnnotationSheet = false
@@ -146,6 +150,7 @@ struct BlueprintEditorView: View {
                         Label(is3D ? "2D" : "3D", systemImage: is3D ? "square.grid.3x3" : "view.3d")
                     }
                     if !is3D {
+                        Button { showChecks = true } label: { Image(systemName: "checklist") }
                         Button { undo() } label: { Image(systemName: "arrow.uturn.backward") }
                             .disabled(undoStack.isEmpty)
                         Button { redo() } label: { Image(systemName: "arrow.uturn.forward") }
@@ -168,6 +173,7 @@ struct BlueprintEditorView: View {
             }
             .sheet(isPresented: $showOpeningSheet) { openingSheet }
             .sheet(isPresented: $showAnnotationSheet) { annotationSheet }
+            .sheet(isPresented: $showChecks) { PlanChecksView(plan: floorPlan) }
         }
     }
 
@@ -191,6 +197,47 @@ struct BlueprintEditorView: View {
                 .buttonStyle(.plain)
                 .background(tool == t ? Color.accentColor.opacity(0.25) : .clear)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
+            }
+            if tool == .symbol {
+                Menu {
+                    ForEach(SymbolKind.Category.allCases) { category in
+                        Section(category.rawValue) {
+                            ForEach(SymbolKind.allCases.filter { $0.category == category }) { kind in
+                                Button {
+                                    symbolKind = kind
+                                } label: {
+                                    Label(kind.displayName, systemImage: symbolKind == kind ? "checkmark" : kind.symbolName)
+                                }
+                            }
+                        }
+                    }
+                } label: {
+                    Label(symbolKind.displayName, systemImage: symbolKind.symbolName)
+                        .font(.caption.weight(.semibold))
+                        .padding(.horizontal, 10).padding(.vertical, 8)
+                        .background(Color.accentColor.opacity(0.2), in: Capsule())
+                }
+            }
+            if tool == .select, let id = selectedWallID,
+               let index = floorPlan.walls.firstIndex(where: { $0.id == id }) {
+                Menu {
+                    Section("Marked by you. Not verified: only a structural engineer can confirm which walls carry load.") {
+                        ForEach(WallStructure.allCases) { type in
+                            Button {
+                                pushUndo()
+                                floorPlan.walls[index].structure = type == .unknown ? nil : type
+                                persist()
+                            } label: {
+                                Label(type.displayName, systemImage: (floorPlan.walls[index].structure ?? .unknown) == type ? "checkmark" : "square.split.2x1")
+                            }
+                        }
+                    }
+                } label: {
+                    Label("Wall type", systemImage: "square.split.2x1")
+                        .font(.caption.weight(.semibold))
+                        .padding(.horizontal, 10).padding(.vertical, 8)
+                        .background(Color.accentColor.opacity(0.2), in: Capsule())
+                }
             }
             if tool == .select, let id = selectedWallID {
                 Button(role: .destructive) {
@@ -313,6 +360,8 @@ struct BlueprintEditorView: View {
                     placeOrEditAnnotation(at: point)
                 case .select:
                     selectNearestWall(at: point)
+                case .symbol:
+                    placeSymbol(at: point)
                 case .wall, .stairs:
                     break
                 }
@@ -658,9 +707,45 @@ struct BlueprintEditorView: View {
         if !roomPoints.isEmpty {
             drawPendingRoom(in: &context, size: size)
         }
+        for symbol in floorPlan.symbolList {
+            drawSymbol(symbol, in: &context, size: size)
+        }
         for (index, annotation) in floorPlan.annotations.enumerated() {
             drawAnnotationPin(annotation, number: index + 1, in: &context, size: size)
         }
+    }
+
+    private func drawSymbol(_ symbol: PlanSymbol, in context: inout GraphicsContext, size: CGSize) {
+        let color: Color
+        switch symbol.kind.category {
+        case .electrical: color = Color(red: 0.85, green: 0.45, blue: 0)
+        case .plumbing: color = Color(red: 0, green: 0.4, blue: 0.85)
+        case .dataSafety: color = Color(red: 0, green: 0.55, blue: 0.25)
+        }
+        var path = Path()
+        for segment in BlueprintLayout.glyph(for: symbol.kind, at: symbol.position) {
+            path.move(to: planToScreen(segment.a, canvasSize: size))
+            path.addLine(to: planToScreen(segment.b, canvasSize: size))
+        }
+        context.stroke(path, with: .color(color), lineWidth: 1.6)
+        if !symbol.kind.tag.isEmpty {
+            context.draw(Text(symbol.kind.tag).font(.system(size: 9, weight: .semibold)).foregroundStyle(color),
+                         at: planToScreen(symbol.position + SIMD2<Float>(0, 0.32), canvasSize: size))
+        }
+    }
+
+    /// Tap an empty spot to place the chosen symbol; tap an existing symbol to remove it.
+    private func placeSymbol(at point: SIMD2<Float>) {
+        let tolerance: Float = 22 / Float(effectiveScale)
+        pushUndo()
+        var list = floorPlan.symbolList
+        if let hit = list.firstIndex(where: { simd_length($0.position - point) < tolerance }) {
+            list.remove(at: hit)
+        } else {
+            list.append(PlanSymbol(kind: symbolKind, position: snappedToGrid(point)))
+        }
+        floorPlan.symbols = list
+        persist()
     }
 
     private func drawAnnotationPin(_ annotation: PlanAnnotation, number: Int, in context: inout GraphicsContext, size: CGSize) {
@@ -699,7 +784,8 @@ struct BlueprintEditorView: View {
         path.move(to: planToScreen(wall.start, canvasSize: size))
         path.addLine(to: planToScreen(wall.end, canvasSize: size))
         let width = max(2, CGFloat(wall.thickness) * effectiveScale)
-        context.stroke(path, with: .color(highlighted ? .accentColor : .primary), lineWidth: width)
+        let wallColor: Color = highlighted ? .accentColor : (wall.structure == .loadBearing ? .red : .primary)
+        context.stroke(path, with: .color(wallColor), lineWidth: width)
     }
 
     private func drawOpening(_ opening: FloorPlanOpening, on wall: FloorPlanWall, in context: inout GraphicsContext, size: CGSize) {

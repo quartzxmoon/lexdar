@@ -4,6 +4,7 @@ type: subsystem
 created: 2026-11-03
 updated: 2026-11-03
 sources:
+  - code: Lexdar/Views/PlanChecksView.swift
   - code: Lexdar/Models/FloorPlan.swift
   - code: Lexdar/Scanning/RoomPlanImporter.swift
   - code: Lexdar/Views/BlueprintLayout.swift
@@ -354,3 +355,28 @@ box treads for the 3D and AR views.
   which is the same approach real CAD/floor-plan tools use for "drawn by
   hand" — Apple Pencil input works through it with full precision since
   SwiftUI's gestures don't distinguish Pencil from touch.
+
+## Wall types, electrical and plumbing symbols, plan checks
+
+- `FloorPlanWall.structure` (`WallStructure`) lets the user mark a wall load-bearing,
+  partition, or exterior. Load-bearing walls draw red in the editor and get cross-ticks in
+  the blueprint, PDF, and DXF (`BlueprintLayout.bearingTicks`, DXF layer STRUCTURE).
+- `PlanSymbol` / `SymbolKind` pin outlets, switches, lights, panels, shutoffs, data, and
+  alarms to a plan with the editor's Symbols tool. `BlueprintLayout.glyph(for:at:)` returns
+  line-only glyphs so the screen, PDF, and DXF renderers draw them with one loop (DXF layers
+  ELECTRICAL, PLUMBING, DATA_SAFETY).
+- `PlanChecker` (the checklist button in the editor) flags loose wall ends, overlapping
+  openings, bedrooms without a smoke alarm or window, non-GFCI outlets in wet rooms, and
+  narrow or shallow stairs.
+
+> ⚠️ The load-bearing marker is the user's own note, never a finding. The app has no way to
+> know what a wall carries, so the wall-type menu and the checks say so, and no screen may
+> ever call a wall safe to remove. Keep that wording if the UI changes.
+
+> ⚠️ The plan checks reflect common US model codes (IRC R310, R311, R314; NEC 210.8) as
+> general guidance only; local code governs. Rewording a check into a statement that the plan
+> "meets code" would be wrong.
+
+> ⚠️ The new fields on `FloorPlanWall` and `FloorPlan` are optional so saved plans still
+> decode. The DXF layer count is 12 (`emit(70, "12")`); add a layer, change the count.
+> Symbols are not drawn in the 3D preview. Compile-checked in CI only.

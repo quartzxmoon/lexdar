@@ -60,6 +60,9 @@ struct RenovationSceneView: UIViewRepresentable {
     /// Which story new walls and items are placed on: 0 is the scanned floor,
     /// -1 a basement, 1 the floor above, and so on.
     var levelIndex: Int = 0
+    /// True shows the scan as it was, ignoring every change in the plan, for a
+    /// before-and-after comparison. Editing is paused while it is on.
+    var showOriginal: Bool = false
 
     func makeUIView(context: Context) -> SCNView {
         let view = SCNView()
@@ -96,10 +99,11 @@ struct RenovationSceneView: UIViewRepresentable {
     func updateUIView(_ uiView: SCNView, context: Context) {
         let coordinator = context.coordinator
         coordinator.parent = self
-        if coordinator.lastPlanUpdatedAt != plan.updatedAt {
+        if coordinator.lastPlanUpdatedAt != plan.updatedAt || coordinator.lastShowOriginal != showOriginal {
+            coordinator.lastShowOriginal = showOriginal
             coordinator.rebuildScene(room: room, plan: plan)
         }
-        uiView.allowsCameraControl = (selectedPlacedItemID == nil && tool != .drawWall)
+        uiView.allowsCameraControl = showOriginal || (selectedPlacedItemID == nil && tool != .drawWall)
 
         if tool != coordinator.lastTool || levelIndex != coordinator.lastLevel {
             coordinator.lastTool = tool
@@ -127,6 +131,7 @@ struct RenovationSceneView: UIViewRepresentable {
         var lastPlanUpdatedAt: Date = .distantPast
         var lastTool: RenovationTool = .inspect
         var lastLevel = 0
+        var lastShowOriginal = false
         var isPlacing = false
         let bounds: RoomSceneBuilder.RoomBounds
 
@@ -156,7 +161,8 @@ struct RenovationSceneView: UIViewRepresentable {
         func rebuildScene(room: CapturedRoom, plan: RenovationPlan) {
             guard let view else { return }
             let pov = view.pointOfView
-            let scene = RoomSceneBuilder.build(room: room, plan: plan,
+            let shown = parent.showOriginal ? RenovationPlan(scanID: plan.scanID, name: "original") : plan
+            let scene = RoomSceneBuilder.build(room: room, plan: shown,
                                                showDetectedObjects: parent.showDetectedObjects)
             if let pov {
                 pov.removeFromParentNode()
@@ -268,7 +274,7 @@ struct RenovationSceneView: UIViewRepresentable {
         }
 
         @objc func handleTap(_ gesture: UITapGestureRecognizer) {
-            guard let view else { return }
+            guard let view, !parent.showOriginal else { return }
             let point = gesture.location(in: view)
             let hits = view.hitTest(point, options: [.searchMode: NSNumber(value: 1)])
             let tags = hits.compactMap { Self.tag($0.node) }
@@ -312,6 +318,7 @@ struct RenovationSceneView: UIViewRepresentable {
         // MARK: - Pan: draw a wall, or drag the selected item
 
         @objc func handlePan(_ gesture: UIPanGestureRecognizer) {
+            guard !parent.showOriginal else { return }
             if parent.tool == .drawWall {
                 handleDrawWall(gesture)
                 return

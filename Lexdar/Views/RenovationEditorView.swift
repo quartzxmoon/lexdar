@@ -23,6 +23,7 @@ struct RenovationEditorView: View {
     @State private var showCatalogSheet = false
     @State private var showSummary = false
     @State private var showCost = false
+    @State private var showOriginal = false
     @State private var showDeleteConfirm = false
     /// Which story new walls and items go on (0 = the scanned floor).
     @State private var level = 0
@@ -46,7 +47,8 @@ struct RenovationEditorView: View {
                                      pendingPlacementItemID: $pendingPlacementItemID,
                                      hudText: $hudText,
                                      showDetectedObjects: showDetectedObjects,
-                                     levelIndex: level)
+                                     levelIndex: level,
+                                     showOriginal: showOriginal)
                     .ignoresSafeArea(edges: .bottom)
 
                 VStack(spacing: 10) {
@@ -57,6 +59,8 @@ struct RenovationEditorView: View {
                         drawWallBar
                     }
                     toolBar
+                        .disabled(showOriginal)
+                        .opacity(showOriginal ? 0.4 : 1)
                 }
                 .padding(.bottom, 8)
             }
@@ -76,6 +80,15 @@ struct RenovationEditorView: View {
                         .background(.ultraThinMaterial, in: Capsule())
                 }
                 .padding(.leading, 12).padding(.top, 8)
+            }
+            .overlay(alignment: .topTrailing) {
+                Picker("View", selection: $showOriginal) {
+                    Text("After").tag(false)
+                    Text("Before").tag(true)
+                }
+                .pickerStyle(.segmented)
+                .frame(width: 170)
+                .padding(.trailing, 12).padding(.top, 8)
             }
             .overlay(alignment: .top) {
                 if let hudText {

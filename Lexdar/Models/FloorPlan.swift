@@ -13,6 +13,24 @@ import simd
 /// meters, matching ARKit/RoomPlan's world space with the vertical (height)
 /// axis dropped. For a hand-drawn plan with no ARKit session behind it,
 /// these are just plan-space meters with an arbitrary origin.
+/// What kind of wall this is, as marked by the person drawing the plan. This is
+/// a note on the drawing, never a finding: the app cannot tell which walls carry
+/// load, and only a structural engineer or the original plans can.
+enum WallStructure: String, Codable, CaseIterable, Identifiable {
+    case unknown, partition, loadBearing, exterior
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .unknown: return "Not marked"
+        case .partition: return "Partition (believed non-structural)"
+        case .loadBearing: return "Load-bearing (marked by you)"
+        case .exterior: return "Exterior wall"
+        }
+    }
+}
+
 struct FloorPlanWall: Identifiable, Codable, Hashable {
     let id: UUID
     var start: SIMD2<Float>
@@ -24,9 +42,12 @@ struct FloorPlanWall: Identifiable, Codable, Hashable {
     /// blueprint renderer. Defaults to a standard 2x4 interior wall (~4.5in
     /// finished) when hand-drawn.
     var thickness: Float
+    /// Optional so plans saved before wall types existed still decode.
+    var structure: WallStructure?
 
     init(id: UUID = UUID(), start: SIMD2<Float>, end: SIMD2<Float>,
-         height: Float = 2.4384, thickness: Float = 0.1143) {
+         height: Float = 2.4384, thickness: Float = 0.1143, structure: WallStructure? = nil) {
+        self.structure = structure
         self.id = id
         self.start = start
         self.end = end
@@ -228,6 +249,114 @@ struct PlanStair: Identifiable, Codable, Hashable {
     var length: Float { simd_length(end - start) }
 }
 
+/// Electrical, plumbing, data, and safety symbols that can be pinned to a plan.
+enum SymbolKind: String, Codable, CaseIterable, Identifiable {
+    // Electrical
+    case outlet, outletGFCI, outlet240, switchSingle, switchThreeWay, dimmer
+    case ceilingLight, recessedLight, ceilingFan, panel, junction
+    // Plumbing
+    case waterHeater, hoseBib, cleanout, floorDrain, shutoff, gasShutoff
+    // Data and safety
+    case ethernet, coax, smokeAlarm, coAlarm, thermostat
+
+    var id: String { rawValue }
+
+    enum Category: String, CaseIterable, Identifiable {
+        case electrical = "Electrical", plumbing = "Plumbing", dataSafety = "Data and Safety"
+        var id: String { rawValue }
+    }
+
+    var category: Category {
+        switch self {
+        case .outlet, .outletGFCI, .outlet240, .switchSingle, .switchThreeWay, .dimmer,
+             .ceilingLight, .recessedLight, .ceilingFan, .panel, .junction:
+            return .electrical
+        case .waterHeater, .hoseBib, .cleanout, .floorDrain, .shutoff, .gasShutoff:
+            return .plumbing
+        case .ethernet, .coax, .smokeAlarm, .coAlarm, .thermostat:
+            return .dataSafety
+        }
+    }
+
+    var displayName: String {
+        switch self {
+        case .outlet: return "Outlet (duplex)"
+        case .outletGFCI: return "GFCI outlet"
+        case .outlet240: return "240V outlet"
+        case .switchSingle: return "Switch"
+        case .switchThreeWay: return "3-way switch"
+        case .dimmer: return "Dimmer"
+        case .ceilingLight: return "Ceiling light"
+        case .recessedLight: return "Recessed light"
+        case .ceilingFan: return "Ceiling fan"
+        case .panel: return "Electrical panel"
+        case .junction: return "Junction box"
+        case .waterHeater: return "Water heater"
+        case .hoseBib: return "Hose bib"
+        case .cleanout: return "Drain cleanout"
+        case .floorDrain: return "Floor drain"
+        case .shutoff: return "Water shutoff"
+        case .gasShutoff: return "Gas shutoff"
+        case .ethernet: return "Ethernet / data"
+        case .coax: return "Coax / TV"
+        case .smokeAlarm: return "Smoke alarm"
+        case .coAlarm: return "CO alarm"
+        case .thermostat: return "Thermostat"
+        }
+    }
+
+    /// Short tag drawn next to the symbol on the plan.
+    var tag: String {
+        switch self {
+        case .outlet: return ""
+        case .outletGFCI: return "GFCI"
+        case .outlet240: return "240V"
+        case .switchSingle: return "S"
+        case .switchThreeWay: return "S3"
+        case .dimmer: return "SD"
+        case .ceilingLight: return ""
+        case .recessedLight: return "R"
+        case .ceilingFan: return "CF"
+        case .panel: return "PNL"
+        case .junction: return "J"
+        case .waterHeater: return "WH"
+        case .hoseBib: return "HB"
+        case .cleanout: return "CO"
+        case .floorDrain: return "FD"
+        case .shutoff: return "WS"
+        case .gasShutoff: return "GS"
+        case .ethernet: return "DATA"
+        case .coax: return "TV"
+        case .smokeAlarm: return "SD"
+        case .coAlarm: return "CO"
+        case .thermostat: return "T"
+        }
+    }
+
+    var symbolName: String {
+        switch category {
+        case .electrical: return "bolt.fill"
+        case .plumbing: return "drop.fill"
+        case .dataSafety: return "antenna.radiowaves.left.and.right"
+        }
+    }
+}
+
+/// One electrical, plumbing, data, or safety symbol placed on a plan.
+struct PlanSymbol: Identifiable, Codable, Hashable {
+    let id: UUID
+    var kind: SymbolKind
+    var position: SIMD2<Float>
+    var note: String
+
+    init(id: UUID = UUID(), kind: SymbolKind, position: SIMD2<Float>, note: String = "") {
+        self.id = id
+        self.kind = kind
+        self.position = position
+        self.note = note
+    }
+}
+
 /// A complete floor plan: one level's worth of walls, openings, and room
 /// boundaries, at a known real-world scale. This is the thing contractor-
 /// grade blueprints are rendered from (see `BlueprintView` /
@@ -253,6 +382,8 @@ struct FloorPlan: Identifiable, Codable, Hashable {
     var floorLevel: Int?
     /// Optional so plans saved before stairs existed still decode.
     var stairs: [PlanStair]?
+    /// Optional so plans saved before symbols existed still decode.
+    var symbols: [PlanSymbol]?
 
     init(id: UUID = UUID(), name: String, source: FloorPlanSource,
          walls: [FloorPlanWall] = [], openings: [FloorPlanOpening] = [],
@@ -270,6 +401,7 @@ struct FloorPlan: Identifiable, Codable, Hashable {
     }
 
     var stairList: [PlanStair] { stairs ?? [] }
+    var symbolList: [PlanSymbol] { symbols ?? [] }
 
     var scanID: UUID? {
         if case .lidarScan(let scanID) = source { return scanID }

@@ -61,10 +61,11 @@ enum BlueprintDXFExporter {
         emit(2, "TABLES")
         emit(0, "TABLE")
         emit(2, "LAYER")
-        emit(70, "8")
+        emit(70, "12")
         let layerDefs: [(name: String, aciColor: Int)] = [
             ("WALLS", 7), ("DOORS", 5), ("WINDOWS", 4), ("OPENINGS", 30),
             ("ROOMS", 3), ("DIMENSIONS", 8), ("TEXT", 2), ("STAIRS", 6),
+            ("ELECTRICAL", 40), ("PLUMBING", 140), ("DATA_SAFETY", 94), ("STRUCTURE", 1),
         ]
         for layer in layerDefs {
             emit(0, "LAYER")
@@ -124,6 +125,24 @@ enum BlueprintDXFExporter {
             for segment in stair.lines {
                 line(segment.a, segment.b, layer: "STAIRS")
             }
+        }
+
+        for glyph in layout.symbols {
+            let layer: String
+            switch glyph.kind.category {
+            case .electrical: layer = "ELECTRICAL"
+            case .plumbing: layer = "PLUMBING"
+            case .dataSafety: layer = "DATA_SAFETY"
+            }
+            for segment in glyph.lines {
+                line(segment.a, segment.b, layer: layer)
+            }
+            if !glyph.tag.isEmpty {
+                text(glyph.tag, at: glyph.tagPosition, height: 0.07, layer: layer)
+            }
+        }
+        for segment in layout.bearingTicks {
+            line(segment.a, segment.b, layer: "STRUCTURE")
         }
 
         for polygon in layout.roomPolygons where polygon.count >= 3 {

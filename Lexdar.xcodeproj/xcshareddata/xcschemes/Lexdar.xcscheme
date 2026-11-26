@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "405060B92F8246CFBA98800B"
+               BlueprintIdentifier = "4358363A284241739734499E"
                BuildableName = "Lexdar.app"
                BlueprintName = "Lexdar"
                ReferencedContainer = "container:Lexdar.xcodeproj">
@@ -36,7 +36,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "405060B92F8246CFBA98800B"
+            BlueprintIdentifier = "4358363A284241739734499E"
             BuildableName = "Lexdar.app"
             BlueprintName = "Lexdar"
             ReferencedContainer = "container:Lexdar.xcodeproj">
@@ -53,7 +53,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "405060B92F8246CFBA98800B"
+            BlueprintIdentifier = "4358363A284241739734499E"
             BuildableName = "Lexdar.app"
             BlueprintName = "Lexdar"
             ReferencedContainer = "container:Lexdar.xcodeproj">

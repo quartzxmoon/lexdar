@@ -224,6 +224,10 @@ objects appear in 3D as they are found. It hides itself when scanning stops
 > inside it at placement. Compile-checked in CI only; the look of the models and
 > textures has never been seen on a device.
 
+- The Before/After control (`RenovationEditorView.showOriginal`) rebuilds the scene from an
+  empty plan so the original scan can be compared with the plan; editing is paused while
+  Before is shown.
+
 ## Multi-room scanning
 
 Open-plan spaces collapse to the first closed room in RoomPlan's processed result.
