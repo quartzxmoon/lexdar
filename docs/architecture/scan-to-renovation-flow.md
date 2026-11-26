@@ -190,12 +190,27 @@ objects appear in 3D as they are found. It hides itself when scanning stops
 > Not yet run on a device; the camera framing in `LiveRoomPreview` (distance
 > from the room's bounding box) is a guess to tune once seen.
 
+## Multi-room scanning
+
+Open-plan spaces collapse to the first closed room in RoomPlan's processed result.
+`RoomCaptureCoordinator.finishRoom` stops with `stop(pauseARSession: false)`, so the AR
+session stays continuous; `scanNextRoom` re-runs the same session. Each processed room is
+appended to `completedRooms` (once, guarded by `awaitingRoom`) and `mergedRoom` combines
+them with `StructureBuilder`, falling back to `merge` (plain concatenation through the
+rooms' JSON form).
+
+> ⚠️ `merge` assumes RoomPlan encodes `walls`, `doors`, `windows`, `openings`, `objects`
+> and `floors` as top-level arrays, the same unverified assumption as
+> `ScanStore.withoutObjects`. `StructureBuilder`'s `rooms` property and async signature
+> are also unchecked beyond CI compiling. If the app is backgrounded between rooms the AR
+> session is no longer continuous and rooms will not line up (relocalization with an
+> `ARWorldMap` is not implemented). Never run on a device.
+
 ## Not yet built
 
 - No native `.usdz`/Reality asset loading path for catalog items — see
   `CatalogItem.assetName` and the README section "Swapping in real 3D
   assets".
-- No multi-room stitching beyond what RoomPlan's own continuous-session
-  capture provides.
+- Multi-room scanning exists but has never run on a device (see below).
 - Wall removal / material swap is a **visual planning aid only** — nothing
   in this codebase checks structural/load-bearing concerns.

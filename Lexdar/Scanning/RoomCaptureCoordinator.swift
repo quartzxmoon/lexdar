@@ -17,7 +17,14 @@ final class RoomCaptureCoordinator: NSObject, ObservableObject {
     /// Latest in-progress room model from RoomPlan, throttled, for the live
     /// 3D preview shown while scanning.
     @Published var liveRoom: CapturedRoom?
+    /// Every room finished so far in this scan, in order. Open-plan spaces
+    /// (kitchen + dining, a hallway with side rooms) are scanned one room at a
+    /// time on the same AR session and merged on save.
+    @Published private(set) var completedRooms: [CapturedRoom] = []
     private var lastLiveUpdate = Date.distantPast
+    /// True between asking the session to stop and RoomPlan handing back the
+    /// processed room, so that room is recorded exactly once.
+    private var awaitingRoom = false
 
     static var isSupported: Bool {
         RoomCaptureSession.isSupported
@@ -41,6 +48,66 @@ final class RoomCaptureCoordinator: NSObject, ObservableObject {
         finalRoom = nil
         liveRoom = nil
         errorMessage = nil
+        completedRooms = []
+        awaitingRoom = false
+    }
+
+    /// Ends the current room but keeps the AR session running so the next
+    /// room lands in the same coordinate space.
+    func finishRoom() {
+        awaitingRoom = true
+        captureView.captureSession.stop(pauseARSession: false)
+        isScanning = false
+    }
+
+    /// Starts another room on the same session, keeping the finished ones.
+    func scanNextRoom() {
+        let configuration = RoomCaptureSession.Configuration()
+        captureView.captureSession.run(configuration: configuration)
+        isScanning = true
+        finalRoom = nil
+        liveRoom = nil
+        errorMessage = nil
+    }
+
+    /// One room for saving: the single room, or all finished rooms combined.
+    func mergedRoom() async -> CapturedRoom? {
+        guard completedRooms.count > 1 else { return completedRooms.first ?? finalRoom }
+        do {
+            let structure = try await StructureBuilder(options: []).capturedStructure(from: completedRooms)
+            if let merged = Self.merge(structure.rooms) { return merged }
+        } catch {
+            errorMessage = "Room alignment failed (\(error.localizedDescription)); combining rooms as scanned."
+        }
+        // The AR session was continuous, so the rooms already share one space.
+        return Self.merge(completedRooms) ?? finalRoom
+    }
+
+    /// Concatenates the surfaces and objects of several rooms through their
+    /// JSON form (CapturedRoom has no public initializer). The key names are an
+    /// assumption about RoomPlan's coding format; nil means it did not work.
+    static func merge(_ rooms: [CapturedRoom]) -> CapturedRoom? {
+        guard let first = rooms.first else { return nil }
+        guard rooms.count > 1 else { return first }
+        let encoder = JSONEncoder()
+        func dictionary(_ room: CapturedRoom) -> [String: Any]? {
+            guard let data = try? encoder.encode(room) else { return nil }
+            return (try? JSONSerialization.jsonObject(with: data)) as? [String: Any]
+        }
+        guard var base = dictionary(first) else { return nil }
+        let keys = ["walls", "doors", "windows", "openings", "objects", "floors"]
+        for room in rooms.dropFirst() {
+            guard let extra = dictionary(room) else { return nil }
+            for key in keys {
+                if let more = extra[key] as? [Any], let existing = base[key] as? [Any] {
+                    base[key] = existing + more
+                }
+            }
+        }
+        guard let data = try? JSONSerialization.data(withJSONObject: base),
+              let merged = try? JSONDecoder().decode(CapturedRoom.self, from: data),
+              merged.walls.count >= first.walls.count else { return nil }
+        return merged
     }
 
     func acceptLiveUpdate(_ room: CapturedRoom) {
@@ -50,6 +117,7 @@ final class RoomCaptureCoordinator: NSObject, ObservableObject {
     }
 
     func stop() {
+        awaitingRoom = true
         captureView.captureSession.stop()
         isScanning = false
     }
@@ -75,6 +143,12 @@ extension RoomCaptureCoordinator: RoomCaptureViewDelegate {
             if let error {
                 self.errorMessage = error.localizedDescription
                 return
+            }
+            if self.awaitingRoom {
+                self.completedRooms.append(processedResult)
+                self.awaitingRoom = false
+            } else if !self.completedRooms.isEmpty {
+                self.completedRooms[self.completedRooms.count - 1] = processedResult
             }
             self.finalRoom = processedResult
         }

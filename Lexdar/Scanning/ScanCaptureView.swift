@@ -53,6 +53,15 @@ struct ScanCaptureView: View {
                         .foregroundStyle(.white)
                         .clipShape(Capsule())
                 }
+                if !coordinator.isScanning, !coordinator.completedRooms.isEmpty {
+                    Text("\(coordinator.completedRooms.count) room(s) captured. Open space or an arch you could not finish? Walk into the next room and tap Scan Next Room. Stay in the app so the rooms line up, then Save.")
+                        .font(.footnote)
+                        .padding(.horizontal, 12).padding(.vertical, 6)
+                        .background(.black.opacity(0.6))
+                        .foregroundStyle(.white)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                        .padding(.horizontal)
+                }
                 if let error = coordinator.errorMessage {
                     Text(error)
                         .font(.footnote)
@@ -96,19 +105,31 @@ struct ScanCaptureView: View {
     private var primaryButton: some View {
         if coordinator.isScanning {
             Button {
-                coordinator.stop()
+                coordinator.finishRoom()
             } label: {
-                Label("Finish Scan", systemImage: "checkmark.circle.fill").font(.headline)
+                Label(coordinator.completedRooms.isEmpty ? "Finish Room" : "Finish Room \(coordinator.completedRooms.count + 1)",
+                      systemImage: "checkmark.circle.fill").font(.headline)
             }
             .buttonStyle(.borderedProminent)
         } else if coordinator.finalRoom != nil {
-            Button {
-                showNamePrompt = true
-            } label: {
-                Label(isSaving ? "Saving…" : "Save Scan", systemImage: "square.and.arrow.down").font(.headline)
+            HStack(spacing: 12) {
+                Button {
+                    coordinator.scanNextRoom()
+                } label: {
+                    Label("Scan Next Room", systemImage: "plus.viewfinder").font(.headline)
+                }
+                .buttonStyle(.bordered)
+                .disabled(isSaving)
+
+                Button {
+                    showNamePrompt = true
+                } label: {
+                    Label(isSaving ? "Saving…" : "Save \(coordinator.completedRooms.count > 1 ? "\(coordinator.completedRooms.count) Rooms" : "Scan")",
+                          systemImage: "square.and.arrow.down").font(.headline)
+                }
+                .buttonStyle(.borderedProminent)
+                .disabled(isSaving)
             }
-            .buttonStyle(.borderedProminent)
-            .disabled(isSaving)
         } else {
             Button {
                 coordinator.start()
@@ -120,10 +141,15 @@ struct ScanCaptureView: View {
     }
 
     private func save() {
-        guard let room = coordinator.finalRoom else { return }
+        guard coordinator.finalRoom != nil else { return }
         isSaving = true
         Task {
             do {
+                guard let room = await coordinator.mergedRoom() else {
+                    isSaving = false
+                    coordinator.errorMessage = "Nothing to save yet."
+                    return
+                }
                 _ = try await store.saveNewScan(name: projectName, room: room, includeObjects: includeObjects)
                 isSaving = false
                 dismiss()
